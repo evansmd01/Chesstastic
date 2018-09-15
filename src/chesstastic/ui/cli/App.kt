@@ -1,5 +1,6 @@
 package chesstastic.ui.cli
 
+import chesstastic.engine.Board
 import chesstastic.ui.cli.commands.*
 import chesstastic.ui.cli.view.BoardView
 import chestastic.engine.*

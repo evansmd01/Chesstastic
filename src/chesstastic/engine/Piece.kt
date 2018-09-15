@@ -1,4 +1,4 @@
-package chestastic.engine
+package chesstastic.engine
 
 sealed class Piece(val color: Color)
 

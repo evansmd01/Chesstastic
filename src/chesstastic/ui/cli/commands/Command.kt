@@ -1,6 +1,6 @@
 package chesstastic.ui.cli.commands
 
-import chestastic.engine.Coordinate
+import chesstastic.engine.Coordinate
 
 interface CommandParser {
     fun parse(input: String): Command?

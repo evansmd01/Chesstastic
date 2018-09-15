@@ -1,4 +1,4 @@
-package chestastic.engine
+package chesstastic.engine
 
 enum class File: Indexable {
     A, B, C, D, E, F, G, H;

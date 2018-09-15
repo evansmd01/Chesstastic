@@ -1,4 +1,4 @@
-package chestastic.engine
+package chesstastic.engine
 
 data class Coordinate(val file: File, val rank: Rank) {
     fun indexEquals(fileIndex: Int, rankIndex: Int): Boolean =

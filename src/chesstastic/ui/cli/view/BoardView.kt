@@ -1,5 +1,6 @@
 package chesstastic.ui.cli.view
 
+import chesstastic.engine.*
 import chestastic.engine.*
 
 class BoardView {

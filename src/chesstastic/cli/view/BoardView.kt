@@ -18,7 +18,7 @@ class BoardView {
                         prefix = " $rank | ",
                         postfix = " | $rank\n")
                 { file ->
-                    board[file, rank]?.let { renderPiece(it) } ?: " "
+                    board[Coordinate(file, rank)]?.let { renderPiece(it) } ?: " "
                 }
             }
 

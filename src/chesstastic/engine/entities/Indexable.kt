@@ -5,5 +5,5 @@ interface Indexable {
 }
 
 interface IndexableCompanion<T: Indexable> {
-    fun fromIndex(index: Int): T
+    fun fromIndex(index: Int): T?
 }

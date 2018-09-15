@@ -2,40 +2,46 @@ package chesstastic.engine.entities
 
 import chesstastic.engine.rules.MoveCalculator
 
-typealias BoardState = Array<Array<Piece?>>
 
 class Board(
-        private val state: BoardState,
-        private val history: List<BoardState>,
+        private val state: Array<Array<Piece?>>,
+        val history: List<Move>,
         val turn: Color
 ) {
-    operator fun get(file: File, rank: Rank): Piece? = state[rank.index][file.index]
+    operator fun get(coord: Coordinate): Piece? = state[coord.rank.index][coord.file.index]
 
-    private val validMoves by lazy { MoveCalculator(this).validMoves }
+    private val legalMoves by lazy { MoveCalculator.legalMoves(this) }
 
-    val isCheckmate = validMoves.count() == 0
+    val isCheck by lazy { MoveCalculator.isKingInCheck(turn, this) }
+    val isCheckmate by lazy { legalMoves.count() == 0 }
 
-    fun update(move: Move): Board? {
-        if (move !in validMoves)
-            return null
-
-        val movingPiece = get(move.from.file, move.from.rank)
-        val newState = state.mapIndexed { rankIndex, ranks ->
-            ranks.mapIndexed { fileIndex, piece ->
-                when {
-                    move.from.indexEquals(fileIndex, rankIndex) -> null
-                    move.to.indexEquals(fileIndex, rankIndex) -> movingPiece
-                    else -> piece
-                }
-            }.toTypedArray()
-        }.toTypedArray()
-        val newHistory = history + listOf(state)
+    fun update(move: Move): Board {
+        val newState = applyMove(move)
+        val newHistory = history + move
         return Board(newState, newHistory, turn.opposite)
+    }
+
+    private fun applyMove(move: Move): Array<Array<Piece?>> {
+        val movingPiece = get(move.from) ?: throw Error("Invalid move, there is no piece on ${move.from}")
+
+        val newState = state.map { it.copyOf() }.toTypedArray()
+        newState[move.from.rank.index][move.from.file.index] = null
+        newState[move.to.rank.index][move.to.file.index] = movingPiece
+
+        if (move is EnPassantMove) {
+            newState[move.captured.rank.index][move.captured.file.index] = null
+        } else if (move is CastleMove) {
+            newState[move.rookMove.from.rank.index][move.rookMove.from.file.index] = null
+            newState[move.rookMove.to.rank.index][move.rookMove.to.file.index] = movingPiece
+        }
+
+        return newState
     }
     
     companion object {
         fun createNew(): Board = Board(InitialState, listOf(), Color.Light)
-        private val InitialState: BoardState = arrayOf(
+
+        private val InitialState: Array<Array<Piece?>> = arrayOf(
                 arrayOf<Piece?>(
                         Rook(Color.Light),
                         Knight(Color.Light),

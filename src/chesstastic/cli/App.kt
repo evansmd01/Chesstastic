@@ -3,6 +3,7 @@ package chesstastic.cli
 import chesstastic.cli.commands.*
 import chesstastic.engine.entities.*
 import chesstastic.cli.view.*
+import chesstastic.engine.rules.MoveCalculator
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
@@ -14,15 +15,20 @@ fun main(args: Array<String>) {
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
             break@gameLoop
         }
+        if (board.isCheck) {
+            printlnColor(ConsoleColor.RED, "CHECK!")
+        }
         print("${board.turn} player's turn: ")
         val input = readLine()?.toLowerCase()?.trim()
         val command = input?.let { Command.parse(it) }
         when (command) {
             is ExitCommand -> break@gameLoop
             is MoveCommand -> {
-                val newBoard = board.update(Move(command.from, command.to))
-                if (newBoard != null)
-                    board = newBoard
+                val move = MoveCalculator.legalMoves(board).firstOrNull{
+                    it.from == command.from && it.to == command.to
+                }
+                if (move != null)
+                    board = board.update(move)
                 else
                     printlnError("Invalid move: $input")
             }

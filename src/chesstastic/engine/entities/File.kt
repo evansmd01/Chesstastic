@@ -14,4 +14,9 @@ enum class File: Indexable {
             G -> 6
             H -> 7
         }
+
+    companion object: IndexableCompanion<File> {
+        override fun fromIndex(index: Int): File? =
+            File.values().firstOrNull { it.index == index }
+    }
 }

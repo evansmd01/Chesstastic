@@ -14,9 +14,9 @@ fun main(args: Array<String>) {
         when (command) {
             is Exit -> break@gameLoop
             is Move -> board = board.move(command.from, command.to)
+            else -> println("${ConsoleColor.RED}Invalid command: $input${ConsoleColor.RESET}")
         }
     }
 }
-
 
 

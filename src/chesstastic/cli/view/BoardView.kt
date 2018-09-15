@@ -1,5 +1,6 @@
 package chesstastic.cli.view
 
+import chesstastic.cli.ConsoleColor
 import chesstastic.engine.*
 
 class BoardView {
@@ -23,18 +24,18 @@ class BoardView {
             }
 
         private fun renderPiece(piece: Piece): String = when(piece) {
-            is Pawn -> select(piece.color, "♟", "♙")
-            is Rook -> select(piece.color, "♜", "♖")
-            is Knight -> select(piece.color, "♞", "♘")
-            is Bishop -> select(piece.color, "♝", "♗")
-            is Queen -> select(piece.color, "♛", "♕")
-            is King -> select(piece.color, "♚", "♔")
+            is Pawn -> select(piece.color, "♙")
+            is Rook -> select(piece.color, "♖")
+            is Knight -> select(piece.color, "♘")
+            is Bishop -> select(piece.color, "♗")
+            is Queen -> select(piece.color, "♕")
+            is King -> select(piece.color, "♔")
         }
 
-        private fun select(color: Color, light: String, dark: String): String =
+        private fun select(color: Color, piece: String): String =
             when (color) {
-                Color.Light -> light
-                else -> dark
+                Color.Light -> "${ConsoleColor.CYAN}$piece${ConsoleColor.RESET}"
+                else -> "${ConsoleColor.PURPLE}$piece${ConsoleColor.RESET}"
             }
     }
 }

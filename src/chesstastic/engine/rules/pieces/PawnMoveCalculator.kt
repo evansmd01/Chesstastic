@@ -8,6 +8,7 @@ class PawnMoveCalculator(val piece: Pawn, val currentCoord: Coordinate, val boar
     private val rankDelta = if (piece.color == Color.Light) 1 else -1
     private val opponent = piece.color.opposite
     private val enPassantRank: Rank = if (piece.color == Color.Light) Rank.Five else Rank.Four
+    private val promotionRank: Rank = if (piece.color == Color.Light) Rank.Eight else Rank.One
 
     override val coordinatesUnderAttack: Iterable<Coordinate> by lazy {
         listOfNotNull(currentCoord.transform(1, rankDelta), currentCoord.transform(-1, rankDelta))
@@ -29,7 +30,14 @@ class PawnMoveCalculator(val piece: Pawn, val currentCoord: Coordinate, val boar
         val forwardOne = currentCoord.transform(0, rankDelta)!!
         var isBlocked = board[forwardOne] != null
         if (!isBlocked) {
-            forwardMoves.add(BasicMove(currentCoord, forwardOne))
+            // promotion
+            if(forwardOne.rank == promotionRank) {
+                forwardMoves.add(PawnPromotionMove(currentCoord, forwardOne, Queen(piece.color)))
+                forwardMoves.add(PawnPromotionMove(currentCoord, forwardOne, Knight(piece.color)))
+            } else
+                forwardMoves.add(BasicMove(currentCoord, forwardOne))
+
+            // Double starting move
             if (currentCoord.rank == startingRank(piece.color)) {
                 val forwardTwo = forwardOne.transform(0, rankDelta)!!
                 isBlocked = board[forwardTwo] != null

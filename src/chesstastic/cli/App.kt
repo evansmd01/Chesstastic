@@ -28,7 +28,18 @@ fun main(args: Array<String>) {
                     it.from == command.from && it.to == command.to
                 }
                 if (move != null)
-                    board = board.update(move)
+                    if (move is PawnPromotionMove) {
+                        promoteLoop@while (true) {
+                            printlnColor(ConsoleColor.YELLOW, "Choose a Promotion! Enter 'Q' or 'K'")
+                            val entry = readLine()?.toUpperCase()?.trim()
+                            when (entry) {
+                                "Q" -> { board = board.update(move.withQueen); break@promoteLoop }
+                                "K" -> { board = board.update(move.withKnight); break@promoteLoop }
+                            }
+                        }
+                    } else {
+                        board = board.update(move)
+                    }
                 else
                     printlnError("Invalid move: $input")
             }

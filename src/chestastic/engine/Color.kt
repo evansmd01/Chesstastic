@@ -1,3 +1,3 @@
-package chestastic.Engine
+package chestastic.engine
 
 enum class Color { Dark, Light }

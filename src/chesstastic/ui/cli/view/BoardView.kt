@@ -1,6 +1,6 @@
-package chesstastic.UI.cli.view
+package chesstastic.ui.cli.view
 
-import chestastic.Engine.*
+import chestastic.engine.*
 
 class BoardView {
     companion object {

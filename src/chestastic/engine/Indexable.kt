@@ -1,4 +1,4 @@
-package chestastic.Engine
+package chestastic.engine
 
 interface Indexable {
     val index: Int

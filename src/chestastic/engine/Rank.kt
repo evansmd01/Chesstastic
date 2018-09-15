@@ -1,4 +1,4 @@
-package chestastic.Engine
+package chestastic.engine
 
 enum class Rank: Indexable {
     One,

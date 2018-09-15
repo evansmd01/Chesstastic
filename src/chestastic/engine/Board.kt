@@ -1,4 +1,4 @@
-package chestastic.Engine
+package chestastic.engine
 
 
 class Board(private val state: Array<Array<Piece?>> = InitialState) {

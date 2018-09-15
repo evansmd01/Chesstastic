@@ -1,8 +1,8 @@
-package chesstastic.UI.cli
+package chesstastic.ui.cli
 
-import chesstastic.UI.cli.commands.*
-import chesstastic.UI.cli.view.BoardView
-import chestastic.Engine.*
+import chesstastic.ui.cli.commands.*
+import chesstastic.ui.cli.view.BoardView
+import chestastic.engine.*
 
 fun main(args: Array<String>) {
     var board = Board()

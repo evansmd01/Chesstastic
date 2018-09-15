@@ -1,4 +1,4 @@
-package chesstastic.ui.cli.view
+package chesstastic.cli.view
 
 import chesstastic.engine.*
 import chestastic.engine.*

@@ -1,8 +1,11 @@
-package chesstastic.ui.cli
+package chesstastic.cli
 
+import chesstastic.cli.commands.Command
+import chesstastic.cli.commands.Exit
+import chesstastic.cli.commands.Move
 import chesstastic.engine.Board
 import chesstastic.ui.cli.commands.*
-import chesstastic.ui.cli.view.BoardView
+import chesstastic.cli.view.BoardView
 import chestastic.engine.*
 
 fun main(args: Array<String>) {

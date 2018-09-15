@@ -1,4 +1,4 @@
-package chesstastic.ui.cli.commands
+package chesstastic.cli.commands
 
 import chesstastic.engine.Coordinate
 
@@ -9,8 +9,8 @@ interface CommandParser {
 sealed class Command {
     companion object {
         private val parsers = listOf(
-                Exit.Companion,
-                Move.Companion
+                Exit,
+                Move
         )
 
         fun parse(input: String): Command? = parsers

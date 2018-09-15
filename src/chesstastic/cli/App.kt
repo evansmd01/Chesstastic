@@ -1,22 +1,36 @@
 package chesstastic.cli
 
 import chesstastic.cli.commands.*
-import chesstastic.engine.Board
-import chesstastic.cli.view.BoardView
+import chesstastic.engine.entities.*
+import chesstastic.cli.view.*
 
 fun main(args: Array<String>) {
-    var board = Board()
+    var board = Board.createNew()
     gameLoop@ while (true) {
+        println()
         println(BoardView.render(board))
-        print("Enter Command: ")
+        if (board.isCheckmate) {
+            printlnColor(ConsoleColor.YELLOW, "CHECKMATE!")
+            printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
+            break@gameLoop
+        }
+        print("${board.turn} player's turn: ")
         val input = readLine()?.toLowerCase()?.trim()
         val command = input?.let { Command.parse(it) }
         when (command) {
-            is Exit -> break@gameLoop
-            is Move -> board = board.move(command.from, command.to)
-            else -> println("${ConsoleColor.RED}Invalid command: $input${ConsoleColor.RESET}")
+            is ExitCommand -> break@gameLoop
+            is MoveCommand -> {
+                val newBoard = board.update(Move(command.from, command.to))
+                if (newBoard != null)
+                    board = newBoard
+                else
+                    printlnError("Invalid move: $input")
+            }
+            else -> printlnError("Invalid command: $input")
         }
     }
 }
 
+fun printlnError(message: String) = printlnColor(ConsoleColor.RED, message)
 
+fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")

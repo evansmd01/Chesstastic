@@ -1,6 +1,6 @@
 package chesstastic.cli.commands
 
-import chesstastic.engine.Coordinate
+import chesstastic.engine.entities.Coordinate
 
 interface CommandParser {
     fun parse(input: String): Command?
@@ -9,8 +9,8 @@ interface CommandParser {
 sealed class Command {
     companion object {
         private val parsers = listOf(
-                Exit,
-                Move
+                ExitCommand,
+                MoveCommand
         )
 
         fun parse(input: String): Command? = parsers
@@ -19,29 +19,29 @@ sealed class Command {
     }
 }
 
-class Exit(): Command() {
+class ExitCommand(): Command() {
     companion object: CommandParser {
-        override fun parse(input: String): Exit? =
+        override fun parse(input: String): ExitCommand? =
             if (input.toLowerCase() == "exit")
-                Exit()
+                ExitCommand()
             else null
     }
 }
 
-data class Move(val from: Coordinate, val to: Coordinate): Command() {
+data class MoveCommand(val from: Coordinate, val to: Coordinate): Command() {
     companion object: CommandParser {
         private val regex =
                 """^\s*([a-hA-H][1-8])\s*([a-hA-H][1-8])\s*$"""
                 .toRegex()
 
-        override fun parse(input: String): Move? {
+        override fun parse(input: String): MoveCommand? {
             val match = regex.matchEntire(input)
             if (match != null) {
                 val (fromInput, toInput) = match.destructured
                 val maybeFrom = Coordinate.parse(fromInput)
                 val maybeTo = Coordinate.parse(toInput)
                 if(maybeFrom != null && maybeTo != null) {
-                    return Move(maybeFrom, maybeTo)
+                    return MoveCommand(maybeFrom, maybeTo)
                 }
             }
             return null

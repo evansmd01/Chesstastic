@@ -1,4 +1,4 @@
-package chesstastic.engine
+package chesstastic.engine.entities
 
 interface Indexable {
     val index: Int

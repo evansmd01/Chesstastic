@@ -1,25 +1,41 @@
-package chesstastic.engine
+package chesstastic.engine.entities
 
+import chesstastic.engine.rules.MoveCalculator
 
-class Board(private val state: Array<Array<Piece?>> = InitialState) {
+typealias BoardState = Array<Array<Piece?>>
+
+class Board(
+        private val state: BoardState,
+        private val history: List<BoardState>,
+        val turn: Color
+) {
     operator fun get(file: File, rank: Rank): Piece? = state[rank.index][file.index]
 
-    fun move(from: Coordinate, to: Coordinate): Board {
-        val movingPiece = get(from.file, from.rank)
+    private val validMoves by lazy { MoveCalculator(this).validMoves }
+
+    val isCheckmate = validMoves.count() == 0
+
+    fun update(move: Move): Board? {
+        if (move !in validMoves)
+            return null
+
+        val movingPiece = get(move.from.file, move.from.rank)
         val newState = state.mapIndexed { rankIndex, ranks ->
             ranks.mapIndexed { fileIndex, piece ->
                 when {
-                    from.indexEquals(fileIndex, rankIndex) -> null
-                    to.indexEquals(fileIndex, rankIndex) -> movingPiece
+                    move.from.indexEquals(fileIndex, rankIndex) -> null
+                    move.to.indexEquals(fileIndex, rankIndex) -> movingPiece
                     else -> piece
                 }
             }.toTypedArray()
         }.toTypedArray()
-        return Board(newState)
+        val newHistory = history + listOf(state)
+        return Board(newState, newHistory, turn.opposite)
     }
     
     companion object {
-        private val InitialState = arrayOf(
+        fun createNew(): Board = Board(InitialState, listOf(), Color.Light)
+        private val InitialState: BoardState = arrayOf(
                 arrayOf<Piece?>(
                         Rook(Color.Light),
                         Knight(Color.Light),

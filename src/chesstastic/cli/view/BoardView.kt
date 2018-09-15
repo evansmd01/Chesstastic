@@ -1,7 +1,6 @@
 package chesstastic.cli.view
 
-import chesstastic.cli.ConsoleColor
-import chesstastic.engine.*
+import chesstastic.engine.entities.*
 
 class BoardView {
     companion object {

@@ -7,7 +7,7 @@ import chestastic.engine.*
 fun main(args: Array<String>) {
     var board = Board()
     gameLoop@ while (true) {
-        print(BoardView.render(board))
+        println(BoardView.render(board))
         print("Enter Command: ")
         val input = readLine()?.toLowerCase()?.trim()
         val command = input?.let { Command.parse(it) }

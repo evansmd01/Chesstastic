@@ -31,7 +31,7 @@ class Exit(): Command() {
 data class Move(val from: Coordinate, val to: Coordinate): Command() {
     companion object: CommandParser {
         private val regex =
-                """^\s*[mM][oO][vV][eE]\s+([a-hA-H][1-8])\s*([a-hA-H][1-8])\s*$"""
+                """^\s*([a-hA-H][1-8])\s*([a-hA-H][1-8])\s*$"""
                 .toRegex()
 
         override fun parse(input: String): Move? {

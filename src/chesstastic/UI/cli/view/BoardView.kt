@@ -2,34 +2,24 @@ package chesstastic.UI.cli.view
 
 import chestastic.Engine.*
 
-class BoardView(val output: (String) -> Unit) {
-    fun render(board: Board) {
-        val sb = StringBuilder()
-        sb.appendln(fileLabels)
-        sb.appendln(rankDivider)
-        board.topDown().forEach { (rank, rankState) ->
-            sb.appendln(renderRank(rank, rankState))
-            sb.appendln(rankDivider)
-        }
-        sb.appendln(fileLabels)
-        output(sb.toString())
-    }
-
-
-
+class BoardView {
     companion object {
-        private fun Board.topDown(): Iterable<Pair<Rank, Array<Piece?>>> =
-            this.state.mapIndexed { index, arrayOfPieces ->
-                Pair(Rank.fromIndex(index), arrayOfPieces)
-            }.reversed()
+        private val fileLabels = "     A   B   C   D   E   F   G   H\n"
+        private val rankDivider = "   +---+---+---+---+---+---+---+---+\n"
 
-
-        private val fileLabels = "     A   B   C   D   E   F   G   H"
-        private val rankDivider = "   +---+---+---+---+---+---+---+---+"
-
-        private fun renderRank(rank: Rank, state: Array<Piece?>): String =
-            state.joinToString(separator = " | ", prefix = " $rank | ", postfix = " | $rank") {
-                it?.let { renderPiece(it) } ?: " "
+        fun render(board: Board): String =
+            Rank.values().reversed().joinToString(
+                    separator = rankDivider,
+                    prefix = fileLabels + rankDivider,
+                    postfix = rankDivider + fileLabels)
+            { rank ->
+                File.values().joinToString(
+                        separator = " | ",
+                        prefix = " $rank | ",
+                        postfix = " | $rank\n")
+                { file ->
+                    board[file, rank]?.let { renderPiece(it) } ?: " "
+                }
             }
 
         private fun renderPiece(piece: Piece): String = when(piece) {

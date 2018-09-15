@@ -1,11 +1,11 @@
 package chestastic.Engine
 
 
-class Board(val state: Array<Array<Piece?>> = InitialState) {
-    operator fun get(coord: Coordinate): Piece? = state[coord.rank.index][coord.file.index]
+class Board(private val state: Array<Array<Piece?>> = InitialState) {
+    operator fun get(file: File, rank: Rank): Piece? = state[rank.index][file.index]
 
     fun move(from: Coordinate, to: Coordinate): Board {
-        val movingPiece = get(from)
+        val movingPiece = get(from.file, from.rank)
         val newState = state.mapIndexed { rankIndex, ranks ->
             ranks.mapIndexed { fileIndex, piece ->
                 when {

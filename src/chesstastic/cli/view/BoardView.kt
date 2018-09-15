@@ -1,7 +1,6 @@
 package chesstastic.cli.view
 
 import chesstastic.engine.*
-import chestastic.engine.*
 
 class BoardView {
     companion object {

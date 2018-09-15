@@ -1,12 +1,8 @@
 package chesstastic.cli
 
-import chesstastic.cli.commands.Command
-import chesstastic.cli.commands.Exit
-import chesstastic.cli.commands.Move
+import chesstastic.cli.commands.*
 import chesstastic.engine.Board
-import chesstastic.ui.cli.commands.*
 import chesstastic.cli.view.BoardView
-import chestastic.engine.*
 
 fun main(args: Array<String>) {
     var board = Board()
@@ -18,7 +14,6 @@ fun main(args: Array<String>) {
         when (command) {
             is Exit -> break@gameLoop
             is Move -> board = board.move(command.from, command.to)
-            else -> continue@gameLoop
         }
     }
 }

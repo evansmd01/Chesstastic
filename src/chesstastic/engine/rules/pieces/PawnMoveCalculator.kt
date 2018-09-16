@@ -3,77 +3,75 @@ package chesstastic.engine.rules.pieces
 import chesstastic.engine.entities.*
 import chesstastic.engine.rules.MoveCalculator
 
-class PawnMoveCalculator(val piece: Pawn, val currentCoord: Square, val board: Board): PieceMoveCalculator {
+class PawnMoveCalculator {
+    companion object: PieceMoveCalculator {
 
-    private val rankDelta = if (piece.color == Color.Light) 1 else -1
-    private val opponent = piece.color.opposite
-    private val enPassantRank: Rank = if (piece.color == Color.Light) Rank._5 else Rank._4
-    private val promotionRank: Rank = if (piece.color == Color.Light) Rank._8 else Rank._1
+        private fun rankDelta(color: Color) = if (color == Color.Light) 1 else -1
+        private fun enPassantRank(color: Color): Rank = if (color == Color.Light) Rank._5 else Rank._4
+        private fun promotionRank(color: Color): Rank = if (color == Color.Light) Rank._8 else Rank._1
 
-    override val attackingSquares: Iterable<Square> by lazy {
-        listOfNotNull(currentCoord.transform(1, rankDelta), currentCoord.transform(-1, rankDelta))
-    }
-
-    override val legalMoves: Iterable<Move> by lazy {
-        potentialMoves.filterNot { move ->
-            MoveCalculator.isKingInCheck(piece.color, board.updated(move))
-        }
-    }
-
-    /**
-     * Moves that have not been validated for legality, but which obey the movement abilities of the piece
-     */
-    private val potentialMoves: Iterable<Move> by lazy {
-        val forwardMoves = mutableListOf<Move>()
-
-        // try to move forward
-        val forwardOne = currentCoord.transform(0, rankDelta)!!
-        var isBlocked = board[forwardOne] != null
-        if (!isBlocked) {
-            // promotion
-            if(forwardOne.rank == promotionRank) {
-                forwardMoves.add(Move.Promotion(currentCoord, forwardOne, Queen(piece.color)))
-                forwardMoves.add(Move.Promotion(currentCoord, forwardOne, Knight(piece.color)))
-            } else
-                forwardMoves.add(Move.Basic(currentCoord, forwardOne))
-
-            // Double starting move
-            if (currentCoord.rank == startingRank(piece.color)) {
-                val forwardTwo = forwardOne.transform(0, rankDelta)!!
-                isBlocked = board[forwardTwo] != null
-                if (!isBlocked) forwardMoves.add(Move.Basic(currentCoord, forwardTwo))
+        override fun legalMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
+            return potentialMoves(color, fromSquare, board).filterNot { move ->
+                MoveCalculator.isKingInCheck(color, board.updated(move))
             }
         }
 
-        // try to capture diagonals
-        val captureMoves = attackingSquares.flatMap { target ->
-            val isOccupiedByOpponentPiece = board[target]?.color == opponent
-            val isPromotable = target.rank == promotionRank
-            when {
-                isOccupiedByOpponentPiece && isPromotable -> listOf(
-                    Move.Promotion(currentCoord, target, Queen(piece.color)),
-                    Move.Promotion(currentCoord, target, Knight(piece.color))
-                )
-                isOccupiedByOpponentPiece -> listOf(Move.Basic(currentCoord, target))
-                isEnPassantEligible(target) -> listOf(Move.EnPassant(currentCoord, target))
-                else -> listOf()
+        /**
+         * Moves that have not been validated for legality, but which obey the movement abilities of the piece
+         */
+        private fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
+            val forwardMoves = mutableListOf<Move>()
+            val rankDelta = rankDelta(color)
+            val promotionRank = promotionRank(color)
+
+            // try to move forward
+            val forwardOne = fromSquare.transform(0, rankDelta)!!
+            var isBlocked = board[forwardOne] != null
+            if (!isBlocked) {
+                // promotion
+                if (forwardOne.rank == promotionRank) {
+                    forwardMoves.add(Move.Promotion(fromSquare, forwardOne, Queen(color)))
+                    forwardMoves.add(Move.Promotion(fromSquare, forwardOne, Knight(color)))
+                } else
+                    forwardMoves.add(Move.Basic(fromSquare, forwardOne))
+
+                // Double starting move
+                if (fromSquare.rank == startingRank(color)) {
+                    val forwardTwo = forwardOne.transform(0, rankDelta)!!
+                    isBlocked = board[forwardTwo] != null
+                    if (!isBlocked) forwardMoves.add(Move.Basic(fromSquare, forwardTwo))
+                }
             }
+
+            // try to capture diagonals
+            val attackingSquares = listOfNotNull(fromSquare.transform(1, rankDelta), fromSquare.transform(-1, rankDelta))
+            val captureMoves = attackingSquares.flatMap { target ->
+                val isOccupiedByOpponentPiece = board[target]?.color == color.opposite
+                val isPromotable = target.rank == promotionRank
+                when {
+                    isOccupiedByOpponentPiece && isPromotable -> listOf(
+                        Move.Promotion(fromSquare, target, Queen(color)),
+                        Move.Promotion(fromSquare, target, Knight(color))
+                    )
+                    isOccupiedByOpponentPiece -> listOf(Move.Basic(fromSquare, target))
+                    isEnPassantEligible(color, fromSquare, target, board) ->
+                        listOf(Move.EnPassant(fromSquare, target))
+                    else -> listOf()
+                }
+            }
+
+            return forwardMoves + captureMoves
         }
 
-        forwardMoves + captureMoves
-    }
+        private fun isEnPassantEligible(color: Color, fromSquare: Square, target: Square, board: Board): Boolean {
+            if (fromSquare.rank != enPassantRank(color)) return false
+            return board.history.last() == enPassantOpening(color, target.file)
+        }
 
-    private fun isEnPassantEligible(target: Square): Boolean {
-        if (currentCoord.rank != enPassantRank) return false
-        return board.history.last() == enPassantOpening(target.file)
-    }
+        private fun enPassantOpening(color: Color, file: File): Move = Move.Basic(
+            from = Square(file, startingRank(color.opposite)),
+            to = Square(file, enPassantRank(color)))
 
-    private fun enPassantOpening(file: File): Move = Move.Basic(
-            from = Square(file, startingRank(opponent)),
-            to = Square(file, enPassantRank))
-
-    companion object {
         private fun startingRank(color: Color) = if (color == Color.Light) Rank._2 else Rank._7
     }
 }
-

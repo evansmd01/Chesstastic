@@ -6,10 +6,10 @@ import chesstastic.engine.rules.pieces.*
 class MoveCalculator {
     companion object {
         fun legalMoves(board: Board): Iterable<Move> {
-            return Board.SQUARES.flatMap { coord ->
-                val piece = board[coord]
+            return Board.SQUARES.flatMap { square ->
+                val piece = board[square]
                 if (piece?.color == board.turn) {
-                    PieceMoveCalculator.new(piece, coord, board).legalMoves
+                    PieceMoveCalculator.new(piece).legalMoves(piece.color, square, board)
                 } else listOf()
             }
         }
@@ -21,15 +21,16 @@ class MoveCalculator {
             //   - check diagonals for bishops or queens
             //   - check ranks & files for rooks or queens
             //   - check circumference for knights
-            // This way instead of looping through all possible moves for all pieces,
+            // This way instead of looping through all possible legalMoves for all pieces,
             // we only loop through the limited possibilities for attacking this square
-            Board.SQUARES.any { fromSquare ->
-                val piece = board[fromSquare]
-                if (piece?.color == attacker) {
-                    val attacks = PieceMoveCalculator.new(piece, fromSquare, board).attackingSquares
-                    target in attacks
-                } else false
-            }
+            return false
+//            Board.SQUARES.any { fromSquare ->
+//                val piece = board[fromSquare]
+//                if (piece?.color == attacker) {
+//                    val attacks = PieceMoveCalculator.new(piece, fromSquare, board).attackingSquares
+//                    target in attacks
+//                } else false
+//            }
         }
 
 

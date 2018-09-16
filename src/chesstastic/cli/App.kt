@@ -8,6 +8,7 @@ import chesstastic.test.ChessTests
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
+    var validateMoves = true
     gameLoop@ while (true) {
         println()
         println(BoardView.render(board))
@@ -42,9 +43,16 @@ fun main(args: Array<String>) {
             is Command.ShowMoves -> {
                 println(MoveCalculator.legalMoves(board).toString())
             }
+            is Command.DisableMoveValidation -> {
+                validateMoves = false
+            }
             is Command.Move -> {
-                val move = MoveCalculator.legalMoves(board).firstOrNull{
-                    it.from == command.from && it.to == command.to
+                val move = if (validateMoves) {
+                    MoveCalculator.legalMoves(board).firstOrNull {
+                        it.from == command.from && it.to == command.to
+                    }
+                } else {
+                    Move.Basic(command.from, command.to)
                 }
                 if (move != null)
                     if (move is chesstastic.engine.entities.Move.Promotion) {

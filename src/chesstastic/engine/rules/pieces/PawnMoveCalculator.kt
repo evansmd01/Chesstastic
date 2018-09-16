@@ -1,12 +1,14 @@
 package chesstastic.engine.rules.pieces
 
 import chesstastic.engine.entities.*
+import chesstastic.engine.entities.Rank.*
+import chesstastic.engine.entities.Color.*
 
 class PawnMoveCalculator {
     companion object: PieceMoveCalculator {
-        private fun rankDelta(color: Color) = if (color == Color.Light) 1 else -1
-        private fun enPassantRank(color: Color): Rank = if (color == Color.Light) Rank._5 else Rank._4
-        private fun promotionRank(color: Color): Rank = if (color == Color.Light) Rank._8 else Rank._1
+        private fun rankDelta(color: Color) = if (color == Light) 1 else -1
+        private fun enPassantRank(color: Color): Rank = if (color == Light) _5 else _4
+        private fun promotionRank(color: Color): Rank = if (color == Light) _8 else _1
 
         override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
             val rankDelta = rankDelta(attacker.opposite)
@@ -71,6 +73,6 @@ class PawnMoveCalculator {
             from = Square(file, startingRank(color.opposite)),
             to = Square(file, enPassantRank(color)))
 
-        private fun startingRank(color: Color) = if (color == Color.Light) Rank._2 else Rank._7
+        private fun startingRank(color: Color) = if (color == Light) _2 else _7
     }
 }

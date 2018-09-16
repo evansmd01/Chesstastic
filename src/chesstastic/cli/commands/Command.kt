@@ -14,6 +14,7 @@ sealed class Command {
             Test,
             Load,
             ShowMoves,
+            DisableMoveValidation,
             Move
         )
 
@@ -87,11 +88,20 @@ sealed class Command {
     class ShowMoves: Command() {
         companion object: CommandParser {
             override fun parse(input: String): Command? {
-                return if(input.toLowerCase() == "show potentialMoves") {
+                return if(input.toLowerCase() == "show moves") {
                     ShowMoves()
                 } else null
             }
+        }
+    }
 
+    class DisableMoveValidation: Command() {
+        companion object: CommandParser {
+            override fun parse(input: String): Command? {
+                return if(input.toLowerCase() == "disable validation") {
+                    return DisableMoveValidation()
+                } else null
+            }
         }
     }
 }

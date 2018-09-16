@@ -1,16 +1,14 @@
 package chesstastic.test.engine.rules
 
-import chesstastic.cli.commands.Command
 import chesstastic.engine.entities.*
-import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
+import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.rules.MoveCalculator
-import chesstastic.engine.rules.pieces.PawnMoveCalculator
 import chesstastic.test.framework.ChessTestSuite
 
 class MoveCalculatorTests: ChessTestSuite() {
     init {
-        describe("potentialMoves") {
+        describe("legalMoves") {
             it("should contain pawn promotion potentialMoves") {
                 val board = Board.parseHistory("E2E4,D7D5,E4D5,C7C5,D5D6,C5C4,D6D7,C4C3")
                 val toQueen = Move.Promotion(Square(D, _7), Square(C, _8), Queen(Color.Light))
@@ -52,6 +50,17 @@ class MoveCalculatorTests: ChessTestSuite() {
 
                 val result = MoveCalculator.isSquareAttacked(square, Color.Light, board)
                 result.shouldBe(true)
+            }
+        }
+
+        describe("timesSquareIsAttacked") {
+            it("should detect multiple attacks from pieces of the same type") {
+                val board = Board.parseHistory("E2E4,D7D5,H2H3,F7F5")
+
+                val result = MoveCalculator.timesSquareIsAttacked(Square(E, _4),
+                    attacker = Color.Dark, board = board)
+
+                result.shouldBe(2)
             }
         }
     }

@@ -53,15 +53,18 @@ class PawnMoveCalculatorTests: ChessTestSuite() {
             }
 
             it("should allow pawn promotions") {
-                val board = Board.parse("E2E4,D7D5,E4D5,C7C5,D5D6,C5C4,D6D7,C4C3")
+                val board = Board.parse("C2C8,C8C7")
+                val pawnSquare = Square(C, _7)
 
-                val toQueen = Move.Promotion(Square(D, _7), Square(C, _8), Queen(Light))
-                val toKnight = Move.Promotion(Square(D, _7), Square(C, _8), Knight(Light))
+                val promotionSquares = listOf(Square(B, _8), Square(C, _8), Square(D, _8))
+                val promotions = promotionSquares.flatMap { listOf(
+                    Move.Promotion(pawnSquare, it, Queen(Light)),
+                    Move.Promotion(pawnSquare, it, Knight(Light))
+                ) }
 
-                val legalMoves = PawnMoveCalculator.potentialMoves(Light, Square(D, _7), board)
+                val legalMoves = PawnMoveCalculator.potentialMoves(Light, pawnSquare, board)
 
-                (toQueen in legalMoves).shouldBe(true)
-                (toKnight in legalMoves).shouldBe(true)
+                legalMoves.shouldBeEquivalentTo(promotions)
             }
         }
     }

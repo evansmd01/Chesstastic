@@ -67,7 +67,7 @@ class KingMoveCalculatorTests: ChessTestSuite() {
             }
 
             it("should not kingside castle if moving through check") {
-                val board = Board.parse("E2E6,F2F6,F1F5,G1G5,F8D3")
+                val board = Board.parse("F1F3,G1G3,E7E2")
                 val kingSquare = board.kingSquare(Light)
                 val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -91,7 +91,7 @@ class KingMoveCalculatorTests: ChessTestSuite() {
             }
 
             it("should not queenside castle if moving through check") {
-                val board = Board.parse("C2C6,D2D6,D1D5,C1C5,B1B3,F1G5,G5F1,F8G5")
+                val board = Board.parse("B1B3,C1C3,D1D3,C7C2")
                 val kingSquare = board.kingSquare(Light)
                 val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -108,6 +108,14 @@ class KingMoveCalculatorTests: ChessTestSuite() {
 
             it("should not castle if the king is blocked by his own pieces") {
                 val board = Board.parse("E2E4")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.Castle }
+            }
+
+            it("should not be allowed to castle to get out of check") {
+                val board = Board.parse("F1F3,G1G3,D7D2")
                 val kingSquare = board.kingSquare(Light)
                 val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
 

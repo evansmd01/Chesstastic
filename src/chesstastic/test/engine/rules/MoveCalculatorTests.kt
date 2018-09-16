@@ -10,24 +10,8 @@ import chesstastic.test.framework.ChessTestSuite
 class MoveCalculatorTests: ChessTestSuite() {
     init {
         describe("legalMoves") {
-            it("should contain pawn promotion potentialMoves") {
-                val board = Board.parse("E2E4,D7D5,E4D5,C7C5,D5D6,C5C4,D6D7,C4C3")
-                val toQueen = Move.Promotion(Square(D, _7), Square(C, _8), Queen(Light))
-                val toKnight = Move.Promotion(Square(D, _7), Square(C, _8), Knight(Light))
-
-                val legalMoves = MoveCalculator.legalMoves(board)
-
-                (toQueen in legalMoves).shouldBe(true)
-                (toKnight in legalMoves).shouldBe(true)
-            }
-
-            it("should allow en passant") {
-                val board = Board.parse("E2E4,D7D5,E4D5,C7C5")
-                val enPassant = Move.EnPassant(Square(D, _5), Square(C, _6))
-
-                val legalMoves = MoveCalculator.legalMoves(board)
-
-                (enPassant in legalMoves).shouldBe(true)
+            it("should not allow moves that put the friendly king in check") {
+                //TODO
             }
         }
 

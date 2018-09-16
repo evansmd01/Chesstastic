@@ -13,9 +13,13 @@ class Board(
 
     private val legalMoves by lazy { MoveCalculator.legalMoves(this) }
 
-    val isCheck by lazy { MoveCalculator.isKingInCheck(turn, this) }
+    val isCheck by lazy { isInCheck(turn) }
+    fun isInCheck(color: Color) = MoveCalculator.isKingInCheck(color, this)
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
     val isStalemate by lazy { inactivityCounter >= 60 || legalMoves.count() == 0 && !isCheck }
+
+    fun isSquareAttacked(square: Square, attacker: Color) = MoveCalculator.isSquareAttacked(square, attacker, this)
+    fun timesSquareIsAttacked(square: Square, attacker: Color) = MoveCalculator.timesSquareIsAttacked(square, attacker, this)
 
     fun kingSquare(color: Color): Square  {
         return SQUARES.firstOrNull() { square ->
@@ -26,6 +30,8 @@ class Board(
             }
         } ?: throw Error("King is missing from the board.")
     }
+
+    fun isOccupiedByColor(square: Square, color: Color) = this[square]?.color == color
 
     fun updated(move: Move): Board {
         val newState = applyMove(move)

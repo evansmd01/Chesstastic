@@ -6,19 +6,23 @@ import chesstastic.engine.rules.MoveCalculator
 class Board(
     private val state: Array<Array<Piece?>>,
     val history: List<Move>,
-    val turn: Color
+    val turn: Color,
+    private val inactivityCounter: Int
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
     private val legalMoves by lazy { MoveCalculator.legalMoves(this) }
 
     val isCheck by lazy { MoveCalculator.isKingInCheck(turn, this) }
-    val isCheckmate by lazy { legalMoves.count() == 0 }
+    val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
+    val isStalemate by lazy { inactivityCounter >= 60 || legalMoves.count() == 0 && !isCheck }
 
     fun updated(move: Move): Board {
         val newState = applyMove(move)
         val newHistory = history + move
-        return Board(newState, newHistory, turn.opposite)
+        val wasCapture = false // TODO: implement this, or game will always end on 30th move
+        val newInactivityCount = if (wasCapture) 0 else inactivityCounter + 1
+        return Board(newState, newHistory, turn.opposite, newInactivityCount)
     }
 
     private fun applyMove(move: Move): Array<Array<Piece?>> {
@@ -41,7 +45,7 @@ class Board(
     }
     
     companion object {
-        fun createNew(): Board = Board(InitialState, listOf(), Color.Light)
+        fun createNew(): Board = Board(InitialState, listOf(), Color.Light, 0)
 
         fun parseHistory(history: String): Board {
             return applyHistoryRecursive(createNew(), Move.parseMany(history))

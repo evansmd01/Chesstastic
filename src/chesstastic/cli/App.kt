@@ -16,6 +16,10 @@ fun main(args: Array<String>) {
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
             break@gameLoop
         }
+        if (board.isStalemate) {
+            printlnColor(ConsoleColor.YELLOW, "Stalemate. It's a draw.")
+            break@gameLoop
+        }
         if (board.isCheck) {
             printlnColor(ConsoleColor.RED, "CHECK!")
         }

@@ -32,5 +32,15 @@ class BoardTests: ChessTestSuite() {
                 board.isCheckmate.shouldBe(true)
             }
         }
+
+        describe("isStalemate") {
+            it("should detect stalemate due to no legal moves") {
+                // TODO
+            }
+
+            it("should detect stalemate due to inactivity") {
+                // TODO
+            }
+        }
     }
 }

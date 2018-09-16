@@ -92,13 +92,13 @@ class CastleMove(from: Coordinate, to: Coordinate, val rookMove: BasicMove): Mov
     }
 }
 
-class PawnPromotionMove(from: Coordinate, to: Coordinate, val preference: Piece): Move(from, to) {
-    val withKnight by lazy { PawnPromotionMove(from, to, Knight(preference.color)) }
-    val withQueen by lazy { PawnPromotionMove(from, to, Queen(preference.color)) }
+class PawnPromotionMove(from: Coordinate, to: Coordinate, val promotion: Piece): Move(from, to) {
+    val withKnight by lazy { PawnPromotionMove(from, to, Knight(promotion.color)) }
+    val withQueen by lazy { PawnPromotionMove(from, to, Queen(promotion.color)) }
 
     override fun toString(): String {
-        val pieceCode = if(preference is Queen) "q" else "k"
-        val colorCode = if(preference.color == Color.Light) "l" else "d"
+        val pieceCode = if(promotion is Queen) "q" else "k"
+        val colorCode = if(promotion.color == Color.Light) "l" else "d"
         return "p$colorCode$pieceCode${from.file}${from.rank}${to.file}${to.rank}"
     }
 

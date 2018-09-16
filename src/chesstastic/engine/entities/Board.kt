@@ -33,6 +33,8 @@ class Board(
         } else if (move is CastleMove) {
             newState[move.rookMove.from.rank.index][move.rookMove.from.file.index] = null
             newState[move.rookMove.to.rank.index][move.rookMove.to.file.index] = movingPiece
+        } else if (move is PawnPromotionMove) {
+            newState[move.to.rank.index][move.to.file.index] = move.promotion
         }
 
         return newState

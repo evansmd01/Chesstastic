@@ -1,6 +1,6 @@
 package chesstastic.cli.commands
 
-import chesstastic.engine.entities.Coordinate
+import chesstastic.engine.entities.*
 
 interface CommandParser {
     fun parse(input: String): Command?
@@ -10,7 +10,8 @@ sealed class Command {
     companion object {
         private val parsers = listOf(
                 ExitCommand,
-                MoveCommand
+                MoveCommand,
+                PrintCommand
         )
 
         fun parse(input: String): Command? = parsers
@@ -45,6 +46,18 @@ data class MoveCommand(val from: Coordinate, val to: Coordinate): Command() {
                 }
             }
             return null
+        }
+    }
+}
+
+class PrintCommand: Command() {
+    fun print(board: Board): String = board.history.joinToString(separator = ",")
+
+    companion object: CommandParser {
+        override fun parse(input: String): Command? {
+            return if(input.toLowerCase().trim() == "print")
+                PrintCommand()
+            else null
         }
     }
 }

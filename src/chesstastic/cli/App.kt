@@ -23,6 +23,7 @@ fun main(args: Array<String>) {
         val command = input?.let { Command.parse(it) }
         when (command) {
             is ExitCommand -> break@gameLoop
+            is PrintCommand -> println(command.print(board))
             is MoveCommand -> {
                 val move = MoveCalculator.legalMoves(board).firstOrNull{
                     it.from == command.from && it.to == command.to

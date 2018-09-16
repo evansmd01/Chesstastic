@@ -17,6 +17,16 @@ class Board(
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
     val isStalemate by lazy { inactivityCounter >= 60 || legalMoves.count() == 0 && !isCheck }
 
+    fun kingSquare(color: Color): Square  {
+        return SQUARES.firstOrNull() { square ->
+            val piece = this[square]
+            when {
+                piece is King && piece.color == color -> true
+                else -> false
+            }
+        } ?: throw Error("King is missing from the board.")
+    }
+
     fun updated(move: Move): Board {
         val newState = applyMove(move)
         val newHistory = history + move
@@ -47,14 +57,14 @@ class Board(
     companion object {
         fun createNew(): Board = Board(InitialState, listOf(), Color.Light, 0)
 
-        fun parseHistory(history: String): Board {
-            return applyHistoryRecursive(createNew(), Move.parseMany(history))
+        fun parse(moves: String): Board {
+            return replayMoves(createNew(), Move.parseMany(moves))
         }
 
-        private fun applyHistoryRecursive(board: Board, history: List<Move>): Board {
-            val nextMove = history.firstOrNull()
+        private fun replayMoves(board: Board, moves: List<Move>): Board {
+            val nextMove = moves.firstOrNull()
             return if (nextMove != null) {
-                applyHistoryRecursive(board.updated(nextMove), history.drop(1))
+                replayMoves(board.updated(nextMove), moves.drop(1))
             } else board
         }
 

@@ -26,16 +26,7 @@ class MoveCalculator {
         }
 
         fun isKingInCheck(color: Color, board: Board): Boolean {
-            val kingLocation = Board.SQUARES.find { coord ->
-                val piece = board[coord]
-                when {
-                    piece is King && piece.color == color -> true
-                    else -> false
-                }
-            }
-            return kingLocation?.let {
-                isSquareAttacked(target = it, attacker = color.opposite, board = board)
-            } ?: throw Error("King was not on the board")
+            return isSquareAttacked(target = board.kingSquare(color), attacker = color.opposite, board = board)
         }
     }
 }

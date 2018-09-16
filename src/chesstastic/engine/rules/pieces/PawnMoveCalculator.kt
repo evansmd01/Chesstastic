@@ -21,11 +21,11 @@ class PawnMoveCalculator {
         }
 
         override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
-            val forwardMoves = mutableListOf<Move>()
             val rankDelta = rankDelta(color)
             val promotionRank = promotionRank(color)
 
             // try to move forward
+            val forwardMoves = mutableListOf<Move>()
             val forwardOne = fromSquare.transform(0, rankDelta)!!
             var isBlocked = board[forwardOne] != null
             if (!isBlocked) {
@@ -45,8 +45,10 @@ class PawnMoveCalculator {
             }
 
             // try to capture diagonals
-            val attackingSquares = listOfNotNull(fromSquare.transform(1, rankDelta), fromSquare.transform(-1, rankDelta))
-            val captureMoves = attackingSquares.flatMap { target ->
+            val captureMoves = listOfNotNull(
+                fromSquare.transform(1, rankDelta),
+                fromSquare.transform(-1, rankDelta)
+            ).flatMap { target ->
                 val isOccupiedByOpponentPiece = board[target]?.color == color.opposite
                 val isPromotable = target.rank == promotionRank
                 when {

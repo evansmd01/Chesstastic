@@ -11,7 +11,12 @@ class ChessTests {
             { MoveTests() },
             { BoardTests() },
             { MoveCalculatorTests() },
-            { PawnMoveCalculatorTests() }
+            { PawnMoveCalculatorTests() },
+            { RookMoveCalculatorTests() },
+            { KnightMoveCalculatorTests() },
+            { BishopMoveCalculatorTests() },
+            { QueenMoveCalculatorTests() },
+            { KingMoveCalculatorTests() }
         )
 
         fun run() {

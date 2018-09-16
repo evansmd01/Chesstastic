@@ -1,0 +1,136 @@
+package chesstastic.test.engine.rules.pieces
+
+import chesstastic.engine.entities.*
+import chesstastic.engine.entities.Rank.*
+import chesstastic.engine.entities.File.*
+import chesstastic.engine.entities.Color.*
+import chesstastic.engine.rules.pieces.KingMoveCalculator
+import chesstastic.test.framework.ChessTestSuite
+
+class KingMoveCalculatorTests: ChessTestSuite() {
+    init {
+        describe("potentialMoves") {
+            it("should move any square in one direction") {
+                val board = Board.parse("E1E4")
+                val kingSquare = board.kingSquare(Light)
+
+                val expectedMoves = listOf(
+                    Square(E, _5), Square(E, _3),
+                    Square(F, _5), Square(F, _4), Square(F, _3),
+                    Square(D, _5), Square(D, _4), Square(D, _3)
+                ).map { Move.Basic(kingSquare, it)}
+
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldBeEquivalentTo(expectedMoves)
+            }
+
+            it("should be blocked by it's own pieces") {
+                val board = Board.parse("E1E4,D2D5,E2E5,F2F5,F1F4,D1D4,G1E3,G2F3,C2D3")
+                val kingSquare = board.kingSquare(Light)
+
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.count().shouldBe(0)
+            }
+
+            it("should be able to capture") {
+                val board = Board.parse("E1B7,D7A6,E7B6,F7C6")
+                val kingSquare = board.kingSquare(Light)
+
+                val expectedMoves = listOf(
+                    Square(B, _6), Square(B, _8),
+                    Square(C, _6), Square(C, _7), Square(C, _8),
+                    Square(A, _6), Square(A, _7), Square(A, _8)
+                ).map { Move.Basic(kingSquare, it)}
+
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldBeEquivalentTo(expectedMoves)
+            }
+
+            it("should be able to kingside castle") {
+                val board = Board.parse("A1A3,A3A1,F1F3,G1G3")
+                val kingSquare = board.kingSquare(Light)
+
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldContain(Move.KingsideCastle(Light))
+            }
+
+            it("should not kingside castle if the rook has moved before") {
+                val board = Board.parse("F1F3,G1G3,H1H3,H3H1")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.KingsideCastle }
+            }
+
+            it("should not kingside castle if moving through check") {
+                val board = Board.parse("E2E6,F2F6,F1F5,G1G5,F8D3")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.KingsideCastle }
+            }
+
+            it("should be able to queenside castle") {
+                val board = Board.parse("H1H3,H3H1,B1B3,C1C3,D1D3")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldContain(Move.QueensideCastle(Light))
+            }
+
+            it("should not queenside castle if the rook has moved before") {
+                val board = Board.parse("A1A3,A3A1,B1B3,C1C3,D1D3")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.QueensideCastle }
+            }
+
+            it("should not queenside castle if moving through check") {
+                val board = Board.parse("C2C6,D2D6,D1D5,C1C5,B1B3,F1G5,G5F1,F8G5")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.QueensideCastle }
+            }
+
+            it("should not castle either way if the king has moved before") {
+                val board = Board.parse("B1B3,C1C3,D1D3,F1F3,G1G3,E1D1,D1E1")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.Castle }
+            }
+
+            it("should not castle if the king is blocked by his own pieces") {
+                val board = Board.parse("E2E4")
+                val kingSquare = board.kingSquare(Light)
+                val result = KingMoveCalculator.potentialMoves(Light, kingSquare, board)
+
+                result.shouldNotContain { it is Move.Castle }
+            }
+        }
+
+        describe("timesSquareIsAttacked") {
+            it("should attack any adjacent square") {
+                val board = Board.parse("E1B7,D7A6,E7B6,F7C6")
+
+                val expectedAttacks = listOf(
+                    Square(B, _6), Square(B, _8),
+                    Square(C, _6), Square(C, _7), Square(C, _8),
+                    Square(A, _6), Square(A, _7), Square(A, _8)
+                )
+
+                val attackedSquares = Board.SQUARES.filter {
+                    KingMoveCalculator.timesSquareIsAttacked(it, Light, board) == 1
+                }
+
+                attackedSquares.shouldBeEquivalentTo(expectedAttacks)
+            }
+        }
+    }
+}

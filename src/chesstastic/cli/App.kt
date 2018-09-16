@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
                 break@gameLoop
             }
             is Command.Load -> {
-                board = Board.parseHistory(command.history)
+                board = Board.parse(command.history)
             }
             is Command.ShowMoves -> {
                 println(MoveCalculator.legalMoves(board).toString())

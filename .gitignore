@@ -24,6 +24,5 @@ workspace.xml
 build/
 !**/src/**/build
 !**/test/**/build
-*.iml
 !**/testData/**/*.iml
 .idea/

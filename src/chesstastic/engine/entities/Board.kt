@@ -28,12 +28,12 @@ class Board(
         newState[move.from.rank.index][move.from.file.index] = null
         newState[move.to.rank.index][move.to.file.index] = movingPiece
 
-        if (move is EnPassantMove) {
+        if (move is Move.EnPassant) {
             newState[move.captured.rank.index][move.captured.file.index] = null
-        } else if (move is CastleMove) {
-            newState[move.rookMove.from.rank.index][move.rookMove.from.file.index] = null
-            newState[move.rookMove.to.rank.index][move.rookMove.to.file.index] = movingPiece
-        } else if (move is PawnPromotionMove) {
+        } else if (move is Move.Castle) {
+            newState[move.rook.from.rank.index][move.rook.from.file.index] = null
+            newState[move.rook.to.rank.index][move.rook.to.file.index] = movingPiece
+        } else if (move is Move.Promotion) {
             newState[move.to.rank.index][move.to.file.index] = move.promotion
         }
 

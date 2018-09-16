@@ -4,6 +4,8 @@ import chesstastic.cli.commands.*
 import chesstastic.engine.entities.*
 import chesstastic.cli.view.*
 import chesstastic.engine.rules.MoveCalculator
+import chesstastic.test.ChessTests
+import chesstastic.test.framework.ChessTestFramework
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
@@ -22,14 +24,18 @@ fun main(args: Array<String>) {
         val input = readLine()?.toLowerCase()?.trim()
         val command = input?.let { Command.parse(it) }
         when (command) {
-            is ExitCommand -> break@gameLoop
-            is PrintCommand -> println(command.print(board))
-            is MoveCommand -> {
+            is Command.Exit -> break@gameLoop
+            is Command.Print -> println(board.history.joinToString(separator = ","))
+            is Command.Test -> {
+                ChessTests.run()
+                break@gameLoop
+            }
+            is Command.Move -> {
                 val move = MoveCalculator.legalMoves(board).firstOrNull{
                     it.from == command.from && it.to == command.to
                 }
                 if (move != null)
-                    if (move is PawnPromotionMove) {
+                    if (move is chesstastic.engine.entities.Move.Promotion) {
                         promoteLoop@while (true) {
                             printlnColor(ConsoleColor.YELLOW, "Choose a Promotion! Enter 'Q' or 'K'")
                             val entry = readLine()?.toUpperCase()?.trim()
@@ -42,13 +48,15 @@ fun main(args: Array<String>) {
                         board = board.update(move)
                     }
                 else
-                    printlnError("Invalid move: $input")
+                    printlnRed("Invalid move: $input")
             }
-            else -> printlnError("Invalid command: $input")
+            else -> printlnRed("Invalid command: $input")
         }
     }
 }
 
-fun printlnError(message: String) = printlnColor(ConsoleColor.RED, message)
+fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
 
 fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
+
+fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)

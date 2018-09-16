@@ -1,25 +1,25 @@
 package chesstastic.engine.entities
 
 enum class Rank: Indexable {
-    One,
-    Two,
-    Three,
-    Four,
-    Five,
-    Six,
-    Seven,
-    Eight;
+    _1,
+    _2,
+    _3,
+    _4,
+    _5,
+    _6,
+    _7,
+    _8;
 
     override val index: Int
         get() = when(this) {
-            One -> 0
-            Two -> 1
-            Three -> 2
-            Four -> 3
-            Five -> 4
-            Six -> 5
-            Seven -> 6
-            Eight -> 7
+            _1 -> 0
+            _2 -> 1
+            _3 -> 2
+            _4 -> 3
+            _5 -> 4
+            _6 -> 5
+            _7 -> 6
+            _8 -> 7
         }
 
     override fun toString(): String = (index + 1).toString()

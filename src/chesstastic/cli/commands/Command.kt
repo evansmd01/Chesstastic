@@ -87,7 +87,7 @@ sealed class Command {
     class ShowMoves: Command() {
         companion object: CommandParser {
             override fun parse(input: String): Command? {
-                return if(input.toLowerCase() == "show legalMoves") {
+                return if(input.toLowerCase() == "show potentialMoves") {
                     ShowMoves()
                 } else null
             }

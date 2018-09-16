@@ -6,33 +6,24 @@ import chesstastic.engine.rules.pieces.*
 class MoveCalculator {
     companion object {
         fun legalMoves(board: Board): Iterable<Move> {
-            return Board.SQUARES.flatMap { square ->
+            val potentialMoves = Board.SQUARES.flatMap { square ->
                 val piece = board[square]
                 if (piece?.color == board.turn) {
-                    PieceMoveCalculator.new(piece).legalMoves(piece.color, square, board)
+                    PieceMoveCalculator.getBy(piece).potentialMoves(piece.color, square, board)
                 } else listOf()
+            }
+            return potentialMoves.filterNot { move ->
+                isKingInCheck(board.turn, board.updated(move))
             }
         }
 
-        fun isSquareAttacked(target: Square, attacker: Color, board: Board): Boolean {
-            // TODO: HUGE OPTIMIZATION.
-            // Start from the target square:
-            //   - check corners for pawns
-            //   - check diagonals for bishops or queens
-            //   - check ranks & files for rooks or queens
-            //   - check circumference for knights
-            // This way instead of looping through all possible legalMoves for all pieces,
-            // we only loop through the limited possibilities for attacking this square
-            return false
-//            Board.SQUARES.any { fromSquare ->
-//                val piece = board[fromSquare]
-//                if (piece?.color == attacker) {
-//                    val attacks = PieceMoveCalculator.new(piece, fromSquare, board).attackingSquares
-//                    target in attacks
-//                } else false
-//            }
+        fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
+            return PieceMoveCalculator.all.sumBy { it.timesSquareIsAttacked(target, attacker, board) }
         }
 
+        fun isSquareAttacked(target: Square, attacker: Color, board: Board): Boolean {
+            return PieceMoveCalculator.all.any { it.timesSquareIsAttacked(target, attacker, board) > 0 }
+        }
 
         fun isKingInCheck(color: Color, board: Board): Boolean {
             val kingLocation = Board.SQUARES.find { coord ->
@@ -46,8 +37,6 @@ class MoveCalculator {
                 isSquareAttacked(target = it, attacker = color.opposite, board = board)
             } ?: throw Error("King was not on the board")
         }
-
-
     }
 }
 

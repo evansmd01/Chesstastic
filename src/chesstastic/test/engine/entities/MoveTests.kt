@@ -17,7 +17,7 @@ class MoveTests: ChessTestSuite() {
                 deserialized.shouldBe(this)
             }
 
-            it("should read and write basic legalMoves") {
+            it("should read and write basic potentialMoves") {
                 Move.Basic(Square(E, _2), Square(E, _4))
                     .shouldSerializeTo("E2E4")
             }
@@ -60,7 +60,7 @@ class MoveTests: ChessTestSuite() {
             }
 
             describe("parse many") {
-                it("should parse two legalMoves") {
+                it("should parse two potentialMoves") {
                     val testHistory = "E2E4,D7D5"
                     val moves = Move.parseMany(testHistory)
                     moves.shouldBe(listOf(

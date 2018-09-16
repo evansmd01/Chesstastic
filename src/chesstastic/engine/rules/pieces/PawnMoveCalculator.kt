@@ -1,25 +1,24 @@
 package chesstastic.engine.rules.pieces
 
 import chesstastic.engine.entities.*
-import chesstastic.engine.rules.MoveCalculator
 
 class PawnMoveCalculator {
     companion object: PieceMoveCalculator {
-
         private fun rankDelta(color: Color) = if (color == Color.Light) 1 else -1
         private fun enPassantRank(color: Color): Rank = if (color == Color.Light) Rank._5 else Rank._4
         private fun promotionRank(color: Color): Rank = if (color == Color.Light) Rank._8 else Rank._1
 
-        override fun legalMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
-            return potentialMoves(color, fromSquare, board).filterNot { move ->
-                MoveCalculator.isKingInCheck(color, board.updated(move))
-            }
+        override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
+            val rankDelta = rankDelta(attacker.opposite)
+            val attackOrigin1 = target.transform(fileDelta = 1, rankDelta = rankDelta)
+            val attackOrigin2 = target.transform(fileDelta = -1, rankDelta = rankDelta)
+
+            return listOfNotNull(attackOrigin1, attackOrigin2)
+                .mapNotNull { board[it] }
+                .sumBy { if (it.color == attacker && it is Pawn) 1 else 0 }
         }
 
-        /**
-         * Moves that have not been validated for legality, but which obey the movement abilities of the piece
-         */
-        private fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
+        override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
             val forwardMoves = mutableListOf<Move>()
             val rankDelta = rankDelta(color)
             val promotionRank = promotionRank(color)

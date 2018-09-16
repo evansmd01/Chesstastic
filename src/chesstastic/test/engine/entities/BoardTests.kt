@@ -27,14 +27,14 @@ class BoardTests: ChessTestSuite() {
 
         describe("isCheckmate") {
             it("should detect checkmate") {
-                // TODO: updated scenario when more than pawn legalMoves are possible
+                // TODO: updated scenario when more than pawn potentialMoves are possible
                 val board = Board.parseHistory("E2E4,D7D5,E4D5,C7C5,D5D6,C5C4,D6D7")
                 board.isCheckmate.shouldBe(true)
             }
         }
 
         describe("isStalemate") {
-            it("should detect stalemate due to no legal legalMoves") {
+            it("should detect stalemate due to no legal potentialMoves") {
                 // TODO
             }
 

@@ -2,14 +2,17 @@ package chesstastic.engine.rules.pieces
 
 import chesstastic.engine.entities.*
 
-interface DiagonalMoveCalculator: PieceMoveCalculator {
-    override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {
-        return listOf()
+interface DiagonalMoveCalculator: StraightLineMoveCalculator<DiagonalDirection> {
+    override fun directions() = DiagonalDirection.values()
+    override fun Square.transform(direction: DiagonalDirection) = when (direction) {
+        DiagonalDirection.UL -> this.transform(-1, 1)
+        DiagonalDirection.UR -> this.transform(1, 1)
+        DiagonalDirection.DL -> this.transform(-1, -1)
+        DiagonalDirection.DR -> this.transform(1, -1)
     }
-
-    override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
-        return 0
-    }
-
-    fun isCorrectPiece(piece: Piece): Boolean
 }
+
+enum class DiagonalDirection {
+    UL, UR, DL, DR
+}
+

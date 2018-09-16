@@ -52,7 +52,7 @@ class Board(
             newState[move.captured.rank.index][move.captured.file.index] = null
         } else if (move is Move.Castle) {
             newState[move.rook.from.rank.index][move.rook.from.file.index] = null
-            newState[move.rook.to.rank.index][move.rook.to.file.index] = movingPiece
+            newState[move.rook.to.rank.index][move.rook.to.file.index] = Rook(movingPiece.color)
         } else if (move is Move.Promotion) {
             newState[move.to.rank.index][move.to.file.index] = move.promotion
         }

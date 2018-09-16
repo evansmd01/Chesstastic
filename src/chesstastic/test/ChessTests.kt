@@ -10,7 +10,10 @@ class ChessTests {
         )
 
         fun run() {
+            MoveTests::class.constructors.first()
             ChessTestFramework.execute(suites)
         }
     }
 }
+
+

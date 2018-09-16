@@ -14,7 +14,15 @@ class MoveCalculator {
             }
         }
 
-        fun isSquareAttacked(target: Square, attacker: Color, board: Board): Boolean =
+        fun isSquareAttacked(target: Square, attacker: Color, board: Board): Boolean {
+            // TODO: HUGE OPTIMIZATION.
+            // Start from the target square:
+            //   - check corners for pawns
+            //   - check diagonals for bishops or queens
+            //   - check ranks & files for rooks or queens
+            //   - check circumference for knights
+            // This way instead of looping through all possible moves for all pieces,
+            // we only loop through the limited possibilities for attacking this square
             Board.SQUARES.any { fromSquare ->
                 val piece = board[fromSquare]
                 if (piece?.color == attacker) {
@@ -22,6 +30,7 @@ class MoveCalculator {
                     target in attacks
                 } else false
             }
+        }
 
 
         fun isKingInCheck(color: Color, board: Board): Boolean {

@@ -3,20 +3,20 @@ package chesstastic.engine.rules.pieces
 import chesstastic.engine.entities.*
 import chesstastic.engine.rules.MoveCalculator
 
-class PawnMoveCalculator(val piece: Pawn, val currentCoord: Coordinate, val board: Board): PieceMoveCalculator {
+class PawnMoveCalculator(val piece: Pawn, val currentCoord: Square, val board: Board): PieceMoveCalculator {
 
     private val rankDelta = if (piece.color == Color.Light) 1 else -1
     private val opponent = piece.color.opposite
     private val enPassantRank: Rank = if (piece.color == Color.Light) Rank._5 else Rank._4
     private val promotionRank: Rank = if (piece.color == Color.Light) Rank._8 else Rank._1
 
-    override val coordinatesUnderAttack: Iterable<Coordinate> by lazy {
+    override val attackingSquares: Iterable<Square> by lazy {
         listOfNotNull(currentCoord.transform(1, rankDelta), currentCoord.transform(-1, rankDelta))
     }
 
     override val legalMoves: Iterable<Move> by lazy {
         potentialMoves.filterNot { move ->
-            MoveCalculator.isKingInCheck(piece.color, board.update(move))
+            MoveCalculator.isKingInCheck(piece.color, board.updated(move))
         }
     }
 
@@ -46,26 +46,31 @@ class PawnMoveCalculator(val piece: Pawn, val currentCoord: Coordinate, val boar
         }
 
         // try to capture diagonals
-        val captureMoves = coordinatesUnderAttack.mapNotNull { target ->
+        val captureMoves = attackingSquares.flatMap { target ->
             val isOccupiedByOpponentPiece = board[target]?.color == opponent
+            val isPromotable = target.rank == promotionRank
             when {
-                isOccupiedByOpponentPiece -> Move.Basic(currentCoord, target)
-                isEnPassantEligible(target) -> Move.EnPassant(currentCoord, target)
-                else -> null
+                isOccupiedByOpponentPiece && isPromotable -> listOf(
+                    Move.Promotion(currentCoord, target, Queen(piece.color)),
+                    Move.Promotion(currentCoord, target, Knight(piece.color))
+                )
+                isOccupiedByOpponentPiece -> listOf(Move.Basic(currentCoord, target))
+                isEnPassantEligible(target) -> listOf(Move.EnPassant(currentCoord, target))
+                else -> listOf()
             }
         }
 
         forwardMoves + captureMoves
     }
 
-    private fun isEnPassantEligible(target: Coordinate): Boolean {
+    private fun isEnPassantEligible(target: Square): Boolean {
         if (currentCoord.rank != enPassantRank) return false
         return board.history.last() == enPassantOpening(target.file)
     }
 
     private fun enPassantOpening(file: File): Move = Move.Basic(
-            from = Coordinate(file, startingRank(opponent)),
-            to = Coordinate(file, enPassantRank))
+            from = Square(file, startingRank(opponent)),
+            to = Square(file, enPassantRank))
 
     companion object {
         private fun startingRank(color: Color) = if (color == Color.Light) Rank._2 else Rank._7

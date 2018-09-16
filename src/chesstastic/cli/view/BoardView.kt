@@ -18,7 +18,7 @@ class BoardView {
                         prefix = " $rank | ",
                         postfix = " | $rank\n")
                 { file ->
-                    board[Coordinate(file, rank)]?.let { renderPiece(it) } ?: " "
+                    board[Square(file, rank)]?.let { renderPiece(it) } ?: " "
                 }
             }
 
@@ -29,6 +29,7 @@ class BoardView {
             is Bishop -> select(piece.color, "♗")
             is Queen -> select(piece.color, "♕")
             is King -> select(piece.color, "♔")
+            else -> throw NotImplementedError()
         }
 
         private fun select(color: Color, piece: String): String =

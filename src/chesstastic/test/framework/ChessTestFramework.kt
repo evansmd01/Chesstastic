@@ -6,7 +6,7 @@ import chesstastic.test.engine.entities.*
 
 class ChessTestFramework {
     companion object {
-        fun execute(suiteFactories: List<() -> MoveTests>) {
+        fun execute(suiteFactories: List<() -> ChessTestSuite>) {
             println()
             println("Executing tests...")
 
@@ -18,7 +18,7 @@ class ChessTestFramework {
                 println("Finished: ${suite.javaClass.kotlin.simpleName}")
                 val success = suite.totalSuccessCount()
                 val failure = suite.totalFailCount()
-                if (success > 0) printlnGreen("$success tests Succeeded")
+                if (success > 0) println("$success tests Succeeded")
                 if (failure > 0) printlnRed("$failure tests failed")
                 totalSuccess += success
                 totalFail += failure
@@ -26,7 +26,7 @@ class ChessTestFramework {
             }
 
             println("FINISHED ALL TESTS")
-            if (totalSuccess > 0) printlnGreen("$totalSuccess tests Succeeded")
+            if (totalSuccess > 0) println("$totalSuccess tests Succeeded")
             if (totalFail > 0) printlnRed("$totalFail tests failed")
         }
     }

@@ -5,7 +5,6 @@ import chesstastic.engine.entities.*
 import chesstastic.cli.view.*
 import chesstastic.engine.rules.MoveCalculator
 import chesstastic.test.ChessTests
-import chesstastic.test.framework.ChessTestFramework
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
@@ -25,10 +24,19 @@ fun main(args: Array<String>) {
         val command = input?.let { Command.parse(it) }
         when (command) {
             is Command.Exit -> break@gameLoop
-            is Command.Print -> println(board.history.joinToString(separator = ","))
+            is Command.Export -> {
+                println(board.history.joinToString(separator = ","))
+                break@gameLoop
+            }
             is Command.Test -> {
                 ChessTests.run()
                 break@gameLoop
+            }
+            is Command.Load -> {
+                board = Board.parseHistory(command.history)
+            }
+            is Command.ShowMoves -> {
+                println(MoveCalculator.legalMoves(board).toString())
             }
             is Command.Move -> {
                 val move = MoveCalculator.legalMoves(board).firstOrNull{
@@ -40,12 +48,12 @@ fun main(args: Array<String>) {
                             printlnColor(ConsoleColor.YELLOW, "Choose a Promotion! Enter 'Q' or 'K'")
                             val entry = readLine()?.toUpperCase()?.trim()
                             when (entry) {
-                                "Q" -> { board = board.update(move.withQueen); break@promoteLoop }
-                                "K" -> { board = board.update(move.withKnight); break@promoteLoop }
+                                "Q" -> { board = board.updated(move.withQueen); break@promoteLoop }
+                                "K" -> { board = board.updated(move.withKnight); break@promoteLoop }
                             }
                         }
                     } else {
-                        board = board.update(move)
+                        board = board.updated(move)
                     }
                 else
                     printlnRed("Invalid move: $input")

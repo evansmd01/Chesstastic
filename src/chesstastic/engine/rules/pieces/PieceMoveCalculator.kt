@@ -10,7 +10,7 @@ interface PieceMoveCalculator {
      *
      * Basically, this is any coordinate to which the enemy king would not be allowed to move
      */
-    val coordinatesUnderAttack: Iterable<Coordinate>
+    val attackingSquares: Iterable<Square>
 
     /**
      * Any move to a coordinate that is not occupied by a friendly piece
@@ -19,13 +19,14 @@ interface PieceMoveCalculator {
     val legalMoves: Iterable<Move>
 
     companion object {
-        fun new(piece: Piece, coord: Coordinate, board: Board): PieceMoveCalculator = when(piece) {
+        fun new(piece: Piece, coord: Square, board: Board): PieceMoveCalculator = when(piece) {
             is Pawn -> PawnMoveCalculator(piece, coord, board)
             is Rook -> RookMoveCalculator(piece, coord, board)
             is Knight -> KnightMoveCalculator(piece, coord, board)
             is Bishop -> BishopMoveCalculator(piece, coord, board)
             is Queen -> QueenMoveCalculator(piece, coord, board)
             is King -> KingMoveCalculator(piece, coord, board)
+            else -> throw NotImplementedError()
         }
     }
 }

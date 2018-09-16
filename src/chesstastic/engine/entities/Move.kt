@@ -1,6 +1,6 @@
 package chesstastic.engine.entities
 
-sealed class Move(val from: Coordinate, val to: Coordinate) {
+sealed class Move(val from: Square, val to: Square) {
     override fun equals(other: Any?): Boolean =
         other is Move && other.toString() == toString()
 
@@ -21,7 +21,7 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
             ).firstOrNull()
     }
 
-    class Basic(from: Coordinate, to: Coordinate): Move(from, to) {
+    class Basic(from: Square, to: Square): Move(from, to) {
         override fun toString(): String =
                 "${from.file}${from.rank}${to.file}${to.rank}"
 
@@ -29,13 +29,13 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
             fun parse(input: String): Basic? {
                 return if (input.length == 4)
                     Basic(
-                            Coordinate(
+                            Square(
                                     File.valueOf(input[0].toUpperCase().toString()),
-                                    Rank.fromIndex(input[1].toInt() - 1) ?: throw Error("could not parse rank from $input")
+                                    Rank.fromIndex(input[1].toString().toInt() - 1) ?: throw Error("could not parse rank from $input")
                             ),
-                            Coordinate(
+                            Square(
                                     File.valueOf(input[2].toUpperCase().toString()),
-                                    Rank.fromIndex(input[3].toInt() - 1) ?: throw Error("could not parse rank from $input")
+                                    Rank.fromIndex(input[3].toString().toInt() - 1) ?: throw Error("could not parse rank from $input")
                             )
                     )
                 else null
@@ -43,11 +43,11 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
         }
     }
 
-    class EnPassant(from: Coordinate, to: Coordinate): Move(from, to) {
+    class EnPassant(from: Square, to: Square): Move(from, to) {
         override fun toString(): String =
                 "ep${from.file}${from.rank}${to.file}${to.rank}"
 
-        val captured: Coordinate = Coordinate(to.file, from.rank)
+        val captured: Square = Square(to.file, from.rank)
 
         companion object {
             fun parse(input: String): EnPassant? {
@@ -60,27 +60,27 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
         }
     }
 
-    abstract class Castle(from: Coordinate, to: Coordinate): Move(from, to) {
+    abstract class Castle(from: Square, to: Square): Move(from, to) {
         abstract val rook: Basic
     }
 
     class KingsideCastle(val color: Color): Castle(from(color), to(color)) {
         override val rook: Basic = Basic(
-                Coordinate(File.H, from.rank),
-                Coordinate(File.F, from.rank)
+                Square(File.H, from.rank),
+                Square(File.F, from.rank)
         )
 
         override fun toString(): String =
                 "kc${if (color == Color.Light) "l" else "d"}"
 
         companion object {
-            fun from(color: Color): Coordinate {
+            fun from(color: Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Coordinate(File.E, rank)
+                return Square(File.E, rank)
             }
-            fun to(color:Color): Coordinate {
+            fun to(color:Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Coordinate(File.G, rank)
+                return Square(File.G, rank)
             }
 
             fun parse(input: String): KingsideCastle? {
@@ -95,21 +95,21 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
 
     class QueensideCastle(val color: Color): Castle(from(color), to(color)) {
         override val rook: Basic = Basic(
-                Coordinate(File.A, from.rank),
-                Coordinate(File.D, from.rank)
+                Square(File.A, from.rank),
+                Square(File.D, from.rank)
         )
 
         override fun toString(): String =
                 "qc${if (color == Color.Light) "l" else "d"}"
 
         companion object {
-            fun from(color: Color): Coordinate {
+            fun from(color: Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Coordinate(File.E, rank)
+                return Square(File.E, rank)
             }
-            fun to(color:Color): Coordinate {
+            fun to(color:Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Coordinate(File.C, rank)
+                return Square(File.C, rank)
             }
 
             fun parse(input: String): QueensideCastle? {
@@ -122,7 +122,7 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
         }
     }
 
-    class Promotion(from: Coordinate, to: Coordinate, val promotion: Piece): Move(from, to) {
+    class Promotion(from: Square, to: Square, val promotion: Piece): Move(from, to) {
         val withKnight by lazy { Promotion(from, to, Knight(promotion.color)) }
         val withQueen by lazy { Promotion(from, to, Queen(promotion.color)) }
 
@@ -143,7 +143,7 @@ sealed class Move(val from: Coordinate, val to: Coordinate) {
                 }
 
                 return promotionPiece?.let { piece ->
-                    Basic.parse(input.substring(2))?.let {
+                    Basic.parse(input.substring(3))?.let {
                         Promotion(it.from, it.to, piece)
                     }
                 }

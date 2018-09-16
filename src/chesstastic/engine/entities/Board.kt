@@ -4,18 +4,18 @@ import chesstastic.engine.rules.MoveCalculator
 
 
 class Board(
-        private val state: Array<Array<Piece?>>,
-        val history: List<Move>,
-        val turn: Color
+    private val state: Array<Array<Piece?>>,
+    val history: List<Move>,
+    val turn: Color
 ) {
-    operator fun get(coord: Coordinate): Piece? = state[coord.rank.index][coord.file.index]
+    operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
     private val legalMoves by lazy { MoveCalculator.legalMoves(this) }
 
     val isCheck by lazy { MoveCalculator.isKingInCheck(turn, this) }
     val isCheckmate by lazy { legalMoves.count() == 0 }
 
-    fun update(move: Move): Board {
+    fun updated(move: Move): Board {
         val newState = applyMove(move)
         val newHistory = history + move
         return Board(newState, newHistory, turn.opposite)
@@ -42,6 +42,25 @@ class Board(
     
     companion object {
         fun createNew(): Board = Board(InitialState, listOf(), Color.Light)
+
+        fun parseHistory(history: String): Board {
+            return applyHistoryRecursive(createNew(), Move.parseMany(history))
+        }
+
+        private fun applyHistoryRecursive(board: Board, history: List<Move>): Board {
+            val nextMove = history.firstOrNull()
+            return if (nextMove != null) {
+                applyHistoryRecursive(board.updated(nextMove), history.drop(1))
+            } else board
+        }
+
+        val SQUARES: List<Square> by lazy {
+            File.values().flatMap { file ->
+                Rank.values().map { rank ->
+                    Square(file, rank)
+                }
+            }
+        }
 
         private val InitialState: Array<Array<Piece?>> = arrayOf(
                 arrayOf<Piece?>(

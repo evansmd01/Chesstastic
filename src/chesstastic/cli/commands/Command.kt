@@ -9,14 +9,16 @@ interface CommandParser {
 sealed class Command {
     companion object {
         private val parsers = listOf(
-                Exit,
-                Move,
-                Print,
-                Test
+            Exit,
+            Export,
+            Test,
+            Load,
+            ShowMoves,
+            Move
         )
 
         fun parse(input: String): Command? = parsers
-                .map { it.parse(input) }
+                .map { it.parse(input.trim()) }
                 .firstOrNull { it != null }
     }
 
@@ -29,7 +31,7 @@ sealed class Command {
         }
     }
 
-    class Move(val from: Coordinate, val to: Coordinate): Command() {
+    class Move(val from: Square, val to: Square): Command() {
         companion object: CommandParser {
             private val regex =
                     """^\s*([a-hA-H][1-8])\s*([a-hA-H][1-8])\s*$"""
@@ -39,8 +41,8 @@ sealed class Command {
                 val match = regex.matchEntire(input)
                 if (match != null) {
                     val (fromInput, toInput) = match.destructured
-                    val maybeFrom = Coordinate.parse(fromInput)
-                    val maybeTo = Coordinate.parse(toInput)
+                    val maybeFrom = Square.parse(fromInput)
+                    val maybeTo = Square.parse(toInput)
                     if(maybeFrom != null && maybeTo != null) {
                         return Move(maybeFrom, maybeTo)
                     }
@@ -50,11 +52,11 @@ sealed class Command {
         }
     }
 
-    class Print : Command() {
+    class Export : Command() {
         companion object: CommandParser {
             override fun parse(input: String): Command? {
-                return if(input.toLowerCase().trim() == "print")
-                    Print()
+                return if(input.toLowerCase().trim() == "export")
+                    Export()
                 else null
             }
         }
@@ -66,6 +68,28 @@ sealed class Command {
                 return if(input.toLowerCase().trim() == "test")
                     Test()
                 else null
+            }
+
+        }
+    }
+
+    class Load(val history: String): Command() {
+        companion object: CommandParser {
+            override fun parse(input: String): Command? {
+                return if(input.startsWith("load ")) {
+                    Load(history = input.substring(4).trim())
+                } else null
+            }
+
+        }
+    }
+
+    class ShowMoves: Command() {
+        companion object: CommandParser {
+            override fun parse(input: String): Command? {
+                return if(input.toLowerCase() == "show moves") {
+                    ShowMoves()
+                } else null
             }
 
         }

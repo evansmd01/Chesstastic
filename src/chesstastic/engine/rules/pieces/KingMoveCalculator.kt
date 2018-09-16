@@ -4,7 +4,6 @@ import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Color.*
-import kotlin.coroutines.experimental.buildIterator
 import kotlin.coroutines.experimental.buildSequence
 
 class KingMoveCalculator {

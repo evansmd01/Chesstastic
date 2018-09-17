@@ -11,10 +11,11 @@ fun main(args: Array<String>) {
     var validateMoves = true
     gameLoop@ while (true) {
         println()
-        println(BoardView.render(board))
+        println(AsciiArtView.render(board))
         if (board.isCheckmate) {
             printlnColor(ConsoleColor.YELLOW, "CHECKMATE!")
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
+            println(board.history.joinToString(separator = ","))
             break@gameLoop
         }
         if (board.isStalemate) {

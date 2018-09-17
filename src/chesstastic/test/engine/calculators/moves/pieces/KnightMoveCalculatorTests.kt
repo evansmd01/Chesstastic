@@ -1,9 +1,5 @@
-package chesstastic.test.engine.rules.pieces
+package chesstastic.test.engine.calculators.moves.pieces
 
-import chesstastic.engine.entities.*
-import chesstastic.engine.entities.Rank.*
-import chesstastic.engine.entities.File.*
-import chesstastic.engine.entities.Color.*
 import chesstastic.test.framework.ChessTestSuite
 
 class KnightMoveCalculatorTests: ChessTestSuite() {

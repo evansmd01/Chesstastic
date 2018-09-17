@@ -1,6 +1,6 @@
 package chesstastic.engine.entities
 
-import chesstastic.engine.rules.MoveCalculator
+import chesstastic.engine.calculators.BoardCalculator
 
 
 class Board(
@@ -11,15 +11,15 @@ class Board(
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
-    private val legalMoves by lazy { MoveCalculator.legalMoves(this) }
+    private val legalMoves by lazy { BoardCalculator.legalMoves(this) }
 
     val isCheck by lazy { isInCheck(turn) }
-    fun isInCheck(color: Color) = MoveCalculator.isKingInCheck(color, this)
+    fun isInCheck(color: Color) = BoardCalculator.isKingInCheck(color, this)
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
     val isStalemate by lazy { inactivityCounter >= 60 || legalMoves.count() == 0 && !isCheck }
 
-    fun isSquareAttacked(square: Square, attacker: Color) = MoveCalculator.isSquareAttacked(square, attacker, this)
-    fun timesSquareIsAttacked(square: Square, attacker: Color) = MoveCalculator.timesSquareIsAttacked(square, attacker, this)
+    fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
+    fun timesSquareIsAttacked(square: Square, attacker: Color) = BoardCalculator.timesSquareIsAttacked(square, attacker, this)
 
     fun kingSquare(color: Color): Square  {
         return SQUARES.firstOrNull() { square ->

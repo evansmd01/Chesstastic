@@ -1,12 +1,8 @@
-package chesstastic.test.engine.rules.pieces
+package chesstastic.test.engine.calculators.moves.pieces
 
-import chesstastic.engine.entities.*
-import chesstastic.engine.entities.Rank.*
-import chesstastic.engine.entities.File.*
-import chesstastic.engine.entities.Color.*
 import chesstastic.test.framework.ChessTestSuite
 
-class BishopMoveCalculatorTests: ChessTestSuite() {
+class RookMoveCalculatorTests: ChessTestSuite() {
     init {
         describe("potentialMoves") {
             it("moves until it captures an opponent") {
@@ -23,7 +19,7 @@ class BishopMoveCalculatorTests: ChessTestSuite() {
         }
 
         describe("timesSquareIsAttacked") {
-            it("detects an attack (singular, because bishops are on different color tiles)") {
+            it("detects attacks from multiple queens") {
 
             }
         }

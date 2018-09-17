@@ -1,9 +1,7 @@
-package chesstastic.engine.rules.pieces
+package chesstastic.engine.calculators.moves.pieces
 
+import chesstastic.engine.calculators.moves.PieceMoveCalculator
 import chesstastic.engine.entities.*
-import chesstastic.engine.entities.Rank.*
-import chesstastic.engine.entities.File.*
-import chesstastic.engine.entities.Color.*
 
 class KnightMoveCalculator {
     companion object: PieceMoveCalculator {

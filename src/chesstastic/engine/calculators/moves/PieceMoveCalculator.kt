@@ -1,5 +1,6 @@
-package chesstastic.engine.rules.pieces
+package chesstastic.engine.calculators.moves
 
+import chesstastic.engine.calculators.moves.pieces.*
 import chesstastic.engine.entities.*
 
 interface PieceMoveCalculator {

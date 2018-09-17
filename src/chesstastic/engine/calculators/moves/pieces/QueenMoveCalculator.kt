@@ -1,5 +1,8 @@
-package chesstastic.engine.rules.pieces
+package chesstastic.engine.calculators.moves.pieces
 
+import chesstastic.engine.calculators.moves.DiagonalMoveCalculator
+import chesstastic.engine.calculators.moves.HorizontalMoveCalculator
+import chesstastic.engine.calculators.moves.PieceMoveCalculator
 import chesstastic.engine.entities.*
 
 class QueenMoveCalculator {

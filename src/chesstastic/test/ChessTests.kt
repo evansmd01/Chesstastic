@@ -1,8 +1,9 @@
 package chesstastic.test
 
 import chesstastic.test.engine.entities.*
-import chesstastic.test.engine.rules.*
-import chesstastic.test.engine.rules.pieces.*
+import chesstastic.test.engine.calculators.*
+import chesstastic.test.engine.calculators.moves.*
+import chesstastic.test.engine.calculators.moves.pieces.*
 import chesstastic.test.framework.ChessTestFramework
 
 class ChessTests {
@@ -10,7 +11,7 @@ class ChessTests {
         private val suites = listOf(
             { MoveTests() },
             { BoardTests() },
-            { MoveCalculatorTests() },
+            { BoardCalculatorTests() },
             { PawnMoveCalculatorTests() },
             { RookMoveCalculatorTests() },
             { KnightMoveCalculatorTests() },

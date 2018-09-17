@@ -3,7 +3,7 @@ package chesstastic.cli
 import chesstastic.cli.commands.*
 import chesstastic.engine.entities.*
 import chesstastic.cli.view.*
-import chesstastic.engine.rules.MoveCalculator
+import chesstastic.engine.calculators.BoardCalculator
 import chesstastic.test.ChessTests
 
 fun main(args: Array<String>) {
@@ -42,14 +42,14 @@ fun main(args: Array<String>) {
                 board = Board.parse(command.history)
             }
             is Command.ShowMoves -> {
-                println(MoveCalculator.legalMoves(board).toString())
+                println(BoardCalculator.legalMoves(board).toString())
             }
             is Command.DisableMoveValidation -> {
                 validateMoves = false
             }
             is Command.Move -> {
                 val move = if (validateMoves) {
-                    MoveCalculator.legalMoves(board).firstOrNull {
+                    BoardCalculator.legalMoves(board).firstOrNull {
                         it.from == command.from && it.to == command.to
                     }
                 } else {

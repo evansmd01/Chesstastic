@@ -1,10 +1,10 @@
-package chesstastic.test.engine.rules.pieces
+package chesstastic.test.engine.calculators.moves.pieces
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Color.*
-import chesstastic.engine.rules.pieces.KingMoveCalculator
+import chesstastic.engine.calculators.moves.pieces.KingMoveCalculator
 import chesstastic.test.framework.ChessTestSuite
 
 class KingMoveCalculatorTests: ChessTestSuite() {

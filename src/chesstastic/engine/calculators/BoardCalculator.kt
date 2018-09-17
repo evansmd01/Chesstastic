@@ -1,9 +1,9 @@
-package chesstastic.engine.rules
+package chesstastic.engine.calculators
 
 import chesstastic.engine.entities.*
-import chesstastic.engine.rules.pieces.*
+import chesstastic.engine.calculators.moves.*
 
-class MoveCalculator {
+class BoardCalculator {
     companion object {
         fun legalMoves(board: Board): Iterable<Move> {
             val potentialMoves = Board.SQUARES.flatMap { square ->

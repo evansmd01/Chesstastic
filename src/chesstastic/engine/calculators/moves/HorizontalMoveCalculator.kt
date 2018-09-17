@@ -1,4 +1,4 @@
-package chesstastic.engine.rules.pieces
+package chesstastic.engine.calculators.moves
 
 import chesstastic.engine.entities.*
 

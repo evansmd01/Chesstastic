@@ -11,7 +11,7 @@ fun main(args: Array<String>) {
     var validateMoves = true
     gameLoop@ while (true) {
         println()
-        println(AsciiArtView.render(board))
+        println(BoardView.render(board))
         if (board.isCheckmate) {
             printlnColor(ConsoleColor.YELLOW, "CHECKMATE!")
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")

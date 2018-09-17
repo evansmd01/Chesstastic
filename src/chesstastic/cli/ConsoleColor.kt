@@ -1,4 +1,4 @@
-package chesstastic.cli.view
+package chesstastic.cli
 
 class ConsoleColor {
     companion object {

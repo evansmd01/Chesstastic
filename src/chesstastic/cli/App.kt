@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
         when (player) {
             Player.AI -> {
                 val move = if (board.turn == Color.Dark)
-                    ChesstasticAI.selectMove(board, 5, 3)
+                    ChesstasticAI.selectMove(board, 4, 3)
                 else
                     ChesstasticAI.selectMove(board, 1, 1)
                 board = board.updated(move)

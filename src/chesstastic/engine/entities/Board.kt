@@ -17,7 +17,8 @@ class Board(
     fun isInCheck(color: Color) = BoardCalculator.isKingInCheck(color, this)
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
     private val inactivityLimit = 500
-    val isStalemate by lazy { inactivityCounter >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) }
+    private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
+    val isStalemate by lazy { inactivityCounter >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
     fun timesSquareIsAttacked(square: Square, attacker: Color) = BoardCalculator.timesSquareIsAttacked(square, attacker, this)

@@ -14,6 +14,6 @@ object MovesAvailable: Criteria {
         return when (board.turn) {
             Color.Light -> Score(moves.toDouble(), 0.0)
             Color.Dark -> Score(0.0, moves.toDouble())
-        }
+        } * 3.0
     }
 }

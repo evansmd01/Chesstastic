@@ -11,12 +11,13 @@ class Board(
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
-    private val legalMoves by lazy { BoardCalculator.legalMoves(this) }
+    val legalMoves by lazy { BoardCalculator.legalMoves(this, turn) }
 
     val isCheck by lazy { isInCheck(turn) }
     fun isInCheck(color: Color) = BoardCalculator.isKingInCheck(color, this)
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
-    val isStalemate by lazy { inactivityCounter >= 60 || legalMoves.count() == 0 && !isCheck }
+    private val inactivityLimit = 500
+    val isStalemate by lazy { inactivityCounter >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
     fun timesSquareIsAttacked(square: Square, attacker: Color) = BoardCalculator.timesSquareIsAttacked(square, attacker, this)
@@ -28,7 +29,7 @@ class Board(
                 piece is King && piece.color == color -> true
                 else -> false
             }
-        } ?: throw Error("King is missing from the board.")
+        } ?: throw Error("King is missing from the board.\nHistory: ${this.history.joinToString(separator = ",")}")
     }
 
     fun isOccupiedByColor(square: Square, color: Color) = this[square]?.color == color

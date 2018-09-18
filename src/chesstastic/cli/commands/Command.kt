@@ -9,13 +9,14 @@ interface CommandParser {
 sealed class Command {
     companion object {
         private val parsers = listOf(
+            DisableMoveValidation,
             Exit,
             Export,
-            Test,
             Load,
+            Move,
+            SetPlayer,
             ShowMoves,
-            DisableMoveValidation,
-            Move
+            Test
         )
 
         fun parse(input: String): Command? = parsers
@@ -100,6 +101,22 @@ sealed class Command {
             override fun parse(input: String): Command? {
                 return if(input.toLowerCase() == "disable validation") {
                     return DisableMoveValidation()
+                } else null
+            }
+        }
+    }
+
+    data class SetPlayer(val player: Player): Command() {
+        companion object : CommandParser {
+            private val regex = """set\s+player\s+(ai|human)""".toRegex()
+            override fun parse(input: String): SetPlayer? {
+                val match = regex.matchEntire(input.toLowerCase())
+                return if (match != null) {
+                    val (player) = match.destructured
+                    when (player) {
+                        "ai" -> SetPlayer(Player.AI)
+                        else -> SetPlayer(Player.Human)
+                    }
                 } else null
             }
         }

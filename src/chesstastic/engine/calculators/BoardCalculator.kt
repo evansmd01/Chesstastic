@@ -5,15 +5,15 @@ import chesstastic.engine.calculators.moves.*
 
 class BoardCalculator {
     companion object {
-        fun legalMoves(board: Board): Iterable<Move> {
+        fun legalMoves(board: Board, color: Color): Iterable<Move> {
             val potentialMoves = Board.SQUARES.flatMap { square ->
                 val piece = board[square]
-                if (piece?.color == board.turn) {
-                    PieceMoveCalculator.getBy(piece).potentialMoves(piece.color, square, board)
+                if (piece?.color == color) {
+                    PieceMoveCalculator.getBy(piece).potentialMoves(color, square, board)
                 } else listOf()
             }
             return potentialMoves.filterNot { move ->
-                isKingInCheck(board.turn, board.updated(move))
+                isKingInCheck(color, board.updated(move))
             }
         }
 

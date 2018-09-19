@@ -1,16 +1,7 @@
 package chesstastic.engine.entities
 
-sealed class Piece(val color: Color) {
-    override fun equals(other: Any?): Boolean = other?.hashCode() == hashCode()
+data class Piece(val kind: PieceKind, val color: Color)
 
-    override fun hashCode(): Int = toString().hashCode()
-
-    override fun toString(): String = color.toString() + this::class.simpleName
+enum class PieceKind {
+    Pawn, Rook, Knight, Bishop, Queen, King
 }
-
-class Pawn(color: Color): Piece(color)
-class Rook(color: Color): Piece(color)
-class Bishop(color: Color): Piece(color)
-class Knight(color: Color): Piece(color)
-class Queen(color: Color): Piece(color)
-class King(color: Color): Piece(color)

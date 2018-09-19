@@ -13,7 +13,7 @@ object Material: Criteria {
         Board.SQUARES.forEach {
             val piece = board[it]
             if (piece != null) {
-                val value = PieceWeight.find(piece)
+                val value = PieceWeight.find(piece.kind)
                 if (piece.color == Color.Light) light += value else dark += value
             }
         }

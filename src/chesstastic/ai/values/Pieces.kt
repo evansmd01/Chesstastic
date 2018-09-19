@@ -1,14 +1,15 @@
 package chesstastic.ai.values
 
 import chesstastic.engine.entities.*
+import chesstastic.engine.entities.PieceKind.*
 
 object PieceWeight {
-    fun find(piece: Piece) = when (piece) {
-        is Pawn -> 1.0
-        is Bishop -> 3.2
-        is Knight -> 3.0
-        is Rook -> 5.0
-        is Queen -> 9.0
-        is King -> 0.0
+    fun find(piece: PieceKind) = when (piece) {
+        Pawn -> 1.0
+        Bishop -> 3.2
+        Knight -> 3.0
+        Rook -> 5.0
+        Queen -> 9.0
+        King -> 0.0
     }
 }

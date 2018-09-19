@@ -1,6 +1,8 @@
 package chesstastic.engine.entities
 
 import chesstastic.engine.calculators.BoardCalculator
+import chesstastic.engine.entities.PieceKind.*
+import chesstastic.engine.entities.Color.*
 
 
 class Board(
@@ -27,7 +29,7 @@ class Board(
         return SQUARES.firstOrNull() { square ->
             val piece = this[square]
             when {
-                piece is King && piece.color == color -> true
+                piece?.kind == King && piece.color == color -> true
                 else -> false
             }
         } ?: throw Error("King is missing from the board.\nHistory: ${this.history.joinToString(separator = ",")}")
@@ -54,9 +56,9 @@ class Board(
             newState[move.captured.rank.index][move.captured.file.index] = null
         } else if (move is Move.Castle) {
             newState[move.rook.from.rank.index][move.rook.from.file.index] = null
-            newState[move.rook.to.rank.index][move.rook.to.file.index] = Rook(movingPiece.color)
+            newState[move.rook.to.rank.index][move.rook.to.file.index] = Piece(Rook, movingPiece.color)
         } else if (move is Move.Promotion) {
-            newState[move.to.rank.index][move.to.file.index] = move.promotion
+            newState[move.to.rank.index][move.to.file.index] = Piece(move.promotion, movingPiece.color)
         }
 
         return newState
@@ -85,50 +87,50 @@ class Board(
         }
 
         private val InitialState: Array<Array<Piece?>> = arrayOf(
-                arrayOf<Piece?>(
-                        Rook(Color.Light),
-                        Knight(Color.Light),
-                        Bishop(Color.Light),
-                        Queen(Color.Light),
-                        King(Color.Light),
-                        Bishop(Color.Light),
-                        Knight(Color.Light),
-                        Rook(Color.Light)
-                ),
-                arrayOf<Piece?>(
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light),
-                        Pawn(Color.Light)
-                ),
-                arrayOf<Piece?>(null, null, null, null, null, null, null, null),
-                arrayOf<Piece?>(null, null, null, null, null, null, null, null),
-                arrayOf<Piece?>(null, null, null, null, null, null, null, null),
-                arrayOf<Piece?>(null, null, null, null, null, null, null, null),
-                arrayOf<Piece?>(
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark),
-                        Pawn(Color.Dark)
-                ),
-                arrayOf<Piece?>(
-                        Rook(Color.Dark),
-                        Knight(Color.Dark),
-                        Bishop(Color.Dark),
-                        Queen(Color.Dark),
-                        King(Color.Dark),
-                        Bishop(Color.Dark),
-                        Knight(Color.Dark),
-                        Rook(Color.Dark)
-                )
+            arrayOf<Piece?>(
+                Piece(Rook, Light),
+                Piece(Knight, Light),
+                Piece(Bishop, Light),
+                Piece(Queen, Light),
+                Piece(King, Light),
+                Piece(Bishop, Light),
+                Piece(Knight, Light),
+                Piece(Rook, Light)
+            ),
+            arrayOf<Piece?>(
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light),
+                Piece(Pawn, Light)
+            ),
+            arrayOf<Piece?>(null, null, null, null, null, null, null, null),
+            arrayOf<Piece?>(null, null, null, null, null, null, null, null),
+            arrayOf<Piece?>(null, null, null, null, null, null, null, null),
+            arrayOf<Piece?>(null, null, null, null, null, null, null, null),
+            arrayOf<Piece?>(
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark),
+                Piece(Pawn, Dark)
+            ),
+            arrayOf<Piece?>(
+                Piece(Rook, Dark),
+                Piece(Knight, Dark),
+                Piece(Bishop, Dark),
+                Piece(Queen, Dark),
+                Piece(King, Dark),
+                Piece(Bishop, Dark),
+                Piece(Knight, Dark),
+                Piece(Rook, Dark)
+            )
         )
     }
 }

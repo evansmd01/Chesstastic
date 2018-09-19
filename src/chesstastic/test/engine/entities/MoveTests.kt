@@ -3,6 +3,7 @@ package chesstastic.test.engine.entities
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
+import chesstastic.engine.entities.PieceKind.*
 import chesstastic.test.framework.ChessTestSuite
 
 
@@ -49,14 +50,10 @@ class MoveTests: ChessTestSuite() {
             }
 
             it("should read and write pawn promotion") {
-                Move.Promotion(Square(D, _2), Square(D, _1), Knight(Color.Dark))
-                    .shouldSerializeTo("pdkD2D1")
-                Move.Promotion(Square(E, _7), Square(F, _8), Knight(Color.Light))
-                    .shouldSerializeTo("plkE7F8")
-                Move.Promotion(Square(D, _2), Square(D, _1), Queen(Color.Dark))
-                    .shouldSerializeTo("pdqD2D1")
-                Move.Promotion(Square(E, _7), Square(F, _8), Queen(Color.Light))
-                    .shouldSerializeTo("plqE7F8")
+                Move.Promotion(Square(D, _2), Square(D, _1), Knight)
+                    .shouldSerializeTo("pkD2D1")
+                Move.Promotion(Square(E, _7), Square(F, _8), Queen)
+                    .shouldSerializeTo("pqE7F8")
             }
 
             describe("parse many") {

@@ -122,28 +122,25 @@ sealed class Move(val from: Square, val to: Square) {
         }
     }
 
-    class Promotion(from: Square, to: Square, val promotion: Piece): Move(from, to) {
-        val withKnight by lazy { Promotion(from, to, Knight(promotion.color)) }
-        val withQueen by lazy { Promotion(from, to, Queen(promotion.color)) }
+    class Promotion(from: Square, to: Square, val promotion: PieceKind): Move(from, to) {
+        val withKnight by lazy { Promotion(from, to, PieceKind.Knight) }
+        val withQueen by lazy { Promotion(from, to, PieceKind.Queen) }
 
         override fun toString(): String {
-            val pieceCode = if(promotion is Queen) "q" else "k"
-            val colorCode = if(promotion.color == Color.Light) "l" else "d"
-            return "p$colorCode$pieceCode${from.file}${from.rank}${to.file}${to.rank}"
+            val pieceCode = if(promotion == PieceKind.Queen) "q" else "k"
+            return "p$pieceCode${from.file}${from.rank}${to.file}${to.rank}"
         }
 
         companion object {
             fun parse(input: String): Promotion? {
                 val promotionPiece = when {
-                    input.startsWith("plq") -> Queen(Color.Light)
-                    input.startsWith("pdq") -> Queen(Color.Dark)
-                    input.startsWith("plk") -> Knight(Color.Light)
-                    input.startsWith("pdk") -> Knight(Color.Dark)
+                    input.startsWith("pq") -> PieceKind.Queen
+                    input.startsWith("pk") -> PieceKind.Knight
                     else -> null
                 }
 
                 return promotionPiece?.let { piece ->
-                    Basic.parse(input.substring(3))?.let {
+                    Basic.parse(input.substring(2))?.let {
                         Promotion(it.from, it.to, piece)
                     }
                 }

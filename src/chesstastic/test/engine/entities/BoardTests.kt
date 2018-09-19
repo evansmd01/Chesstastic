@@ -1,6 +1,8 @@
 package chesstastic.test.engine.entities
 
 import chesstastic.engine.entities.*
+import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.PieceKind.*
 import chesstastic.test.framework.ChessTestSuite
 
 class BoardTests: ChessTestSuite() {
@@ -12,9 +14,9 @@ class BoardTests: ChessTestSuite() {
 
                 board.turn.shouldBe(Color.Light)
                 board[Square(File.E, Rank._2)].shouldBe(null)
-                board[Square(File.E, Rank._4)].shouldBe(Pawn(Color.Light))
+                board[Square(File.E, Rank._4)].shouldBe(Piece(Pawn, Light))
                 board[Square(File.D, Rank._7)].shouldBe(null)
-                board[Square(File.D, Rank._5)].shouldBe(Pawn(Color.Dark))
+                board[Square(File.D, Rank._5)].shouldBe(Piece(Pawn, Dark))
             }
         }
 

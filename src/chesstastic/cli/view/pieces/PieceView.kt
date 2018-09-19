@@ -2,6 +2,7 @@ package chesstastic.cli.view.pieces
 
 import chesstastic.cli.ConsoleColor
 import chesstastic.engine.entities.*
+import chesstastic.engine.entities.PieceKind.*
 
 interface PieceView {
     /**
@@ -26,14 +27,13 @@ interface PieceView {
     }
 
     companion object {
-        fun render(piece: Piece): List<List<String?>> = when(piece) {
-            is Pawn -> PawnView
-            is Rook -> RookView
-            is Bishop -> BishopView
-            is Knight -> KnightView
-            is King -> KingView
-            is Queen -> QueenView
-            else -> throw NotImplementedError()
+        fun render(piece: Piece): List<List<String?>> = when(piece.kind) {
+            Pawn -> PawnView
+            Rook -> RookView
+            Bishop -> BishopView
+            Knight -> KnightView
+            King -> KingView
+            Queen -> QueenView
         }.render(piece.color)
     }
 }

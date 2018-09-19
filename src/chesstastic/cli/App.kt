@@ -9,8 +9,8 @@ import chesstastic.test.ChessTests
 fun main(args: Array<String>) {
     var board = Board.createNew()
     var validateMoves = true
-    var lightPlayer = Player.AI
-    var darkPlayer = Player.AI
+    var lightPlayer = Player.Human
+    var darkPlayer = Player.Human
     gameLoop@ while (true) {
         println()
         println(BoardView.render(board))

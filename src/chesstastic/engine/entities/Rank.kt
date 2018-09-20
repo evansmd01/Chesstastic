@@ -1,6 +1,6 @@
 package chesstastic.engine.entities
 
-enum class Rank: Indexable {
+enum class Rank {
     _1,
     _2,
     _3,
@@ -10,7 +10,7 @@ enum class Rank: Indexable {
     _7,
     _8;
 
-    override val index: Int
+    val index: Int
         get() = when(this) {
             _1 -> 0
             _2 -> 1
@@ -24,8 +24,8 @@ enum class Rank: Indexable {
 
     override fun toString(): String = (index + 1).toString()
 
-    companion object: IndexableCompanion<Rank> {
-        override fun fromIndex(index: Int): Rank? =
-                Rank.values().firstOrNull { it.index == index }
+    companion object {
+        fun fromIndex(index: Int): Rank? =
+            Rank.values().firstOrNull { it.index == index }
     }
 }

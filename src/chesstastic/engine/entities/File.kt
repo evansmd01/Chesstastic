@@ -1,9 +1,9 @@
 package chesstastic.engine.entities
 
-enum class File: Indexable {
+enum class File {
     A, B, C, D, E, F, G, H;
 
-    override val index: Int
+    val index: Int
         get() = when(this) {
             A -> 0
             B -> 1
@@ -15,8 +15,8 @@ enum class File: Indexable {
             H -> 7
         }
 
-    companion object: IndexableCompanion<File> {
-        override fun fromIndex(index: Int): File? =
+    companion object {
+        fun fromIndex(index: Int): File? =
             File.values().firstOrNull { it.index == index }
     }
 }

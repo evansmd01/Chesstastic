@@ -21,11 +21,11 @@ class ChesstasticAI(private val depth: Int, private val breadth: Int, private va
         val moves = board.legalMoves.shuffled()
         // stop recursion if we've hit depth, ensuring we ended with an opponent response
         // , or if there are no legal moves left
-        if((depth < 0 && currentTurn == player) || moves.count() == 0) {
+        if((depth < 0 && currentTurn == player) || moves.isEmpty()) {
             return previous
         }
 
-        val bestMovesForCurrentPlayer = moves.shuffled()
+        val bestMovesForCurrentPlayer = moves
             .map { move ->
                 val updatedBoard = board.updated(move)
                 val branch = previous?.branch?.plus(move) ?: Branch(move)

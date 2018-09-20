@@ -39,13 +39,13 @@ class ChesstasticAI(private val depth: Int, private val breadth: Int, private va
             else -> bestMovesForCurrentPlayer.take(1)
         }
 
-        return bestEvaluations
+        val bestBranches = bestEvaluations
             .map { evaluation ->
                 val narrowerBreadth = if (breadth > depth) breadth - 1 else 1
                 findBestBranch(player, evaluation.board, depth - 1, narrowerBreadth, evaluation)!!
             }
             .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
-            .first()
+        return bestBranches.first()
     }
 
     private fun evaluate(board: Board): Score = when {
@@ -60,4 +60,8 @@ private data class Branch(val move: Move, val next: Branch? = null) {
     operator fun plus(other: Move) = Branch(move, Branch(other))
 }
 
-private data class Evaluation(val branch: Branch, val score: Score, val board: Board)
+private data class Evaluation(val branch: Branch, val score: Score, val board: Board) {
+    override fun toString(): String {
+        return "score: ${score.ratioInFavorOf(Color.Light)}, ${board.history.joinToString()}"
+    }
+}

@@ -14,7 +14,7 @@ sealed class Command {
             Export,
             Load,
             Move,
-            SetPlayer,
+            SetAi,
             ShowMoves,
             Test
         )
@@ -106,17 +106,14 @@ sealed class Command {
         }
     }
 
-    data class SetPlayer(val player: Player): Command() {
+    data class SetAi(val breadth: Int = 0, val depth: Int = 0): Command() {
         companion object : CommandParser {
-            private val regex = """set\s+player\s+(ai|human)""".toRegex()
-            override fun parse(input: String): SetPlayer? {
+            private val regex = """set\s+ai\s+(\d+)\s+(\d+)""".toRegex()
+            override fun parse(input: String): SetAi? {
                 val match = regex.matchEntire(input.toLowerCase())
                 return if (match != null) {
-                    val (player) = match.destructured
-                    when (player) {
-                        "ai" -> SetPlayer(Player.AI)
-                        else -> SetPlayer(Player.Human)
-                    }
+                    val (depth, breadth) = match.destructured
+                    SetAi(depth.toInt(), breadth.toInt())
                 } else null
             }
         }

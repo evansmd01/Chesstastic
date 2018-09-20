@@ -13,12 +13,18 @@ class ChesstasticAITests: ChessTestSuite() {
             it("should select the move that results in the best possible score") {
                 val board = Board.createNew()
                 val mock = MockCriteria()
-                val subject = ChesstasticAI(mock)
+                val subject = ChesstasticAI(2, 2, listOf(mock))
 
-                val selectedMove: Move = subject.selectMove(board, depth = 2, breadth = 2)
+                val selectedMove: Move = subject.selectMove(board)
 
                 val bestEvaluation: EvaluationRecord = mock.bestEvaluationFor(board.turn)
                 val bestFirstMove: Move = bestEvaluation.board.history.first()
+
+                if(selectedMove != bestFirstMove) {
+                    println("Selected Move: $selectedMove")
+                    println("Best Evaluation: $bestEvaluation")
+                    println("Evaluations starting with selected move: " + mock.evaluationsStartingWith(selectedMove).joinToString(separator = "\n"))
+                }
 
                 selectedMove.shouldBe(bestFirstMove)
             }
@@ -33,6 +39,8 @@ class MockCriteria: Criteria {
         return records.filter { it.whoseMove == color }.maxBy { it.score.ratioInFavorOf(color) }!!
     }
 
+    fun evaluationsStartingWith(move: Move) = records.filter { it.board.history.first() == move }.sortedBy { it.board.history.count() }
+
     override fun evaluate(board: Board): Score {
         val light = ThreadLocalRandom.current().nextDouble()
         val dark = ThreadLocalRandom.current().nextDouble()
@@ -44,4 +52,8 @@ class MockCriteria: Criteria {
 
 }
 
-data class EvaluationRecord(val whoseMove: Color, val score: Score, val board: Board)
+data class EvaluationRecord(val whoseMove: Color, val score: Score, val board: Board) {
+    override fun toString(): String {
+        return "(whoseMove: $whoseMove, score: ${score.ratioInFavorOf(whoseMove)}, history: ${board.history.joinToString()})"
+    }
+}

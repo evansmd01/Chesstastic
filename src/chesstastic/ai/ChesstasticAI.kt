@@ -5,25 +5,27 @@ import chesstastic.ai.values.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception
 
-class ChesstasticAI(private vararg val criteria: Criteria) {
+private val defaultCriteria = listOf(
+    MovesAvailable,
+    Material
+)
 
-    fun selectMove(
-        board: Board,
-        depth: Int,
-        breadth: Int): Move =
+class ChesstasticAI(private val depth: Int, private val breadth: Int, private val criteria: List<Criteria> = defaultCriteria) {
+
+    fun selectMove(board: Board): Move =
         findBestBranch(board.turn, board, depth, breadth)?.branch?.move ?:
         throw Exception("Could not find a move")
 
     private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: Evaluation? = null): Evaluation? {
         val currentTurn = board.turn
-
+        val moves = board.legalMoves.shuffled()
         // stop recursion if we've hit depth, ensuring we ended with an opponent response
         // , or if there are no legal moves left
-        if((depth < 0 && currentTurn == player) || board.legalMoves.count() == 0) {
+        if((depth < 0 && currentTurn == player) || moves.count() == 0) {
             return previous
         }
 
-        val bestMovesForCurrentPlayer = board.legalMoves
+        val bestMovesForCurrentPlayer = moves.shuffled()
             .map { move ->
                 val updatedBoard = board.updated(move)
                 val branch = previous?.branch?.plus(move) ?: Branch(move)
@@ -39,16 +41,19 @@ class ChesstasticAI(private vararg val criteria: Criteria) {
 
         return bestEvaluations
             .map { evaluation ->
-                val narrowerBreadth = if (breadth > 1) breadth - 1 else 1
+                val narrowerBreadth = if (breadth > depth) breadth - 1 else 1
                 findBestBranch(player, evaluation.board, depth - 1, narrowerBreadth, evaluation)!!
             }
             .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
             .first()
     }
 
-    private fun evaluate(board: Board): Score =
-        criteria.asSequence().map { it.evaluate(board) }
+    private fun evaluate(board: Board): Score = when {
+        board.isCheckmate -> Score.checkmate(winner = board.turn.opposite)
+        board.isStalemate -> Score.even
+        else -> criteria.map { it.evaluate(board) }
             .fold(Score.even) { total, score -> total + score }
+    }
 }
 
 private data class Branch(val move: Move, val next: Branch? = null) {

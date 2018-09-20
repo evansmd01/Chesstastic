@@ -21,16 +21,8 @@ data class Score(val light: Double, val dark: Double) {
 
         fun checkmate(winner: Color) =
             if (winner == Color.Light)
-                Score(Double.MAX_VALUE, 1.0)
+                Score(999999.0, 0.0)
             else
-                Score(1.0, Double.MAX_VALUE)
-
-        fun stalemate(color: Color, odds: Score): Score {
-            val hurt = odds.ratioInFavorOf(color) * -20 // todo: get ratio more intelligently from criteria
-            return when (color) {
-                Color.Light -> Score(hurt, 0.0)
-                Color.Dark -> Score(0.0, hurt)
-            }
-        }
+                Score(0.0, 999999.0)
     }
 }

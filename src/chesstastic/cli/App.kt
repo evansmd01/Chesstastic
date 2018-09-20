@@ -1,20 +1,22 @@
 package chesstastic.cli
 
 import chesstastic.ai.ChesstasticAI
-import chesstastic.ai.criteria.*
-import chesstastic.cli.commands.*
+import chesstastic.cli.commands.Command
+import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
-import chesstastic.cli.view.*
 import chesstastic.test.ChessTests
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
     var validateMoves = true
-    var lightPlayer = Player.Human
-    var darkPlayer = Player.AI
+    var skipPrint = false
+    var lightAI: ChesstasticAI? = null
+    var darkAI: ChesstasticAI? = null
     gameLoop@ while (true) {
         println()
-        println(BoardView.render(board))
+        if (skipPrint) skipPrint = false
+        else println(BoardView.render(board))
+
         if (board.isCheckmate) {
             printlnColor(ConsoleColor.YELLOW, "CHECKMATE!")
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
@@ -30,14 +32,12 @@ fun main(args: Array<String>) {
             printlnColor(ConsoleColor.RED, "CHECK!")
         }
         print("${board.turn} player's turn: ")
-        val player = if (board.turn == Color.Light) lightPlayer else darkPlayer
-        when (player) {
-            Player.AI -> {
-                val move = ChesstasticAI(Material, MovesAvailable)
-                    .selectMove(board, 4, 3)
-                board = board.updated(move)
+        val ai = if (board.turn == Color.Light) lightAI else darkAI
+        when  {
+            ai != null -> {
+                board = board.updated(ai.selectMove(board))
             }
-            Player.Human -> {
+            else -> {
                 val input = readLine()?.toLowerCase()?.trim()
                 val command = input?.let { Command.parse(it) }
                 when (command) {
@@ -49,13 +49,15 @@ fun main(args: Array<String>) {
                         println(board.history.joinToString(separator = ","))
                         break@gameLoop
                     }
-                    is Command.SetPlayer -> when (board.turn) {
-                        Color.Light -> lightPlayer = command.player
-                        Color.Dark -> darkPlayer = command.player
+                    is Command.SetAi -> when(board.turn) {
+                        Color.Light->
+                            lightAI = ChesstasticAI(command.depth, command.breadth)
+                        Color.Dark ->
+                            darkAI = ChesstasticAI(command.depth, command.breadth)
                     }
                     is Command.Test -> {
                         ChessTests.run()
-                        break@gameLoop
+                        skipPrint = true
                     }
                     is Command.Load -> {
                         board = Board.parse(command.history)

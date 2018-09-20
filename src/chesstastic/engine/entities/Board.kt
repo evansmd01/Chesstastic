@@ -21,6 +21,7 @@ class Board(
     private val inactivityLimit = 500
     private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
     val isStalemate by lazy { inactivityCounter >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
+    val isGameOver by lazy { isCheckmate || isStalemate }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
     fun timesSquareIsAttacked(square: Square, attacker: Color) = BoardCalculator.timesSquareIsAttacked(square, attacker, this)

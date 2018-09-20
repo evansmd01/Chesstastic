@@ -13,7 +13,7 @@ class ChesstasticAITests: ChessTestSuite() {
             it("should select the move that results in the best possible score") {
                 val board = Board.createNew()
                 val mock = MockCriteria()
-                val subject = ChesstasticAI(10, 10, listOf(mock))
+                val subject = ChesstasticAI(10, 10, criteria = listOf(mock))
 
                 val selectedMove: Move = subject.selectMove(board)
 
@@ -21,6 +21,20 @@ class ChesstasticAITests: ChessTestSuite() {
                 val bestFirstMove: Move = bestEvaluation.board.history.first()
 
                 selectedMove.shouldBe(bestFirstMove)
+            }
+        }
+
+        describe("full game") {
+            it("should be able to play a full game without encountering errors") {
+                var board = Board.createNew()
+
+                val player1 = ChesstasticAI(2, 2)
+                val player2 = ChesstasticAI(2, 2)
+
+                while(!board.isGameOver) {
+                    val player = if (board.turn == Color.Light) player1 else player2
+                    board = board.updated(player.selectMove(board))
+                }
             }
         }
     }

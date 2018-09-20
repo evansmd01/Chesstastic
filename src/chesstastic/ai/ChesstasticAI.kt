@@ -3,58 +3,47 @@ package chesstastic.ai
 import chesstastic.ai.criteria.*
 import chesstastic.ai.values.Score
 import chesstastic.engine.entities.*
+import java.lang.Exception
 
-object ChesstasticAI {
-    val criteria = listOf(
-        MovesAvailable,
-        Material
-    )
+class ChesstasticAI(private vararg val criteria: Criteria) {
 
     fun selectMove(
         board: Board,
         depth: Int,
         breadth: Int): Move =
-        findBestMove(board.turn, board, depth, breadth)?.first ?:
-        throw Error("Could not find a move.")
+        findBestBranch(board.turn, board, depth, breadth)?.branch?.move ?:
+        throw Exception("Could not find a move")
 
-    private fun findBestMove(
-        forColor: Color,
-        currentBoard: Board,
-        depth: Int,
-        breadth: Int
-    ): Pair<Move, Score>? {
-        val evaluations: List<Triple<Move, Board, Score>> = currentBoard.legalMoves.shuffled()
-            .asSequence()
-            .map { move ->
-                val updatedBoard = currentBoard.updated(move)
-                Triple(move, updatedBoard, evaluate(updatedBoard))
-            }
-            .sortedByDescending { (_, _, score) ->
-                score.ratioInFavorOf(currentBoard.turn)
-            }
-            .toList()
+    private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: Evaluation? = null): Evaluation? {
+        val currentTurn = board.turn
 
-        return if(depth < 1 && currentBoard.turn == forColor) {
-            val best = evaluations.first()
-            Pair(best.first, best.third)
-        } else {
-            val best = evaluations.asSequence().take(breadth)
-                .mapNotNull { (originalMove, updatedBoard, currentScore) ->
-                    when {
-                        updatedBoard.isCheckmate ->
-                            Triple(originalMove, updatedBoard, Score.checkmate(updatedBoard.turn))
-                        updatedBoard.isStalemate ->
-                            Triple(originalMove, updatedBoard, Score.stalemate(currentBoard.turn, currentScore))
-                        else -> {
-                            val best = findBestMove(forColor, updatedBoard, depth - 1, breadth)
-                            best?.let { Triple(originalMove, updatedBoard, best.second) }
-                        }
-                    }
-                }.sortedByDescending { (_, updatedBoard, potentialScore) ->
-                    potentialScore.ratioInFavorOf(updatedBoard.turn)
-                }.firstOrNull()
-            best?.let { Pair(it.first, it.third)}
+        // stop recursion if we've hit depth, ensuring we ended with an opponent response
+        // , or if there are no legal moves left
+        if((depth < 0 && currentTurn == player) || board.legalMoves.count() == 0) {
+            return previous
         }
+
+        val bestMovesForCurrentPlayer = board.legalMoves
+            .map { move ->
+                val updatedBoard = board.updated(move)
+                val branch = previous?.branch?.plus(move) ?: Branch(move)
+                Evaluation(branch, evaluate(updatedBoard), updatedBoard)
+            }
+            .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
+
+
+        val bestEvaluations = when(currentTurn) {
+            player -> bestMovesForCurrentPlayer.take(breadth)
+            else -> bestMovesForCurrentPlayer.take(1)
+        }
+
+        return bestEvaluations
+            .map { evaluation ->
+                val narrowerBreadth = if (breadth > 1) breadth - 1 else 1
+                findBestBranch(player, evaluation.board, depth - 1, narrowerBreadth, evaluation)!!
+            }
+            .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
+            .first()
     }
 
     private fun evaluate(board: Board): Score =
@@ -62,4 +51,8 @@ object ChesstasticAI {
             .fold(Score.even) { total, score -> total + score }
 }
 
+private data class Branch(val move: Move, val next: Branch? = null) {
+    operator fun plus(other: Move) = Branch(move, Branch(other))
+}
 
+private data class Evaluation(val branch: Branch, val score: Score, val board: Board)

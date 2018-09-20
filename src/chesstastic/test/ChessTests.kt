@@ -1,5 +1,6 @@
 package chesstastic.test
 
+import chesstastic.test.ai.*
 import chesstastic.test.engine.entities.*
 import chesstastic.test.engine.calculators.*
 import chesstastic.test.framework.ChessTestFramework
@@ -11,7 +12,8 @@ class ChessTests {
             { BoardTests() },
             { BoardCalculatorTests() },
             { PawnCalculatorTests() },
-            { KingCalculatorTests() }
+            { KingCalculatorTests() },
+            { ChesstasticAITests() }
         )
 
         fun run() {

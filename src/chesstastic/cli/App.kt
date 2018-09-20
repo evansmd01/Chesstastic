@@ -1,6 +1,7 @@
 package chesstastic.cli
 
 import chesstastic.ai.ChesstasticAI
+import chesstastic.ai.criteria.*
 import chesstastic.cli.commands.*
 import chesstastic.engine.entities.*
 import chesstastic.cli.view.*
@@ -10,7 +11,7 @@ fun main(args: Array<String>) {
     var board = Board.createNew()
     var validateMoves = true
     var lightPlayer = Player.Human
-    var darkPlayer = Player.Human
+    var darkPlayer = Player.AI
     gameLoop@ while (true) {
         println()
         println(BoardView.render(board))
@@ -32,10 +33,8 @@ fun main(args: Array<String>) {
         val player = if (board.turn == Color.Light) lightPlayer else darkPlayer
         when (player) {
             Player.AI -> {
-                val move = if (board.turn == Color.Dark)
-                    ChesstasticAI.selectMove(board, 4, 3)
-                else
-                    ChesstasticAI.selectMove(board, 1, 1)
+                val move = ChesstasticAI(Material, MovesAvailable)
+                    .selectMove(board, 4, 3)
                 board = board.updated(move)
             }
             Player.Human -> {

@@ -7,9 +7,11 @@ import chesstastic.engine.entities.Color.*
 import kotlin.coroutines.experimental.buildSequence
 
 object KingCalculator: MoveCalculator, AttackCalculator {
-    override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
+    override fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece,Square>> {
         val attackersKing = board.kingSquare(attacker)
-        return if (attackersKing in adjacentSquares(target)) 1 else 0
+        return adjacentSquares(target)
+            .filter { it == attackersKing }
+            .map { Pair(Piece(PieceKind.King, attacker), it)}
     }
 
     override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {

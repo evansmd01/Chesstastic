@@ -134,7 +134,7 @@ class KingCalculatorTests: ChessTestSuite() {
                 )
 
                 val attackedSquares = Board.SQUARES.filter {
-                    KingCalculator.timesSquareIsAttacked(it, Light, board) == 1
+                    KingCalculator.attackers(it, Light, board).size == 1
                 }
 
                 attackedSquares.shouldBeEquivalentTo(expectedAttacks)

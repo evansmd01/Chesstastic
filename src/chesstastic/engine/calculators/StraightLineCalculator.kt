@@ -27,15 +27,17 @@ interface StraightLineCalculator<T> {
 }
 
 interface StraightLineAttackCalculator<T>: StraightLineCalculator<T>, AttackCalculator {
-    override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
+    override fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece, Square>> {
         // The recursion return the squares in reverse order,
         // which is handy since only the last move in any direction could be a piece
         val friendlyColor = attacker.opposite
         return directions().mapNotNull {
             movesHeading(it, friendlyColor, target, board).firstOrNull()
-        }.count {
-            val piece = board[it]
-            piece != null && matches(piece.kind)
+        }.mapNotNull { square ->
+            val piece = board[square]
+            if(piece != null && matches(piece.kind))
+                piece to square
+            else null
         }
     }
 }
@@ -47,7 +49,7 @@ interface StraightLineMoveCalculator<T>: StraightLineCalculator<T>, MoveCalculat
             .map { Move.Basic(fromSquare, it) }
 }
 
-interface HorizontalCalculator: StraightLineCalculator<HorizontalDirection> {
+class HorizontalCalculator(override val matches: (PieceKind) -> Boolean): StraightLineAttackCalculator<HorizontalDirection>, StraightLineMoveCalculator<HorizontalDirection> {
     override fun directions() = HorizontalDirection.values()
     override fun Square.transform(direction: HorizontalDirection): Square? = when (direction) {
         HorizontalDirection.U -> this.transform(0, 1)
@@ -57,7 +59,7 @@ interface HorizontalCalculator: StraightLineCalculator<HorizontalDirection> {
     }
 }
 
-interface DiagonalCalculator: StraightLineCalculator<DiagonalDirection> {
+class DiagonalCalculator(override val matches: (PieceKind) -> Boolean): StraightLineAttackCalculator<DiagonalDirection>, StraightLineMoveCalculator<DiagonalDirection> {
     override fun directions() = DiagonalDirection.values()
     override fun Square.transform(direction: DiagonalDirection) = when (direction) {
         DiagonalDirection.UL -> this.transform(-1, 1)
@@ -66,11 +68,6 @@ interface DiagonalCalculator: StraightLineCalculator<DiagonalDirection> {
         DiagonalDirection.DR -> this.transform(1, -1)
     }
 }
-
-class DiagonalAttackCalculator(override val matches: (PieceKind) -> Boolean): DiagonalCalculator, StraightLineAttackCalculator<DiagonalDirection>
-class DiagonalMoveCalculator(override val matches: (PieceKind) -> Boolean): DiagonalCalculator, StraightLineMoveCalculator<DiagonalDirection>
-class HorizontalAttackCalculator(override val matches: (PieceKind) -> Boolean): HorizontalCalculator, StraightLineAttackCalculator<HorizontalDirection>
-class HorizontalMoveCalculator(override val matches: (PieceKind) -> Boolean): HorizontalCalculator, StraightLineMoveCalculator<HorizontalDirection>
 
 enum class HorizontalDirection {
     U,D,L,R

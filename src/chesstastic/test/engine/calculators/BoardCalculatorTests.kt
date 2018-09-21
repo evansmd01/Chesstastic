@@ -4,6 +4,7 @@ import chesstastic.engine.entities.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.calculators.BoardCalculator
 import chesstastic.test.framework.ChessTestSuite
 
@@ -42,10 +43,13 @@ class BoardCalculatorTests : ChessTestSuite() {
             it("should detect multiple attacks from pieces of the same type") {
                 val board = Board.parse("E2E4,D7D5,H2H3,F7F5")
 
-                val result = BoardCalculator.timesSquareIsAttacked(Square(E, _4),
+                val result = BoardCalculator.findAttackers(Square(E, _4),
                     attacker = Dark, board = board)
 
-                result.shouldBe(2)
+                result.shouldBeEquivalentTo(listOf(
+                    Piece(Pawn, Dark) to Square(D, _5),
+                    Piece(Pawn, Dark) to Square(F, _5)
+                ))
             }
         }
     }

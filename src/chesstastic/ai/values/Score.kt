@@ -4,6 +4,8 @@ import chesstastic.ai.criteria.safeDivide
 import chesstastic.engine.entities.Color
 
 data class Score(val light: Double, val dark: Double) {
+    constructor(light: Int, dark: Int) : this(light.toDouble(), dark.toDouble())
+
     operator fun plus(other: Score): Score = Score(other.light + light, other.dark + dark)
 
     operator fun times(quantity: Double): Score = Score(light * quantity, dark * quantity)

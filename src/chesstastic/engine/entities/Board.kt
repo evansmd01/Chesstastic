@@ -24,7 +24,6 @@ class Board(
     val isGameOver by lazy { isCheckmate || isStalemate }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
-    fun timesSquareIsAttacked(square: Square, attacker: Color) = BoardCalculator.timesSquareIsAttacked(square, attacker, this)
 
     fun kingSquare(color: Color): Square  {
         return SQUARES.firstOrNull() { square ->

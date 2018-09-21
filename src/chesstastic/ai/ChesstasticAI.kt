@@ -6,8 +6,11 @@ import chesstastic.engine.entities.*
 import java.lang.Exception
 
 private val defaultCriteria = listOf(
-    MovesAvailable,
-    Material
+    //Mobility, // this one really screws up the game, and leads to lots of stalemate.
+    Material,
+    Development,
+    Castling
+    //AttackersVsDefenders // this one causes wierd behavior, like leaving lots of pieces hanging
 )
 
 class ChesstasticAI(private val depth: Int, private val breadth: Int, private val criteria: List<Criteria> = defaultCriteria) {

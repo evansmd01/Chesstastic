@@ -14,8 +14,8 @@ class PawnCalculatorTests: ChessTestSuite() {
             it("detects single attacks") {
                 val board = Board.parse("E2E4,D7D5")
 
-                val result = PawnCalculator.timesSquareIsAttacked(Square(D, _5),
-                    attacker = Light, board = board)
+                val result = PawnCalculator.attackers(Square(D, _5),
+                    attacker = Light, board = board).size
 
                 result.shouldBe(1)
             }
@@ -23,8 +23,8 @@ class PawnCalculatorTests: ChessTestSuite() {
             it("detects multiple attacks") {
                 val board = Board.parse("E2E4,D7D5,H2H3,F7F5")
 
-                val result = PawnCalculator.timesSquareIsAttacked(Square(E, _4),
-                    attacker = Dark, board = board)
+                val result = PawnCalculator.attackers(Square(E, _4),
+                    attacker = Dark, board = board).size
 
                 result.shouldBe(2)
             }

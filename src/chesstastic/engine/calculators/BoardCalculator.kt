@@ -16,12 +16,12 @@ class BoardCalculator {
             }
         }
 
-        fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
-            return AttackCalculator.all.sumBy { it.timesSquareIsAttacked(target, attacker, board) }
+        fun findAttackers(target: Square, attacker: Color, board: Board): List<Pair<Piece, Square>> {
+            return AttackCalculator.all.flatMap { it.attackers(target, attacker, board) }
         }
 
         fun isSquareAttacked(target: Square, attacker: Color, board: Board): Boolean {
-            return AttackCalculator.all.any { it.timesSquareIsAttacked(target, attacker, board) > 0 }
+            return AttackCalculator.all.any { it.attackers(target, attacker, board).isNotEmpty() }
         }
 
         fun isKingInCheck(color: Color, board: Board): Boolean {

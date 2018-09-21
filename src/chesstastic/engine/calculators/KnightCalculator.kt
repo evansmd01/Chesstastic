@@ -3,11 +3,13 @@ package chesstastic.engine.calculators
 import chesstastic.engine.entities.*
 
 object KnightCalculator: MoveCalculator, AttackCalculator {
-    override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int =
+    override fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece,Square>> =
         squaresInRange(target)
-            .count {
-                val piece = board[it]
-                piece?.kind == PieceKind.Knight && piece.color == attacker
+            .mapNotNull { square ->
+                val piece = board[square]
+                if(piece?.kind == PieceKind.Knight && piece.color == attacker)
+                    piece to square
+                else null
             }
 
     override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> =

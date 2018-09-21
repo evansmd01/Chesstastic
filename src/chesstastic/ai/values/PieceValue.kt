@@ -3,7 +3,7 @@ package chesstastic.ai.values
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.PieceKind.*
 
-object PieceWeight {
+object PieceValue {
     fun find(piece: PieceKind) = when (piece) {
         Pawn -> 1.0
         Bishop -> 3.2

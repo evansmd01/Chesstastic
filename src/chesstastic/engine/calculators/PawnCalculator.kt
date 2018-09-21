@@ -10,14 +10,18 @@ object PawnCalculator: MoveCalculator, AttackCalculator {
     private fun enPassantRank(color: Color): Rank = if (color == Light) _5 else _4
     private fun promotionRank(color: Color): Rank = if (color == Light) _8 else _1
 
-    override fun timesSquareIsAttacked(target: Square, attacker: Color, board: Board): Int {
+    override fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece,Square>> {
         val rankDelta = rankDelta(attacker.opposite)
         val attackOrigin1 = target.transform(fileDelta = 1, rankDelta = rankDelta)
         val attackOrigin2 = target.transform(fileDelta = -1, rankDelta = rankDelta)
 
         return listOfNotNull(attackOrigin1, attackOrigin2)
-            .mapNotNull { board[it] }
-            .sumBy { if (it.color == attacker && it.kind == Pawn) 1 else 0 }
+            .mapNotNull { square ->
+                val piece = board[square]
+                if (piece?.color == attacker && piece.kind == Pawn)
+                    piece to square
+                else null
+            }
     }
 
     override fun potentialMoves(color: Color, fromSquare: Square, board: Board): Iterable<Move> {

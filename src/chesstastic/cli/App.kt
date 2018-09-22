@@ -1,18 +1,21 @@
 package chesstastic.cli
 
+import chesstastic.ai.AIPlayer
 import chesstastic.ai.ChesstasticAI
+import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
 import chesstastic.test.framework.ChessTestRunner
 import chesstastic.util.*
+import java.time.Duration
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
     var validateMoves = true
     var skipPrint = false
-    var lightAI: ChesstasticAI? = null
-    var darkAI: ChesstasticAI? = null
+    var lightAI: AIPlayer? = null
+    var darkAI: AIPlayer? = null
     gameLoop@ while (true) {
         println()
         if (skipPrint) skipPrint = false
@@ -50,7 +53,7 @@ fun main(args: Array<String>) {
                         println()
                         println("State:\n" + Snapshot.from(board))
                         println()
-                        println("History:\n" + board.history.joinToString(separator = ","))
+                        println("History:\n" + board.history.joinToString(separator = " "))
                         skipPrint = true
                     }
                     is Command.SetAi -> when(board.turn) {
@@ -58,6 +61,12 @@ fun main(args: Array<String>) {
                             lightAI = ChesstasticAI(command.depth, command.breadth)
                         Color.Dark ->
                             darkAI = ChesstasticAI(command.depth, command.breadth)
+                    }
+                    is Command.SetStockfish -> when(board.turn) {
+                        Color.Light ->
+                            lightAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
+                        Color.Dark ->
+                            darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                     }
                     is Command.Test -> {
                         ChessTestRunner.execute()

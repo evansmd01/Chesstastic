@@ -14,6 +14,8 @@ Just a fun little chess game I made to experiment with Kotlin and because I've a
 
 **19 Sep 18** - AI can achieve checkmate
 
+**22 Sep 18** - AI plays it's first game against Stockfish (world's leading chess AI). Get's destroyed. 
+
 ## Where the dependencies at?
 
 You may have noticed I'm not pulling in any external dependencies. Professionally this is a terrible idea. If a library already exists that can do what you need done, don't waste time re-inventing the wheel. Developer time is expensive and it's irresponsible to waste it. 
@@ -79,9 +81,13 @@ Squares can be worth more/less depending on the player. A valuable square for Li
 
 ## Installing Stockfish opponent
 
+http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x
 ```
+cd lib
 git clone https://github.com/official-stockfish/Stockfish.git
 cd Stockfish/src
 make build ARCH=x86-64
 make strip
 ```
+
+CLI Instructions: http://support.stockfishchess.org/kb/advanced-topics/uci-protocol

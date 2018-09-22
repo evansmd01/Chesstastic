@@ -17,10 +17,10 @@ class ChesstasticAI(
     private val breadth: Int,
     private val constants: Constants = Constants(emptyMap()),
     criteriaFactories: List<(Constants) -> Criteria> = defaultCriteria
-) {
+): AIPlayer {
     val criteria = criteriaFactories.map { it(constants) }
 
-    fun selectMove(board: Board): Move =
+    override fun selectMove(board: Board): Move =
         findBestBranch(board.turn, board, depth, breadth)?.branch?.move ?:
         throw Exception("Could not find a move")
 

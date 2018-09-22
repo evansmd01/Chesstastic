@@ -15,6 +15,7 @@ sealed class Command {
             Load,
             Move,
             SetAi,
+            SetStockfish,
             ShowMoves,
             Test
         )
@@ -101,6 +102,19 @@ sealed class Command {
             override fun parse(input: String): Command? {
                 return if(input.toLowerCase() == "disable validation") {
                     return DisableMoveValidation()
+                } else null
+            }
+        }
+    }
+
+    data class SetStockfish(val moveTimeMillis: Long): Command() {
+        companion object: CommandParser {
+            private val regex = """set\s+stockfish\s+(\d+)""".toRegex()
+            override fun parse(input: String): SetStockfish? {
+                val match = regex.matchEntire(input.toLowerCase())
+                return if (match != null) {
+                    val (moveTime) = match.destructured
+                    SetStockfish(moveTime.toLong())
                 } else null
             }
         }

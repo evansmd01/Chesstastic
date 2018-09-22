@@ -6,58 +6,40 @@ sealed class Move(val from: Square, val to: Square) {
 
     override fun hashCode(): Int = toString().hashCode()
 
+    override fun toString(): String =
+        "${from.file}${from.rank}${to.file}${to.rank}".toLowerCase()
+
     companion object {
-        fun parseMany(input: String, delimiter: String = ","): List<Move> {
-            return input.split(delimiter).mapNotNull { parse(it) }
+        fun parseMany(input: String): List<Move> {
+            return input.split(",", " ").mapNotNull { parse(it) }
         }
 
-        fun parse(input: String): Move? =
-            listOfNotNull(
-                    Basic.parse(input),
-                    KingsideCastle.parse(input),
-                    QueensideCastle.parse(input),
-                    Promotion.parse(input),
-                    EnPassant.parse(input)
-            ).firstOrNull()
-    }
-
-    class Basic(from: Square, to: Square): Move(from, to) {
-        override fun toString(): String =
-                "${from.file}${from.rank}${to.file}${to.rank}"
-
-        companion object {
-            fun parse(input: String): Basic? {
-                return if (input.length == 4)
-                    Basic(
-                            Square(
-                                    File.valueOf(input[0].toUpperCase().toString()),
-                                    Rank.fromIndex(input[1].toString().toInt() - 1) ?: throw Error("could not parseHistory rank from $input")
-                            ),
-                            Square(
-                                    File.valueOf(input[2].toUpperCase().toString()),
-                                    Rank.fromIndex(input[3].toString().toInt() - 1) ?: throw Error("could not parseHistory rank from $input")
-                            )
-                    )
-                else null
-            }
+        fun parse(input: String): Move? {
+            val regex = Regex("""([a-h])([1-8])([a-h])([1-8])[qk]?""")
+            val match = regex.matchEntire(input.toLowerCase().trim())
+            return if (match != null) {
+                val (fromFileIn, fromRankIn, toFileIn, toRankIn) = match.destructured
+                val from = Square(
+                    File.valueOf(fromFileIn.toUpperCase()),
+                    Rank.valueOf("_$fromRankIn")
+                )
+                val to = Square(
+                    File.valueOf(toFileIn.toUpperCase()),
+                    Rank.valueOf("_$toRankIn")
+                )
+                when {
+                    match.value.endsWith("q") -> Promotion(from, to, PieceKind.Queen)
+                    match.value.endsWith("k") -> Promotion(from, to, PieceKind.Knight)
+                    else -> Basic(from, to)
+                }
+            } else null
         }
     }
+
+    class Basic(from: Square, to: Square): Move(from, to)
 
     class EnPassant(from: Square, to: Square): Move(from, to) {
-        override fun toString(): String =
-                "ep${from.file}${from.rank}${to.file}${to.rank}"
-
         val captured: Square = Square(to.file, from.rank)
-
-        companion object {
-            fun parse(input: String): EnPassant? {
-                return if (input.startsWith("ep"))
-                    Basic.parse(input.substring(2))?.let {
-                        EnPassant(it.from, it.to)
-                    }
-                else null
-            }
-        }
     }
 
     abstract class Castle(from: Square, to: Square): Move(from, to) {
@@ -70,9 +52,6 @@ sealed class Move(val from: Square, val to: Square) {
                 Square(File.F, from.rank)
         )
 
-        override fun toString(): String =
-                "kc${if (color == Color.Light) "l" else "d"}"
-
         companion object {
             fun from(color: Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
@@ -81,14 +60,6 @@ sealed class Move(val from: Square, val to: Square) {
             fun to(color:Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
                 return Square(File.G, rank)
-            }
-
-            fun parse(input: String): KingsideCastle? {
-                return when(input) {
-                    "kcl" -> KingsideCastle(Color.Light)
-                    "kcd" -> KingsideCastle(Color.Dark)
-                    else -> null
-                }
             }
         }
     }
@@ -99,9 +70,6 @@ sealed class Move(val from: Square, val to: Square) {
                 Square(File.D, from.rank)
         )
 
-        override fun toString(): String =
-                "qc${if (color == Color.Light) "l" else "d"}"
-
         companion object {
             fun from(color: Color): Square {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
@@ -111,14 +79,6 @@ sealed class Move(val from: Square, val to: Square) {
                 val rank = if (color == Color.Light) Rank._1 else Rank._8
                 return Square(File.C, rank)
             }
-
-            fun parse(input: String): QueensideCastle? {
-                return when(input) {
-                    "qcl" -> QueensideCastle(Color.Light)
-                    "qcd" -> QueensideCastle(Color.Dark)
-                    else -> null
-                }
-            }
         }
     }
 
@@ -127,25 +87,11 @@ sealed class Move(val from: Square, val to: Square) {
         val withQueen by lazy { Promotion(from, to, PieceKind.Queen) }
 
         override fun toString(): String {
-            val pieceCode = if(promotion == PieceKind.Queen) "q" else "k"
-            return "p$pieceCode${from.file}${from.rank}${to.file}${to.rank}"
-        }
-
-        companion object {
-            fun parse(input: String): Promotion? {
-                val promotionPiece = when {
-                    input.startsWith("pq") -> PieceKind.Queen
-                    input.startsWith("pk") -> PieceKind.Knight
-                    else -> null
-                }
-
-                return promotionPiece?.let { piece ->
-                    Basic.parse(input.substring(2))?.let {
-                        Promotion(it.from, it.to, piece)
-                    }
-                }
-            }
+            val kind = if (promotion == PieceKind.Queen) "q" else "k"
+            return super.toString() + kind
         }
     }
 }
+
+
 

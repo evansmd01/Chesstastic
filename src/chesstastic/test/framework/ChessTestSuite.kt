@@ -49,10 +49,6 @@ interface AssertionHelpers {
         if (this != expected) throw AssertionError("$this did not equal $expected")
     }
 
-    fun <T> T.shouldNotBe(expected: T) {
-        if (this == expected) throw AssertionError("$this was equal to $expected")
-    }
-
     fun <T> Iterable<T>.shouldBe(expected: Iterable<T>) {
         if (this != expected) throw AssertionError("$this did not equal $expected")
     }

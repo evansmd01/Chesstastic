@@ -11,6 +11,7 @@ import chesstastic.test.framework.ChessTestSuite
 class MoveTests: ChessTestSuite() {
     init {
         describe("string serialization") {
+
             fun Move.shouldSerializeTo(expectation: String) {
                 val serialized = this.toString()
                 serialized.shouldBe(expectation)

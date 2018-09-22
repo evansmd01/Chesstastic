@@ -44,17 +44,56 @@ class BoardTests: ChessTestSuite() {
 
         describe("isCheckmate") {
             it("should detect checkmate") {
-                // TODO
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|Q|p|p|
+                    | | | | | | | | |
+                    | | | | | | |N| |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P| |P|P|P|
+                    |R|N|B| |K|B| |R|
+                """.trimIndent(), turn = Color.Dark)
+
+                board.isCheckmate.shouldBe(true)
             }
         }
 
         describe("isStalemate") {
-            it("should detect stalemate due to no legal potentialMoves") {
-                // TODO
+            it("should detect stalemate due to no legal moves") {
+                val board = Snapshot.parse("""
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | |k| | | | |
+                    | | | | | | | | |
+                    | | | |K| | | | |
+                    | | | | | |q| | |
+                    | | |r| | | | | |
+                    | | | | | | | | |
+                """.trimIndent(), turn = Color.Light)
+
+                board.isStalemate.shouldBe(true)
+            }
+
+            it("should detect stalemate due to only kings") {
+                val board = Snapshot.parse("""
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | |k| | | | |
+                    | | | | | | | | |
+                    | | | | |K| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                """.trimIndent(), turn = Color.Light)
+
+                board.isStalemate.shouldBe(true)
             }
 
             it("should detect stalemate due to inactivity") {
-                // TODO
+                val repeatMoves = (0..25).joinToString(separator = "") { "D1E2,D8D7,E2D1,D7D8," }
+                val board = Board.parseHistory("E2E4,D7D5,$repeatMoves")
+                board.isStalemate.shouldBe(true)
             }
         }
     }

@@ -5,17 +5,6 @@ import chesstastic.engine.entities.*
 import chesstastic.ai.values.Constants.Companion.Key.*
 
 class Constants(private val overrides: Map<String, Double>) {
-    operator fun get(key: Key): Double = overrides[key.name] ?: default(key)
-
-    fun pieceValue(pieceKind: PieceKind): Double = when(pieceKind) {
-        Queen -> this[QUEEN_VALUE]
-        King -> this[KING_VALUE]
-        Rook -> this[ROOK_VALUE]
-        Bishop -> this[BISHOP_VALUE]
-        Knight -> this[KNIGHT_VALUE]
-        Pawn -> this[PAWN_VALUE]
-    }
-
     companion object {
         enum class Key {
             QUEEN_VALUE,
@@ -38,5 +27,16 @@ class Constants(private val overrides: Map<String, Double>) {
             CHECKMATE_SCORE -> Double.MAX_VALUE
             DEVELOPMENT_WEIGHT -> 20.0
         }
+    }
+
+    operator fun get(key: Key): Double = overrides[key.name] ?: default(key)
+
+    fun pieceValue(pieceKind: PieceKind): Double = when(pieceKind) {
+        Queen -> this[QUEEN_VALUE]
+        King -> this[KING_VALUE]
+        Rook -> this[ROOK_VALUE]
+        Bishop -> this[BISHOP_VALUE]
+        Knight -> this[KNIGHT_VALUE]
+        Pawn -> this[PAWN_VALUE]
     }
 }

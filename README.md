@@ -4,9 +4,15 @@ Just a fun little chess game I made to experiment with Kotlin and because I've a
 
 ![Screenshot](https://i.gyazo.com/337df6aa1b8bb5d907d772852f6d7780.png)
 
-#### Fast Checkmate: Wide AI (5 10) vs Deep AI (10 5)
+## Milestones:
 
-![FastCheckmate](https://i.gyazo.com/67e4d6b95f03402b1d57c73701e4a868.png)
+**11 Sep 18** - Initial commit, repo setup
+
+**15 Sep 18** - Begin building game logic
+
+**16 Sep 18** - Complete human v human game logic
+
+**19 Sep 18** - AI can achieve checkmate
 
 ## Ideas / Notes / Internal Ramblings of a Madman
 

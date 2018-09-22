@@ -4,6 +4,7 @@ import chesstastic.cli.printlnGreen
 import chesstastic.cli.printlnRed
 import chesstastic.engine.entities.Board
 import chesstastic.engine.entities.Snapshot
+import java.time.Duration
 
 class ChessTestFramework {
     companion object {
@@ -14,19 +15,23 @@ class ChessTestFramework {
             var totalSuccess = 0
             var totalFail = 0
 
-            suiteFactories.forEach { suiteFactory ->
-                val suite = suiteFactory()
-                println("Finished: ${suite.javaClass.kotlin.simpleName}")
-                val success = suite.totalSuccessCount()
-                val failure = suite.totalFailCount()
-                if (success > 0) println("$success tests Succeeded")
-                if (failure > 0) printlnRed("$failure tests failed")
-                totalSuccess += success
-                totalFail += failure
-                println()
+            val totalTime = Stopwatch.timeAction {
+                suiteFactories.forEach { suiteFactory ->
+                    val (suite, duration) = Stopwatch.timeFunction(suiteFactory)
+                    println("Finished: ${suite.javaClass.kotlin.simpleName}")
+                    println("Execution time: ${duration.format()}")
+                    val success = suite.totalSuccessCount()
+                    val failure = suite.totalFailCount()
+                    if (success > 0) println("$success tests Succeeded")
+                    if (failure > 0) printlnRed("$failure tests failed")
+                    totalSuccess += success
+                    totalFail += failure
+                    println()
+                }
             }
 
             println("FINISHED ALL TESTS")
+            println("Total execution time: ${totalTime.format()}")
             if (totalSuccess > 0) println("$totalSuccess tests Succeeded")
             if (totalFail > 0) printlnRed("$totalFail tests failed")
         }
@@ -110,3 +115,23 @@ interface AssertionHelpers {
         if(!positionEqual) throw AssertionError("\nBoard with state:\n\n${Snapshot.from(this)}\n\ndid not equal:\n\n${Snapshot.from(other)}\n".prependIndent("       "))
     }
 }
+
+object Stopwatch {
+    fun <T> timeFunction(function: () -> T): Pair<T, Duration> {
+        val startTime = System.currentTimeMillis()
+        val retVal = function()
+        return retVal to Duration.ofMillis(System.currentTimeMillis() - startTime)
+    }
+
+    fun timeAction(task: () -> Unit): Duration = timeFunction(task).second
+}
+
+fun Duration.format(): String {
+    val totalMillis = this.toMillis()
+    val totalSeconds = totalMillis / 1000
+    val totalMinutes = totalSeconds / 60
+
+    return "${totalMinutes.format(2)}:${(totalSeconds % 60).format(2)}.${(totalMillis % 1000).format(3)}"
+}
+
+fun Long.format(digits: Int): String = String.format("%0${digits}d", this)

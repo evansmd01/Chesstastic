@@ -2,7 +2,7 @@ package chesstastic.engine.entities
 
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
-import chesstastic.transformIf
+import chesstastic.util.transformIf
 
 object Snapshot {
     fun parse(value: String, turn: Color): Board {

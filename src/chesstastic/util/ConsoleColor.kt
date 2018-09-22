@@ -1,4 +1,4 @@
-package chesstastic.cli
+package chesstastic.util
 
 class ConsoleColor {
     companion object {
@@ -13,3 +13,9 @@ class ConsoleColor {
         val WHITE = "\u001B[37m"
     }
 }
+
+fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
+
+fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
+
+fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)

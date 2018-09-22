@@ -1,6 +1,6 @@
 package chesstastic.cli.view.pieces
 
-import chesstastic.cli.ConsoleColor
+import chesstastic.util.ConsoleColor
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.PieceKind.*
 

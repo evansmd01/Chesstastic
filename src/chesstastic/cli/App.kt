@@ -5,6 +5,7 @@ import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
 import chesstastic.test.ChessTests
+import chesstastic.util.*
 
 fun main(args: Array<String>) {
     var board = Board.createNew()
@@ -97,12 +98,5 @@ fun main(args: Array<String>) {
                 }
             }
         }
-
     }
 }
-
-fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
-
-fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
-
-fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)

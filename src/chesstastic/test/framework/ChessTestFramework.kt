@@ -1,10 +1,7 @@
 package chesstastic.test.framework
 
-import chesstastic.cli.printlnGreen
-import chesstastic.cli.printlnRed
-import chesstastic.engine.entities.Board
-import chesstastic.engine.entities.Snapshot
-import java.time.Duration
+import chesstastic.engine.entities.*
+import chesstastic.util.*
 
 class ChessTestFramework {
     companion object {
@@ -115,23 +112,3 @@ interface AssertionHelpers {
         if(!positionEqual) throw AssertionError("\nBoard with state:\n\n${Snapshot.from(this)}\n\ndid not equal:\n\n${Snapshot.from(other)}\n".prependIndent("       "))
     }
 }
-
-object Stopwatch {
-    fun <T> timeFunction(function: () -> T): Pair<T, Duration> {
-        val startTime = System.currentTimeMillis()
-        val retVal = function()
-        return retVal to Duration.ofMillis(System.currentTimeMillis() - startTime)
-    }
-
-    fun timeAction(task: () -> Unit): Duration = timeFunction(task).second
-}
-
-fun Duration.format(): String {
-    val totalMillis = this.toMillis()
-    val totalSeconds = totalMillis / 1000
-    val totalMinutes = totalSeconds / 60
-
-    return "${totalMinutes.format(2)}:${(totalSeconds % 60).format(2)}.${(totalMillis % 1000).format(3)}"
-}
-
-fun Long.format(digits: Int): String = String.format("%0${digits}d", this)

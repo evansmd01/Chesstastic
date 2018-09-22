@@ -1,12 +1,11 @@
 package chesstastic.ai.criteria
 
+import chesstastic.ai.values.Constants
+import chesstastic.ai.values.Constants.Companion.Key.*
 import chesstastic.ai.values.Score
-import chesstastic.engine.entities.Board
-import chesstastic.engine.entities.Rank
-import chesstastic.engine.entities.Square
+import chesstastic.engine.entities.*
 
-object Development: Criteria {
-    private val wieght = 10.0 // todo: get from config
+class Development(private val constants: Constants): Criteria {
     override fun evaluate(board: Board): Score {
         // Get number of squares from back rank that have originated at least one move
         // Max count at 7, because moving the king is only a good thing if it's to castle
@@ -14,7 +13,7 @@ object Development: Criteria {
         val light = distinctStartingSquares(board, Rank._1).count()
         val dark = distinctStartingSquares(board, Rank._8).count()
 
-        return Score(Math.max(light, 7), Math.max(dark, 7)) * wieght
+        return Score(Math.max(light, 7), Math.max(dark, 7)) * constants[DEVELOPMENT_WEIGHT]
     }
 
     /**

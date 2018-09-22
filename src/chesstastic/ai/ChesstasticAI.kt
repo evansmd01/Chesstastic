@@ -1,19 +1,24 @@
 package chesstastic.ai
 
 import chesstastic.ai.criteria.*
+import chesstastic.ai.values.Constants
+import chesstastic.ai.values.Constants.Companion.Key.*
 import chesstastic.ai.values.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception
 
-private val defaultCriteria = listOf(
-    //Mobility, // this one really screws up the game, and leads to lots of stalemate.
-    Material,
-    Development,
-    Castling
-    //AttackersVsDefenders // this one causes wierd behavior, like leaving lots of pieces hanging
+private val defaultCriteria = listOf<(Constants) -> Criteria>(
+    { Material(it) },
+    { Development(it) }
 )
 
-class ChesstasticAI(private val depth: Int, private val breadth: Int, private val criteria: List<Criteria> = defaultCriteria) {
+class ChesstasticAI(
+    private val depth: Int,
+    private val breadth: Int,
+    private val constants: Constants = Constants(emptyMap()),
+    criteriaFactories: List<(Constants) -> Criteria> = defaultCriteria
+) {
+    val criteria = criteriaFactories.map { it(constants) }
 
     fun selectMove(board: Board): Move =
         findBestBranch(board.turn, board, depth, breadth)?.branch?.move ?:
@@ -52,7 +57,7 @@ class ChesstasticAI(private val depth: Int, private val breadth: Int, private va
     }
 
     private fun evaluate(board: Board): Score = when {
-        board.isCheckmate -> Score.checkmate(winner = board.turn.opposite)
+        board.isCheckmate -> Score.forOnly(board.turn.opposite, constants[CHECKMATE_SCORE])
         board.isStalemate -> Score.even
         else -> criteria.map { it.evaluate(board) }
             .fold(Score.even) { total, score -> total + score }

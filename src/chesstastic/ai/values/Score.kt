@@ -20,11 +20,9 @@ data class Score(val light: Double, val dark: Double) {
 
     companion object {
         val even = Score(0.0, 0.0)
-
-        fun checkmate(winner: Color) =
-            if (winner == Color.Light)
-                Score(999999.0, 0.0)
-            else
-                Score(0.0, 999999.0)
+        fun forOnly(color: Color, score: Double) = when (color) {
+            Color.Light -> Score(score, 0.0)
+            Color.Dark -> Score(0.0, score)
+        }
     }
 }

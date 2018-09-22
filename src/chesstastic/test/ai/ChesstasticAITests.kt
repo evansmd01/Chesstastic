@@ -13,7 +13,7 @@ class ChesstasticAITests: ChessTestSuite() {
             it("should select the move that results in the best possible score") {
                 val board = Board.createNew()
                 val mock = MockCriteria()
-                val subject = ChesstasticAI(10, 10, criteria = listOf(mock))
+                val subject = ChesstasticAI(10, 10, criteriaFactories = listOf({ _ -> mock }))
 
                 val selectedMove: Move = subject.selectMove(board)
 

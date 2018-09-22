@@ -14,6 +14,14 @@ Just a fun little chess game I made to experiment with Kotlin and because I've a
 
 **19 Sep 18** - AI can achieve checkmate
 
+## Where the dependencies at?
+
+You may have noticed I'm not pulling in any external dependencies. Professionally this is a terrible idea. If a library already exists that can do what you need done, don't waste time re-inventing the wheel. Developer time is expensive and it's irresponsible to waste it. 
+
+That said, if you want to really learn a new language... Don't use libraries. Building frameworks and libraries is the best way I've found to learn all the little ins and outs of how to bend the syntax to your will. 
+
+So for this project, I'm limiting myself to the standard library. Kotlin makes it easy anyway. 
+
 ## Ideas / Notes / Internal Ramblings of a Madman
 
 ### Algorithms

@@ -4,7 +4,7 @@ import chesstastic.ai.ChesstasticAI
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
-import chesstastic.test.ChessTests
+import chesstastic.test.framework.ChessTestRunner
 import chesstastic.util.*
 
 fun main(args: Array<String>) {
@@ -60,7 +60,7 @@ fun main(args: Array<String>) {
                             darkAI = ChesstasticAI(command.depth, command.breadth)
                     }
                     is Command.Test -> {
-                        ChessTests.run()
+                        ChessTestRunner.execute()
                         skipPrint = true
                     }
                     is Command.Load -> {

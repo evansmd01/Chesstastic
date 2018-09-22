@@ -75,3 +75,13 @@ Squares can be worth more/less depending on the player. A valuable square for Li
             - or is supported by a square (or squares) of equal or lesser value than the enemy attacker(s). 
 
 - 
+
+
+## Installing Stockfish opponent
+
+```
+git clone https://github.com/official-stockfish/Stockfish.git
+cd Stockfish/src
+make build ARCH=x86-64
+make strip
+```

@@ -26,3 +26,4 @@ build/
 !**/test/**/build
 !**/testData/**/*.iml
 .idea/
+Stockfish/

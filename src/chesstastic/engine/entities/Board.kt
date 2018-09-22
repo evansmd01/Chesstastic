@@ -63,11 +63,13 @@ class Board(
 
         return newState
     }
+
+    fun positionEquals(other: Board): Boolean = other.state.contentDeepEquals(this.state)
     
     companion object {
         fun createNew(): Board = Board(InitialState, listOf(), Color.Light, 0)
 
-        fun parse(moves: String): Board {
+        fun parseHistory(moves: String): Board {
             return replayMoves(createNew(), Move.parseMany(moves))
         }
 

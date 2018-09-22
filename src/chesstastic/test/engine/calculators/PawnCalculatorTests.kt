@@ -12,7 +12,7 @@ class PawnCalculatorTests: ChessTestSuite() {
     init {
         describe("timeSquareIsAttacked") {
             it("detects single attacks") {
-                val board = Board.parse("E2E4,D7D5")
+                val board = Board.parseHistory("E2E4,D7D5")
 
                 val result = PawnCalculator.attackers(Square(D, _5),
                     attacker = Light, board = board).size
@@ -21,7 +21,7 @@ class PawnCalculatorTests: ChessTestSuite() {
             }
 
             it("detects multiple attacks") {
-                val board = Board.parse("E2E4,D7D5,H2H3,F7F5")
+                val board = Board.parseHistory("E2E4,D7D5,H2H3,F7F5")
 
                 val result = PawnCalculator.attackers(Square(E, _4),
                     attacker = Dark, board = board).size
@@ -32,7 +32,7 @@ class PawnCalculatorTests: ChessTestSuite() {
 
         describe("potentialMoves") {
             it("should allow diagonal attacks") {
-                val board = Board.parse("E2E3,D7D5,E3E4,F7F5")
+                val board = Board.parseHistory("E2E3,D7D5,E3E4,F7F5")
 
                 val diagonalOne = Move.Basic(Square(E, _4), Square(D, _5))
                 val diagonalTwo = Move.Basic(Square(E, _4), Square(F, _5))
@@ -44,7 +44,7 @@ class PawnCalculatorTests: ChessTestSuite() {
             }
 
             it("should allow en passant") {
-                val board = Board.parse("E2E4,D7D5,E4D5,C7C5")
+                val board = Board.parseHistory("E2E4,D7D5,E4D5,C7C5")
 
                 val legalMoves = PawnCalculator.potentialMoves(Light, Square(D, _5), board)
 
@@ -54,7 +54,7 @@ class PawnCalculatorTests: ChessTestSuite() {
             }
 
             it("should allow pawn promotions") {
-                val board = Board.parse("C2C8,C8C7")
+                val board = Board.parseHistory("C2C8,C8C7")
                 val pawnSquare = Square(C, _7)
 
                 val promotionSquares = listOf(Square(B, _8), Square(C, _8), Square(D, _8))

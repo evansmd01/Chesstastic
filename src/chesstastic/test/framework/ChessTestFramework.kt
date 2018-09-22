@@ -2,7 +2,8 @@ package chesstastic.test.framework
 
 import chesstastic.cli.printlnGreen
 import chesstastic.cli.printlnRed
-import chesstastic.test.engine.entities.*
+import chesstastic.engine.entities.Board
+import chesstastic.engine.entities.Snapshot
 
 class ChessTestFramework {
     companion object {
@@ -101,5 +102,11 @@ interface AssertionHelpers {
 
     fun <T> Iterable<T>.shouldNotContain(unexpected: (T) -> Boolean) {
         if(this.any(unexpected)) throw AssertionError("$this contained $unexpected")
+    }
+
+    fun Board.shouldMatch(snapshot: String) {
+        val other = Snapshot.parse(snapshot, this.turn)
+        val positionEqual = this.positionEquals(other)
+        if(!positionEqual) throw AssertionError("\nBoard with state:\n\n${Snapshot.from(this)}\n\ndid not equal:\n\n${Snapshot.from(other)}\n".prependIndent("       "))
     }
 }

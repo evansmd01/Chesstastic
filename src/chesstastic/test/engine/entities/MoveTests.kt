@@ -56,8 +56,8 @@ class MoveTests: ChessTestSuite() {
                     .shouldSerializeTo("pqE7F8")
             }
 
-            describe("parse many") {
-                it("should parse two potentialMoves") {
+            describe("parseHistory many") {
+                it("should parseHistory two potentialMoves") {
                     val testHistory = "E2E4,D7D5"
                     val moves = Move.parseMany(testHistory)
                     moves.shouldBe(listOf(

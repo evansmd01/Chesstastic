@@ -31,11 +31,11 @@ sealed class Move(val from: Square, val to: Square) {
                     Basic(
                             Square(
                                     File.valueOf(input[0].toUpperCase().toString()),
-                                    Rank.fromIndex(input[1].toString().toInt() - 1) ?: throw Error("could not parse rank from $input")
+                                    Rank.fromIndex(input[1].toString().toInt() - 1) ?: throw Error("could not parseHistory rank from $input")
                             ),
                             Square(
                                     File.valueOf(input[2].toUpperCase().toString()),
-                                    Rank.fromIndex(input[3].toString().toInt() - 1) ?: throw Error("could not parse rank from $input")
+                                    Rank.fromIndex(input[3].toString().toInt() - 1) ?: throw Error("could not parseHistory rank from $input")
                             )
                     )
                 else null

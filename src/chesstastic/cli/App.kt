@@ -46,8 +46,11 @@ fun main(args: Array<String>) {
                     }
                     is Command.Exit -> break@gameLoop
                     is Command.Export -> {
-                        println(board.history.joinToString(separator = ","))
-                        break@gameLoop
+                        println()
+                        println("State:\n" + Snapshot.from(board))
+                        println()
+                        println("History:\n" + board.history.joinToString(separator = ","))
+                        skipPrint = true
                     }
                     is Command.SetAi -> when(board.turn) {
                         Color.Light->
@@ -60,7 +63,7 @@ fun main(args: Array<String>) {
                         skipPrint = true
                     }
                     is Command.Load -> {
-                        board = Board.parse(command.history)
+                        board = Board.parseHistory(command.history)
                     }
                     is Command.ShowMoves -> {
                         println(board.legalMoves.toString())

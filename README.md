@@ -83,9 +83,7 @@ Squares can be worth more/less depending on the player. A valuable square for Li
 
 http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x
 ```
-cd lib
-git clone https://github.com/official-stockfish/Stockfish.git
-cd Stockfish/src
+cd lib/Stockfish/src
 make build ARCH=x86-64
 make strip
 ```

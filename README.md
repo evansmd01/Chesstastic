@@ -79,13 +79,18 @@ Squares can be worth more/less depending on the player. A valuable square for Li
 - 
 
 
-## Installing Stockfish opponent
+## Installing Stockfish
 
-http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x
+This project uses Stockfish as an opponent for training & testing the AI. Stockfish is the top ranked chess AI at this time. 
+
 ```
-cd lib/Stockfish/src
+cd lib/Stockfish
+git submodule update --init
+cd src
 make build ARCH=x86-64
 make strip
 ```
 
-CLI Instructions: http://support.stockfishchess.org/kb/advanced-topics/uci-protocol
+Based on OSX install instructions: http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x
+
+

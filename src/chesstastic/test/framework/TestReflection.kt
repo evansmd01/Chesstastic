@@ -20,7 +20,7 @@ object TestReflection {
         val testFilter = "test"
         val baseClass = ChessTestSuite::class
 
-        val urls = classLoader.urLs.filter { it.file.contains(packageFilter) }
+        val urls = classLoader.urLs.filter { it.file.toLowerCase().contains(packageFilter) }
         return urls.flatMap { url ->
             File(url.path).walkTopDown()
                 .map{ it.absolutePath }

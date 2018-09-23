@@ -45,6 +45,6 @@ make build ARCH=x86-64
 make strip
 ```
 
-Based on OSX install instructions: http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x
+Based on OSX [install instructions](http://support.stockfishchess.org/kb/advanced-topics/compiling-stockfish-on-mac-os-x)
 
 

@@ -56,7 +56,7 @@ sealed class Command {
     class Import(val history: String): Command() {
         companion object: CommandParser {
             override fun parse(input: String): Command? {
-                return if(input.startsWith("load ")) {
+                return if(input.startsWith("import ")) {
                     Import(history = input.substring(4).trim())
                 } else null
             }

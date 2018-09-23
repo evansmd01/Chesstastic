@@ -11,24 +11,19 @@ interface PieceView {
     val drawing: List<String>
 
     fun render(color: Color): List<List<String>> {
+        val myColor = if(color == Color.Light) ConsoleColor.CYAN else ConsoleColor.PURPLE
         return drawing.map { line ->
-            val stringChars = line.map { c -> c.toString() }
-            val myColor = if(color == Color.Light) ConsoleColor.CYAN else ConsoleColor.PURPLE
-            val firstNotHash = stringChars.indexOfFirst { it != "#" }
-            val lastNotHash = stringChars.indexOfLast { it != "#" }
-            val copy = stringChars.toMutableList()
-            if (firstNotHash != -1) {
-                copy[firstNotHash] = myColor + copy[firstNotHash]
-            }
-            if(lastNotHash != -1) {
-                copy[lastNotHash] = copy[lastNotHash] + ConsoleColor.RESET
-            }
-            copy
+            line.map { c -> c.toString() }
+                .map {
+                    if (it != "#") {
+                        myColor + it + ConsoleColor.RESET
+                    } else it
+                }
         }
     }
 
     companion object {
-        fun render(piece: Piece): List<List<String?>> = when(piece.kind) {
+        fun render(piece: Piece): List<List<String>> = when(piece.kind) {
             Pawn -> PawnView
             Rook -> RookView
             Bishop -> BishopView

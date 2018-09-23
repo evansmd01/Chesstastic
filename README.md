@@ -4,6 +4,8 @@ Just a fun little chess game I made to experiment with Kotlin and because I've a
 
 ![Screenshot](https://i.gyazo.com/337df6aa1b8bb5d907d772852f6d7780.png)
 
+![Checkmate](https://i.gyazo.com/c3d43c29ea5428d9e32afd7bcb8b4dce.png)
+
 ## Backlog
 
 If you're curious, [check out the Pivotal Tracker board!](https://www.pivotaltracker.com/n/projects/2199679)

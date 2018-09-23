@@ -17,22 +17,17 @@ fun main(args: Array<String>) {
     var darkAI: AIPlayer? = null
     gameLoop@ while (true) {
         println()
+        println()
         if (skipPrint) skipPrint = false
         else println(BoardView.render(board))
-
         if (board.isCheckmate) {
-            printlnColor(ConsoleColor.YELLOW, "CHECKMATE!")
             printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
-            println(board.history.joinToString(separator = ","))
+            println(board.history.joinToString(separator = " "))
             break@gameLoop
         }
         if (board.isStalemate) {
-            printlnColor(ConsoleColor.YELLOW, "Stalemate. It's a draw.")
-            println(board.history.joinToString(separator = ","))
+            println(board.history.joinToString(separator = " "))
             break@gameLoop
-        }
-        if (board.isCheck) {
-            printlnColor(ConsoleColor.RED, "CHECK!")
         }
         print("${board.turn} player's turn: ")
         val ai = if (board.turn == Color.Light) lightAI else darkAI

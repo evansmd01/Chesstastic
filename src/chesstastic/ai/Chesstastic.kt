@@ -12,7 +12,7 @@ private val defaultCriteria = listOf<(Constants) -> Criteria>(
     { Development(it) }
 )
 
-class ChesstasticAI(
+class Chesstastic(
     private val depth: Int,
     private val breadth: Int,
     private val constants: Constants = Constants(emptyMap()),

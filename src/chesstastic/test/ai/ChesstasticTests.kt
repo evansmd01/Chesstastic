@@ -7,13 +7,13 @@ import chesstastic.engine.entities.*
 import chesstastic.test.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom
 
-class ChesstasticAITests: ChessTestSuite() {
+class ChesstasticTests: ChessTestSuite() {
     init {
         describe("select move") {
             it("should select the move that results in the best possible score") {
                 val board = Board.createNew()
                 val mock = MockCriteria()
-                val subject = ChesstasticAI(3, 3, criteriaFactories = listOf({ _ -> mock }))
+                val subject = Chesstastic(3, 3, criteriaFactories = listOf({ _ -> mock }))
 
                 val selectedMove: Move = subject.selectMove(board)
 
@@ -28,8 +28,8 @@ class ChesstasticAITests: ChessTestSuite() {
             it("should be able to play a full game without encountering errors") {
                 var board = Board.createNew()
 
-                val player1 = ChesstasticAI(2, 2)
-                val player2 = ChesstasticAI(2, 2)
+                val player1 = Chesstastic(2, 2)
+                val player2 = Chesstastic(2, 2)
 
                 while(!board.isGameOver) {
                     val player = if (board.turn == Color.Light) player1 else player2

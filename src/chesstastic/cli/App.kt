@@ -1,7 +1,7 @@
 package chesstastic.cli
 
 import chesstastic.ai.AIPlayer
-import chesstastic.ai.ChesstasticAI
+import chesstastic.ai.Chesstastic
 import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
@@ -58,9 +58,9 @@ fun main(args: Array<String>) {
                     }
                     is Command.SetAi -> when(board.turn) {
                         Color.Light->
-                            lightAI = ChesstasticAI(command.depth, command.breadth)
+                            lightAI = Chesstastic(command.depth, command.breadth)
                         Color.Dark ->
-                            darkAI = ChesstasticAI(command.depth, command.breadth)
+                            darkAI = Chesstastic(command.depth, command.breadth)
                     }
                     is Command.SetStockfish -> when(board.turn) {
                         Color.Light ->

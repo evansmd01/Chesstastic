@@ -1,24 +1,22 @@
 package chesstastic.ai
 
-import chesstastic.ai.criteria.*
-import chesstastic.ai.values.Constants
-import chesstastic.ai.values.Constants.Companion.Key.*
-import chesstastic.ai.values.Score
+import chesstastic.ai.heuristics.*
+import chesstastic.ai.Constants.Companion.Key.*
+import chesstastic.ai.heuristics.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception
 
-private val defaultCriteria = listOf<(Constants) -> Criteria>(
-    { Material(it) },
-    { Development(it) }
-)
+interface AIPlayer {
+    fun selectMove(board: Board): Move
+}
 
 class Chesstastic(
     private val depth: Int,
     private val breadth: Int,
     private val constants: Constants = Constants(emptyMap()),
-    criteriaFactories: List<(Constants) -> Criteria> = defaultCriteria
+    heuristicFactories: List<(Constants) -> Heuristic> = Heuristic.factories
 ): AIPlayer {
-    val criteria = criteriaFactories.map { it(constants) }
+    private val heuristics = heuristicFactories.map { it(constants) }
 
     override fun selectMove(board: Board): Move =
         findBestBranch(board.turn, board, depth, breadth)?.branch?.move ?:
@@ -59,7 +57,7 @@ class Chesstastic(
     private fun evaluate(board: Board): Score = when {
         board.isCheckmate -> Score.forOnly(board.turn.opposite, constants[CHECKMATE_SCORE])
         board.isStalemate -> Score.even
-        else -> criteria.map { it.evaluate(board) }
+        else -> heuristics.map { it.evaluate(board) }
             .fold(Score.even) { total, score -> total + score }
     }
 }

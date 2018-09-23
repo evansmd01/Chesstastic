@@ -1,11 +1,10 @@
-package chesstastic.ai.criteria
+package chesstastic.ai.heuristics
 
-import chesstastic.ai.values.Constants
-import chesstastic.ai.values.Score
+import chesstastic.ai.Constants
 import chesstastic.engine.entities.Board
 import chesstastic.engine.entities.Color.Light
 
-class Material(private val constants: Constants): Criteria {
+class Material(private val constants: Constants): Heuristic {
     override fun evaluate(board: Board): Score {
         var light = 0.0
         var dark = 0.0

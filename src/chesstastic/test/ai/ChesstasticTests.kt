@@ -1,8 +1,8 @@
 package chesstastic.test.ai
 
 import chesstastic.ai.*
-import chesstastic.ai.criteria.Criteria
-import chesstastic.ai.values.Score
+import chesstastic.ai.heuristics.Heuristic
+import chesstastic.ai.heuristics.Score
 import chesstastic.engine.entities.*
 import chesstastic.test.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom
@@ -12,8 +12,8 @@ class ChesstasticTests: ChessTestSuite() {
         describe("select move") {
             it("should select the move that results in the best possible score") {
                 val board = Board.createNew()
-                val mock = MockCriteria()
-                val subject = Chesstastic(3, 3, criteriaFactories = listOf({ _ -> mock }))
+                val mock = MockHeuristic()
+                val subject = Chesstastic(3, 3, heuristicFactories = listOf({ _ -> mock }))
 
                 val selectedMove: Move = subject.selectMove(board)
 
@@ -40,7 +40,7 @@ class ChesstasticTests: ChessTestSuite() {
     }
 }
 
-class MockCriteria: Criteria {
+class MockHeuristic: Heuristic {
     val records = mutableListOf<EvaluationRecord>()
 
     fun bestEvaluationFor(color: Color): EvaluationRecord {

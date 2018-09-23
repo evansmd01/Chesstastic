@@ -1,6 +1,5 @@
-package chesstastic.ai.values
+package chesstastic.ai.heuristics
 
-import chesstastic.ai.criteria.safeDivide
 import chesstastic.engine.entities.Color
 
 data class Score(val light: Double, val dark: Double) {
@@ -23,6 +22,17 @@ data class Score(val light: Double, val dark: Double) {
         fun forOnly(color: Color, score: Double) = when (color) {
             Color.Light -> Score(score, 0.0)
             Color.Dark -> Score(0.0, score)
+        }
+
+        fun safeDivide(numerator: Double, denominator: Double): Double {
+            var n = numerator
+            var d = denominator
+            if(denominator == 0.0) {
+                val inc = 0.00001
+                n += inc
+                d += inc
+            }
+            return n/d
         }
     }
 }

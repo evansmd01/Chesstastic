@@ -1,8 +1,8 @@
-package chesstastic.ai.values
+package chesstastic.ai
 
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.*
-import chesstastic.ai.values.Constants.Companion.Key.*
+import chesstastic.ai.Constants.Companion.Key.*
 
 class Constants(private val overrides: Map<String, Double>) {
     companion object {

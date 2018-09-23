@@ -1,11 +1,10 @@
-package chesstastic.ai.criteria
+package chesstastic.ai.heuristics
 
-import chesstastic.ai.values.Constants
-import chesstastic.ai.values.Constants.Companion.Key.*
-import chesstastic.ai.values.Score
+import chesstastic.ai.Constants
+import chesstastic.ai.Constants.Companion.Key.*
 import chesstastic.engine.entities.*
 
-class Development(private val constants: Constants): Criteria {
+class Development(private val constants: Constants): Heuristic {
     override fun evaluate(board: Board): Score {
         // Get number of squares from back rank that have originated at least one move
         // Max count at 7, because moving the king is only a good thing if it's to castle

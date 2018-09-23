@@ -4,6 +4,10 @@ Just a fun little chess game I made to experiment with Kotlin and because I've a
 
 ![Screenshot](https://i.gyazo.com/337df6aa1b8bb5d907d772852f6d7780.png)
 
+## Backlog
+
+If you're curious, [check out the Pivotal Tracker board](https://www.pivotaltracker.com/n/projects/2199679)
+
 ## Milestones:
 
 **11 Sep 18** - Initial commit, repo setup

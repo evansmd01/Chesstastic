@@ -6,7 +6,6 @@ import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
-import chesstastic.test.framework.ChessTestRunner
 import chesstastic.util.*
 import java.time.Duration
 
@@ -48,7 +47,6 @@ fun main(args: Array<String>) {
                     is Command.DisableMoveValidation -> {
                         validateMoves = false
                     }
-                    is Command.Exit -> break@gameLoop
                     is Command.Export -> {
                         println()
                         println("State:\n" + Snapshot.from(board))
@@ -68,17 +66,9 @@ fun main(args: Array<String>) {
                         Color.Dark ->
                             darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                     }
-                    is Command.Test -> {
-                        ChessTestRunner.execute()
-                        skipPrint = true
-                    }
-                    is Command.Load -> {
+                    is Command.Import -> {
                         board = Board.parseHistory(command.history)
                     }
-                    is Command.ShowMoves -> {
-                        println(board.legalMoves.toString())
-                    }
-
                     is Command.Move -> {
                         val move = if (validateMoves) {
                             board.legalMoves.firstOrNull {

@@ -1,4 +1,4 @@
-package chesstastic.test.framework
+package chesstastic.testing.framework
 
 import chesstastic.engine.entities.*
 import chesstastic.util.*

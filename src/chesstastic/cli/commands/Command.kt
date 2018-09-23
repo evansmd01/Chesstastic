@@ -10,28 +10,16 @@ sealed class Command {
     companion object {
         private val parsers = listOf(
             DisableMoveValidation,
-            Exit,
+            Import,
             Export,
-            Load,
             Move,
             SetAi,
-            SetStockfish,
-            ShowMoves,
-            Test
+            SetStockfish
         )
 
         fun parse(input: String): Command? = parsers
                 .map { it.parse(input.trim()) }
                 .firstOrNull { it != null }
-    }
-
-    class Exit: Command() {
-        companion object: CommandParser {
-            override fun parse(input: String): Exit? =
-                    if (input.toLowerCase() == "exit")
-                        Exit()
-                    else null
-        }
     }
 
     class Move(val from: Square, val to: Square): Command() {
@@ -65,35 +53,14 @@ sealed class Command {
         }
     }
 
-    class Test : Command() {
-        companion object: CommandParser {
-            override fun parse(input: String): Command? {
-                return if(input.toLowerCase().trim() == "test")
-                    Test()
-                else null
-            }
-
-        }
-    }
-
-    class Load(val history: String): Command() {
+    class Import(val history: String): Command() {
         companion object: CommandParser {
             override fun parse(input: String): Command? {
                 return if(input.startsWith("load ")) {
-                    Load(history = input.substring(4).trim())
+                    Import(history = input.substring(4).trim())
                 } else null
             }
 
-        }
-    }
-
-    class ShowMoves: Command() {
-        companion object: CommandParser {
-            override fun parse(input: String): Command? {
-                return if(input.toLowerCase() == "show moves") {
-                    ShowMoves()
-                } else null
-            }
         }
     }
 

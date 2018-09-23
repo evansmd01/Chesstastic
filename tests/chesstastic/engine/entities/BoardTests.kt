@@ -1,7 +1,6 @@
-package chesstastic.test.engine.entities
+package chesstastic.engine.entities
 
-import chesstastic.engine.entities.*
-import chesstastic.test.framework.ChessTestSuite
+import chesstastic.testing.framework.ChessTestSuite
 
 class BoardTests: ChessTestSuite() {
     init {

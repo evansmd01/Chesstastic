@@ -1,4 +1,4 @@
-package chesstastic.test.framework
+package chesstastic.testing.framework
 
 import java.io.File
 import java.net.URLClassLoader
@@ -33,6 +33,7 @@ object TestReflection {
                 }
                 .distinct()
                 .filterNot { it.contains("$") }
+                .filterNot { it.contains("ChessTestRunner") }
                 .map { classLoader.loadClass(it).kotlin }
                 .filterNot { it == baseClass }
                 .filter { it.isSubclassOf(baseClass) }

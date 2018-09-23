@@ -1,10 +1,13 @@
-package chesstastic.test.framework
+package chesstastic.testing.framework
 
 import chesstastic.util.*
 
+fun main(args: Array<String>) {
+    ChessTestRunner.execute()
+}
+
 object ChessTestRunner {
     fun execute() {
-        println()
         println("Executing tests...")
 
         var totalSuccess = 0

@@ -1,12 +1,11 @@
-package chesstastic.test.engine.calculators
+package chesstastic.engine.calculators
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
-import chesstastic.engine.calculators.BoardCalculator
-import chesstastic.test.framework.ChessTestSuite
+import chesstastic.testing.framework.ChessTestSuite
 
 class BoardCalculatorTests : ChessTestSuite() {
     init {

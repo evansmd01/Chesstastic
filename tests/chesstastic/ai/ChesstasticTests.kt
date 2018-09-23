@@ -1,10 +1,9 @@
-package chesstastic.test.ai
+package chesstastic.ai
 
-import chesstastic.ai.*
 import chesstastic.ai.heuristics.Heuristic
 import chesstastic.ai.heuristics.Score
 import chesstastic.engine.entities.*
-import chesstastic.test.framework.ChessTestSuite
+import chesstastic.testing.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom
 
 class ChesstasticTests: ChessTestSuite() {

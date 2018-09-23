@@ -12,16 +12,14 @@ import java.time.Duration
 
 class Stockfish(private val timeLimit: Duration): AIPlayer {
     override fun selectMove(board: Board): Move {
-        val runner = StockfishRunner()
+        val process = StockfishProcess.start()
         try {
-            runner.startEngine()
             val history = board.history.joinToString(separator = " ").toLowerCase()
-            val move = runner.getBestMove(history, timeLimit.toMillis().toInt()) ?:
-                throw Exception("Stockfish could not select a move")
-            return Move.parse(move) ?:
-                throw Exception("Could not parse move: '$move'")
+            val move = process.getBestMove(history, timeLimit.toMillis().toInt())
+                ?: throw Exception("Stockfish could not select a move")
+            return Move.parse(move) ?: throw Exception("Could not parse move: '$move'")
         } finally {
-            runner.stopEngine()
+            process.close()
         }
     }
 }
@@ -29,25 +27,10 @@ class Stockfish(private val timeLimit: Duration): AIPlayer {
 /**
  * Based on CLI Instructions http://support.stockfishchess.org/kb/advanced-topics/uci-protocol
  */
-private class StockfishRunner {
-    private var engineProcess: Process? = null
-    private var processReader: BufferedReader? = null
-    private var processWriter: OutputStreamWriter? = null
-
-    fun startEngine() {
-        if (!File(EXECUTABLE).exists())
-            throw Exception("Stockfish has not been installed. Follow the instructions in the readme.")
-
-        engineProcess = Runtime.getRuntime().exec(EXECUTABLE)
-        processReader = BufferedReader(InputStreamReader(
-            engineProcess!!.inputStream))
-        processWriter = OutputStreamWriter(
-            engineProcess!!.outputStream)
-    }
-
+private class StockfishProcess(val process: Process, val reader: BufferedReader, val writer: OutputStreamWriter) {
     fun sendCommand(command: String) {
-        processWriter?.write(command + "\n")
-        processWriter?.flush()
+        writer.write(command + "\n")
+        writer.flush()
     }
 
     fun getOutput(waitTime: Int): String {
@@ -55,7 +38,7 @@ private class StockfishRunner {
         Thread.sleep(waitTime.toLong())
         sendCommand("isready")
         while (true) {
-            val text = processReader?.readLine()
+            val text = reader.readLine()
             if (text == "readyok")
                 break
             else
@@ -72,13 +55,25 @@ private class StockfishRunner {
         return match?.groupValues?.elementAt(1)
     }
 
-    fun stopEngine() {
+    fun close() {
         sendCommand("quit")
-        processReader?.close()
-        processWriter?.close()
+        reader.close()
+        writer.close()
+        process.destroyForcibly()
     }
 
     companion object {
         val EXECUTABLE = "${System.getProperty("user.dir")}/lib/Stockfish/src/stockfish"
+
+        fun start(): StockfishProcess {
+            if (!File(EXECUTABLE).exists())
+                throw Exception("Stockfish has not been installed. Follow the instructions in the readme.")
+            val process = Runtime.getRuntime().exec(EXECUTABLE)
+            return StockfishProcess(
+                process,
+                BufferedReader(InputStreamReader(process.inputStream)),
+                OutputStreamWriter(process.outputStream)
+            )
+        }
     }
 }

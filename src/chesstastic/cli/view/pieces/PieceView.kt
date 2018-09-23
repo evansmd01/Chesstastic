@@ -8,19 +8,20 @@ interface PieceView {
     /**
      * Representation of a drawing, where any null item is transparent
      */
-    val drawing: List<List<String?>>
+    val drawing: List<String>
 
-    fun render(color: Color): List<List<String?>> {
-        return drawing.map {
+    fun render(color: Color): List<List<String>> {
+        return drawing.map { line ->
+            val stringChars = line.map { c -> c.toString() }
             val myColor = if(color == Color.Light) ConsoleColor.CYAN else ConsoleColor.PURPLE
-            val firstNotNull = it.indexOfFirst { it != null }
-            val lastNotNull = it.indexOfLast { it != null }
-            val copy = it.toMutableList()
-            if (firstNotNull != -1) {
-                copy[firstNotNull] = myColor + copy[firstNotNull]
+            val firstNotHash = stringChars.indexOfFirst { it != "#" }
+            val lastNotHash = stringChars.indexOfLast { it != "#" }
+            val copy = stringChars.toMutableList()
+            if (firstNotHash != -1) {
+                copy[firstNotHash] = myColor + copy[firstNotHash]
             }
-            if(lastNotNull != -1) {
-                copy[lastNotNull] = copy[lastNotNull] + ConsoleColor.RESET
+            if(lastNotHash != -1) {
+                copy[lastNotHash] = copy[lastNotHash] + ConsoleColor.RESET
             }
             copy
         }

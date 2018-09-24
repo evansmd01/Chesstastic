@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators
+package chesstastic.engine.position.calculators
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
@@ -72,7 +72,7 @@ object PawnCalculator: MoveCalculator, AttackCalculator {
 
     private fun isEnPassantEligible(color: Color, fromSquare: Square, target: Square, board: Board): Boolean {
         if (fromSquare.rank != enPassantRank(color)) return false
-        return board.history.last() == enPassantOpening(color, target.file)
+        return board.historyMetadata.history.mostRecent == enPassantOpening(color, target.file)
     }
 
     private fun enPassantOpening(color: Color, file: File): Move = Move.Basic(

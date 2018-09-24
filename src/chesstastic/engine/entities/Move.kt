@@ -42,42 +42,44 @@ sealed class Move(val from: Square, val to: Square) {
         val captured: Square = Square(to.file, from.rank)
     }
 
-    abstract class Castle(from: Square, to: Square): Move(from, to) {
+    sealed class Castle(from: Square, to: Square): Move(from, to) {
         abstract val rook: Basic
-    }
 
-    class KingsideCastle(val color: Color): Castle(from(color), to(color)) {
-        override val rook: Basic = Basic(
+        class Kingside(val color: Color) : Castle(from(color), to(color)) {
+            override val rook: Basic = Basic(
                 Square(File.H, from.rank),
                 Square(File.F, from.rank)
-        )
+            )
 
-        companion object {
-            fun from(color: Color): Square {
-                val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Square(File.E, rank)
-            }
-            fun to(color:Color): Square {
-                val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Square(File.G, rank)
+            companion object {
+                fun from(color: Color): Square {
+                    val rank = if (color == Color.Light) Rank._1 else Rank._8
+                    return Square(File.E, rank)
+                }
+
+                fun to(color: Color): Square {
+                    val rank = if (color == Color.Light) Rank._1 else Rank._8
+                    return Square(File.G, rank)
+                }
             }
         }
-    }
 
-    class QueensideCastle(val color: Color): Castle(from(color), to(color)) {
-        override val rook: Basic = Basic(
+        class Queenside(val color: Color) : Castle(from(color), to(color)) {
+            override val rook: Basic = Basic(
                 Square(File.A, from.rank),
                 Square(File.D, from.rank)
-        )
+            )
 
-        companion object {
-            fun from(color: Color): Square {
-                val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Square(File.E, rank)
-            }
-            fun to(color:Color): Square {
-                val rank = if (color == Color.Light) Rank._1 else Rank._8
-                return Square(File.C, rank)
+            companion object {
+                fun from(color: Color): Square {
+                    val rank = if (color == Color.Light) Rank._1 else Rank._8
+                    return Square(File.E, rank)
+                }
+
+                fun to(color: Color): Square {
+                    val rank = if (color == Color.Light) Rank._1 else Rank._8
+                    return Square(File.C, rank)
+                }
             }
         }
     }
@@ -92,6 +94,8 @@ sealed class Move(val from: Square, val to: Square) {
         }
     }
 }
+
+data class MoveMetadata(val move: Move, val pieceKind: PieceKind, val captured: Piece?)
 
 
 

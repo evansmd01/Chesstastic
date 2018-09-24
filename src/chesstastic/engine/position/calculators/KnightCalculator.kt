@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators
+package chesstastic.engine.position.calculators
 
 import chesstastic.engine.entities.*
 

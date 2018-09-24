@@ -71,7 +71,7 @@ interface AssertionHelpers {
     }
 
     fun Board.shouldMatch(snapshot: String) {
-        val other = Snapshot.parse(snapshot, this.turn)
+        val other = Snapshot.parse(snapshot, this.historyMetadata.currentTurn)
         val positionEqual = this.positionEquals(other)
         if(!positionEqual) throw AssertionError("\nBoard with state:\n\n${Snapshot.from(this)}\n\ndid not equal:\n\n${Snapshot.from(other)}\n".prependIndent("       "))
     }

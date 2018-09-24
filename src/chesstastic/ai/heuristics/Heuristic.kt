@@ -8,8 +8,7 @@ interface Heuristic {
 
     companion object {
         val factories = listOf<(Constants) -> Heuristic>(
-            { Material(it) },
-            { Development(it) }
+            { Material(it) }
         )
     }
 }

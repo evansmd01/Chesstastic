@@ -1,7 +1,8 @@
-package chesstastic.engine.calculators
+package chesstastic.engine.position.calculators
 
 import chesstastic.engine.entities.*
 
+// TODO: Toss out this interface & implementations after implementing PositionalMetadata. Attacks will be kept track of while iterating through potential moves.
 interface AttackCalculator {
     fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece,Square>>
 

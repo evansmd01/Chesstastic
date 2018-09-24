@@ -1,5 +1,6 @@
-package chesstastic.testing.framework
+package chesstastic.testing
 
+import chesstastic.testing.framework.TestReflection
 import chesstastic.util.*
 
 fun main(args: Array<String>) {

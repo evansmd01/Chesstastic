@@ -1,76 +1,73 @@
 package chesstastic.engine.entities
 
-import chesstastic.engine.calculators.BoardCalculator
+import chesstastic.engine.position.calculators.BoardCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
 
 
 class Board(
-    private val state: Array<Array<Piece?>>,
-    val history: List<Move>,
-    val turn: Color,
-    private val inactivityCounter: Int
+    private val state: Array<Array<Piece?>> = INITIAL_STATE,
+    val historyMetadata: HistoryMetadata = HistoryMetadata.EMPTY
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
-    val legalMoves by lazy { BoardCalculator.legalMoves(this, turn) }
+    val legalMoves by lazy { BoardCalculator.legalMoves(this, historyMetadata.currentTurn) }
 
-    val isCheck by lazy { isInCheck(turn) }
+    val isCheck by lazy { isInCheck(historyMetadata.currentTurn) }
     fun isInCheck(color: Color) = BoardCalculator.isKingInCheck(color, this)
     val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
-    private val inactivityLimit = 100
+    private val inactivityLimit = 100 // TODO: Verify the "50 move rule" defines a "move" as both players having taken a turn, hence 100 here.
     private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
-    val isStalemate by lazy { inactivityCounter >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
-    val isGameOver by lazy { isCheckmate || isStalemate }
+    val isStalemate by lazy { historyMetadata.inactivityCount >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
 
     fun kingSquare(color: Color): Square  {
-        return SQUARES.firstOrNull() { square ->
+        return SQUARES.firstOrNull { square ->
             val piece = this[square]
             when {
                 piece?.kind == King && piece.color == color -> true
                 else -> false
             }
-        } ?: throw Error("King is missing from the board.\nHistory: ${this.history.joinToString(separator = ",")}")
+        } ?: throw Error("King is missing from the board.\nHistory: ${historyMetadata.history}")
     }
 
     fun isOccupiedByColor(square: Square, color: Color) = this[square]?.color == color
 
     fun updated(move: Move): Board {
-        val newState = applyMove(move)
-        val newHistory = history + move
-        val wasCapture = false // TODO: implement this, or game will always end on 30th move
-        val newInactivityCount = if (wasCapture) 0 else inactivityCounter + 1
-        return Board(newState, newHistory, turn.opposite, newInactivityCount)
+        val (newState, moveMetadata) = applyMove(move)
+        return Board(newState, historyMetadata + moveMetadata)
     }
 
-    private fun applyMove(move: Move): Array<Array<Piece?>> {
+    private fun applyMove(move: Move): Pair<Array<Array<Piece?>>,MoveMetadata> {
         val movingPiece = get(move.from) ?: throw Error("Invalid move, there is no piece on ${move.from}")
-
+        var captured: Piece? = state[move.to.rank.index][move.to.file.index]
         val newState = state.map { it.copyOf() }.toTypedArray()
         newState[move.from.rank.index][move.from.file.index] = null
         newState[move.to.rank.index][move.to.file.index] = movingPiece
 
-        if (move is Move.EnPassant) {
-            newState[move.captured.rank.index][move.captured.file.index] = null
-        } else if (move is Move.Castle) {
-            newState[move.rook.from.rank.index][move.rook.from.file.index] = null
-            newState[move.rook.to.rank.index][move.rook.to.file.index] = Piece(Rook, movingPiece.color)
-        } else if (move is Move.Promotion) {
-            newState[move.to.rank.index][move.to.file.index] = Piece(move.promotion, movingPiece.color)
+        when (move) {
+            is Move.EnPassant -> {
+                captured = state[move.captured.rank.index][move.captured.file.index]
+                newState[move.captured.rank.index][move.captured.file.index] = null
+            }
+            is Move.Castle -> {
+                newState[move.rook.from.rank.index][move.rook.from.file.index] = null
+                newState[move.rook.to.rank.index][move.rook.to.file.index] = Piece(Rook, movingPiece.color)
+            }
+            is Move.Promotion -> {
+                newState[move.to.rank.index][move.to.file.index] = Piece(move.promotion, movingPiece.color)
+            }
         }
 
-        return newState
+        return Pair(newState, MoveMetadata(move, movingPiece.kind, captured))
     }
 
     fun positionEquals(other: Board): Boolean = other.state.contentDeepEquals(this.state)
     
     companion object {
-        fun createNew(): Board = Board(InitialState, listOf(), Color.Light, 0)
-
         fun parseHistory(moves: String): Board {
-            return replayMoves(createNew(), Move.parseMany(moves))
+            return replayMoves(Board(), Move.parseMany(moves))
         }
 
         private fun replayMoves(board: Board, moves: List<Move>): Board {
@@ -88,7 +85,7 @@ class Board(
             }
         }
 
-        private val InitialState: Array<Array<Piece?>> = arrayOf(
+        private val INITIAL_STATE: Array<Array<Piece?>> = arrayOf(
             arrayOf<Piece?>(
                 Piece(Rook, Light),
                 Piece(Knight, Light),

@@ -11,7 +11,7 @@ import java.time.Duration
 
 object CliGameLoop {
     fun start() {
-        var board = Board.createNew()
+        var board = Board()
         var validateMoves = true
         var skipPrint = false
         var lightAI: AIPlayer? = null
@@ -22,16 +22,15 @@ object CliGameLoop {
             if (skipPrint) skipPrint = false
             else println(BoardView.render(board))
             if (board.isCheckmate) {
-                printlnColor(ConsoleColor.YELLOW, "Congratulations ${board.turn.opposite} Player!")
-                println(board.history.joinToString(separator = " "))
+                println(board.historyMetadata.history)
                 break@gameLoop
             }
             if (board.isStalemate) {
-                println(board.history.joinToString(separator = " "))
+                println(board.historyMetadata.history)
                 break@gameLoop
             }
-            print("${board.turn} player's turn: ")
-            val ai = if (board.turn == Color.Light) lightAI else darkAI
+            print("${board.historyMetadata.currentTurn} player's turn: ")
+            val ai = if (board.historyMetadata.currentTurn == Color.Light) lightAI else darkAI
             when  {
                 ai != null -> {
                     board = board.updated(ai.selectMove(board))
@@ -47,16 +46,16 @@ object CliGameLoop {
                             println()
                             println("State:\n" + Snapshot.from(board))
                             println()
-                            println("History:\n" + board.history.joinToString(separator = " "))
+                            println("History:\n" + board.historyMetadata.history)
                             skipPrint = true
                         }
-                        is Command.SetAi -> when(board.turn) {
+                        is Command.SetAi -> when(board.historyMetadata.currentTurn) {
                             Color.Light->
                                 lightAI = Chesstastic(command.depth, command.breadth)
                             Color.Dark ->
                                 darkAI = Chesstastic(command.depth, command.breadth)
                         }
-                        is Command.SetStockfish -> when(board.turn) {
+                        is Command.SetStockfish -> when(board.historyMetadata.currentTurn) {
                             Color.Light ->
                                 lightAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                             Color.Dark ->

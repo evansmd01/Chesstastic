@@ -5,6 +5,7 @@ import chesstastic.testing.framework.ChessTestSuite
 import chesstastic.ai.stockfish.Stockfish
 import java.time.Duration
 
+@Suppress("unused")
 class StockfishTests: ChessTestSuite(){
     init {
         describe("selectMove") {

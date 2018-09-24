@@ -2,14 +2,15 @@ package chesstastic.engine.entities
 
 import chesstastic.testing.framework.ChessTestSuite
 
+@Suppress("unused")
 class BoardTests: ChessTestSuite() {
     init {
         describe("parseHistory") {
-            it("parses history correctly") {
+            it("parses historyMetadata correctly") {
                 val testHistory = "E2E4,D7D5"
                 val board = Board.parseHistory(testHistory)
 
-                board.turn.shouldBe(Color.Light)
+                board.historyMetadata.currentTurn.shouldBe(Color.Light)
 
                 board.shouldMatch("""
                     |r|n|b|q|k|b|n|r|

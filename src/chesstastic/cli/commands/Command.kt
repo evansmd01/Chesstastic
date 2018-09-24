@@ -18,8 +18,9 @@ sealed class Command {
         )
 
         fun parse(input: String): Command? = parsers
-                .map { it.parse(input.trim()) }
-                .firstOrNull { it != null }
+            .asSequence()
+            .map { it.parse(input.trim()) }
+            .firstOrNull { it != null }
     }
 
     class Move(val from: Square, val to: Square): Command() {

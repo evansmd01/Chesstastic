@@ -7,6 +7,7 @@ interface MessageView {
     val drawing: String
 
     fun lines() = drawing.lines()
+        .asSequence()
         .map { it.trim().replace("|", "") }
         .filterNot { it.isEmpty() }
 
@@ -27,7 +28,7 @@ interface MessageView {
         lines().map { line ->
                 line.map { c -> c.toString() }
                     .map { if(it != " ") "${ConsoleColor.YELLOW}$it${ConsoleColor.RESET}" else it }
-            }
+            }.toList()
 
     companion object {
         fun get(board: Board): MessageView = when {

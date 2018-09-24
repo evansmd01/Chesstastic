@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators
+package chesstastic.engine.position.calculators
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.File.*
@@ -7,6 +7,7 @@ import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.testing.framework.ChessTestSuite
 
+@Suppress("unused")
 class BoardCalculatorTests : ChessTestSuite() {
     init {
         describe("legalMoves") {

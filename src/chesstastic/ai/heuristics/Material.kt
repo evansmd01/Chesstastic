@@ -9,6 +9,7 @@ class Material(private val constants: Constants): Heuristic {
         var light = 0.0
         var dark = 0.0
 
+        // TODO: REFACTOR TO DETERMINE FROM POSITIONAL METADATA
         Board.SQUARES.forEach {
             val piece = board[it]
             if (piece != null) {

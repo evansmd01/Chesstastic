@@ -14,7 +14,7 @@ class Stockfish(private val timeLimit: Duration): AIPlayer {
     override fun selectMove(board: Board): Move {
         val process = StockfishProcess.start()
         try {
-            val history = board.history.joinToString(separator = " ").toLowerCase()
+            val history = board.historyMetadata.history.toString()
             val move = process.getBestMove(history, timeLimit.toMillis().toInt())
                 ?: throw Exception("Stockfish could not select a move")
             return Move.parse(move) ?: throw Exception("Could not parse move: '$move'")

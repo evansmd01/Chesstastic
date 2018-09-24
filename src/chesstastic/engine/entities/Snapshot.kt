@@ -5,20 +5,28 @@ import chesstastic.engine.entities.Color.*
 import chesstastic.util.transformIf
 
 object Snapshot {
-    fun parse(value: String, turn: Color): Board {
+    fun parse(value: String, turn: Color, allowCastle: Boolean = false): Board {
         val state = value.trim()
             .split("\n")
             .reversed()
+            .asSequence()
             .map{ it.trim() }
             .filter { it.isNotEmpty() }
-            .map {
-                it.split("|")
+            .map { rank ->
+                rank.split("|")
+                    .asSequence()
                     .filter { it.isNotEmpty() }
                     .map { pieceFromString(it) }
+                    .toList()
                     .toTypedArray()
             }
+            .toList()
             .toTypedArray()
-        return Board(state, history = emptyList(), turn = turn, inactivityCounter = 0)
+        return Board(state, historyMetadata = HistoryMetadata.EMPTY.copy(
+            currentTurn = turn,
+            lightCastleMetadata = CastleMetadata(!allowCastle, !allowCastle, !allowCastle),
+            darkCastleMetadata = CastleMetadata(!allowCastle, !allowCastle, !allowCastle)
+        ))
     }
 
     fun from(board: Board): String =

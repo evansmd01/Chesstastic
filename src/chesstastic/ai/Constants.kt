@@ -13,7 +13,6 @@ class Constants(private val overrides: Map<String, Double>) {
             ROOK_VALUE,
             KNIGHT_VALUE,
             BISHOP_VALUE,
-            CHECKMATE_SCORE,
             DEVELOPMENT_WEIGHT,
         }
 
@@ -24,7 +23,6 @@ class Constants(private val overrides: Map<String, Double>) {
             ROOK_VALUE -> 5.0
             KNIGHT_VALUE -> 3.0
             BISHOP_VALUE -> 3.0
-            CHECKMATE_SCORE -> Double.MAX_VALUE
             DEVELOPMENT_WEIGHT -> 20.0
         }
     }

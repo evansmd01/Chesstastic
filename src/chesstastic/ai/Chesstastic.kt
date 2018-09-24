@@ -59,7 +59,7 @@ class Chesstastic(
     }
 
     private fun evaluate(board: Board): Score = when {
-        board.isCheckmate -> Score.forOnly(board.historyMetadata.currentTurn.opposite, constants[CHECKMATE_SCORE])
+        board.isCheckmate -> Score.forOnly(board.historyMetadata.currentTurn.opposite, Double.POSITIVE_INFINITY)
         board.isStalemate -> Score.even
         else -> heuristics.asSequence().map { it.evaluate(board) }
             .fold(Score.even) { total, score -> total + score }

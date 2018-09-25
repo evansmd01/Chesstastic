@@ -85,7 +85,7 @@ sealed class Move(val from: Square, val to: Square) {
     }
 
     class Promotion(from: Square, to: Square, val promotion: PieceKind): Move(from, to) {
-        
+
         override fun toString(): String {
             val kind = if (promotion == PieceKind.Queen) "q" else "n"
             return super.toString() + kind

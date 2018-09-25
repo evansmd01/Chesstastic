@@ -10,9 +10,7 @@ import java.util.concurrent.ThreadLocalRandom
 
 object GameGenerator: Task {
     override val name = "generate games"
-
-    private fun outputFilePath() =
-        "${System.getProperty("user.dir")}/data/generated-boards-${System.currentTimeMillis() / 1000L}.txt"
+    private fun outputFilePath() = "generated-boards-${System.currentTimeMillis() / 1000L}.txt"
 
     override fun execute() {
         val dataFile = TrainingDataFile(outputFilePath())

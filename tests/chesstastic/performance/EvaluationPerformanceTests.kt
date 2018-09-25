@@ -10,7 +10,7 @@ class EvaluationPerformanceTests: ChessTestSuite() {
     init {
         describe("evaluating the scores of ever position in 20 games") {
             it("records performance") {
-                val filename = "generated-boards-1537837907.txt"
+                val filename = "100-games.txt"
                 val file = TrainingDataFile(filename)
                 var positionCount = 0
                 val duration = Stopwatch.timeAction {

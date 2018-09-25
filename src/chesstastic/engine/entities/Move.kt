@@ -45,14 +45,6 @@ sealed class Move(val from: Square, val to: Square) {
     sealed class Castle(from: Square, to: Square): Move(from, to) {
         abstract val rookMove: Basic
 
-        override fun equals(other: Any?): Boolean {
-            return super.equals(other) || rookMove == other
-        }
-
-        override fun hashCode(): Int {
-            return super.hashCode() + rookMove.hashCode()
-        }
-
         class Kingside(val color: Color) : Castle(from(color), to(color)) {
             override val rookMove: Basic = Basic(
                 Square(File.H, from.rank),
@@ -97,7 +89,7 @@ sealed class Move(val from: Square, val to: Square) {
         val withQueen by lazy { Promotion(from, to, PieceKind.Queen) }
 
         override fun toString(): String {
-            val kind = if (promotion == PieceKind.Queen) "q" else "k"
+            val kind = if (promotion == PieceKind.Queen) "q" else "n"
             return super.toString() + kind
         }
     }

@@ -4,6 +4,21 @@ import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.util.transformIf
 
+/*
+COPY PASTE THAT SHIZ!
+
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R|N|B|Q|K|B|N|R|
+                """.trimIndent(), turn = Color.Light)
+
+ */
 object Snapshot {
     fun parse(value: String, turn: Color, allowCastle: Boolean = false): Board {
         val state = value.trim()

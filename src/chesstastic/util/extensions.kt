@@ -12,4 +12,6 @@ fun Duration.format(): String {
     return "${totalMinutes.format(2)}:${(totalSeconds % 60).format(2)}.${(totalMillis % 1000).format(3)}"
 }
 
+operator fun Duration.div(int: Int): Duration = Duration.ofMillis(this.toMillis() / int)
+
 fun Long.format(digits: Int): String = String.format("%0${digits}d", this)

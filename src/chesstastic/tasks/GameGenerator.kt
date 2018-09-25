@@ -15,9 +15,7 @@ object GameGenerator: Task {
         "${System.getProperty("user.dir")}/data/generated-boards-${System.currentTimeMillis() / 1000L}.txt"
 
     override fun execute() {
-        val file = File(outputFilePath())
-        file.parentFile.mkdirs()
-        val dataFile = TrainingDataFile(file)
+        val dataFile = TrainingDataFile(outputFilePath())
         val ai = Stockfish(Duration.ofMillis(50))
         dataFile.writeAll(ai.generateGames(20).map {
             println()

@@ -13,7 +13,6 @@ import java.time.Duration
 object CliGameLoop {
     fun start() {
         var board = Board()
-        var validateMoves = true
         var skipPrint = false
         var lightAI: AIPlayer? = null
         var darkAI: AIPlayer? = null
@@ -40,9 +39,6 @@ object CliGameLoop {
                     val input = readLine()?.toLowerCase()?.trim()
                     val command = input?.let { Command.parse(it) }
                     when (command) {
-                        is Command.DisableMoveValidation -> {
-                            validateMoves = false
-                        }
                         is Command.Import -> {
                             board = Board.parseHistory(command.history)
                         }
@@ -72,12 +68,8 @@ object CliGameLoop {
                                 darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                         }
                         is Command.Move -> {
-                            val move = if (validateMoves) {
-                                board.legalMoves.firstOrNull {
-                                    it.from == command.from && it.to == command.to
-                                }
-                            } else {
-                                Move.Basic(command.from, command.to)
+                            val move = board.legalMoves.firstOrNull {
+                                it.from == command.from && it.to == command.to
                             }
                             if (move != null)
                                 if (move is chesstastic.engine.entities.Move.Promotion) {

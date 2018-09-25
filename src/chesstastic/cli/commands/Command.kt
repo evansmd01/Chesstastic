@@ -9,7 +9,6 @@ interface CommandParser {
 sealed class Command {
     companion object {
         private val parsers = listOf(
-            DisableMoveValidation,
             Import,
             Export,
             Move,
@@ -63,16 +62,6 @@ sealed class Command {
                 } else null
             }
 
-        }
-    }
-
-    class DisableMoveValidation: Command() {
-        companion object: CommandParser {
-            override fun parse(input: String): Command? {
-                return if(input.toLowerCase() == "disable validation") {
-                    return DisableMoveValidation()
-                } else null
-            }
         }
     }
 

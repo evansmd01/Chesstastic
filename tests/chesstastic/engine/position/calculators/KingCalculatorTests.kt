@@ -11,7 +11,17 @@ class KingCalculatorTests: ChessTestSuite() {
     init {
         describe("potentialMoves") {
             it("should move any square in one direction") {
-                val board = Board.parseHistory("E1E4")
+                val board = Snapshot.parse("""
+                    | | | | |k| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | |K| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                """.trimIndent(), turn = Color.Light)
+
                 val kingSquare = board.kingSquare(Light)
 
                 val expectedMoves = listOf(
@@ -26,7 +36,16 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should be blocked by it's own pieces") {
-                val board = Board.parseHistory("E1E4,D2D5,E2E5,F2F5,F1F4,D1D4,G1E3,G2F3,C2D3")
+                val board = Snapshot.parse("""
+                    | | | | |k| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | |P|P|P| | |
+                    | | | |P|K|P| | |
+                    | | | |P|P|P| | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                """.trimIndent(), turn = Color.Light)
                 val kingSquare = board.kingSquare(Light)
 
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
@@ -35,13 +54,23 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should be able to capture") {
-                val board = Board.parseHistory("E1B7,D7A6,E7B6,F7C6")
+                val board = Snapshot.parse("""
+                    | | | | |k| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | |p|p|p| | |
+                    | | | |p|K|p| | |
+                    | | | |p|p|p| | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                """.trimIndent(), turn = Color.Light)
+
                 val kingSquare = board.kingSquare(Light)
 
                 val expectedMoves = listOf(
-                    Square(B, _6), Square(B, _8),
-                    Square(C, _6), Square(C, _7), Square(C, _8),
-                    Square(A, _6), Square(A, _7), Square(A, _8)
+                    Square(E, _5), Square(E, _3),
+                    Square(F, _5), Square(F, _4), Square(F, _3),
+                    Square(D, _5), Square(D, _4), Square(D, _3)
                 ).map { Move.Basic(kingSquare, it)}
 
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
@@ -50,7 +79,16 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should be able to kingside castle") {
-                val board = Board.parseHistory("A1A3,A3A1,F1F3,G1G3")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R|N|B|Q|K| | |R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
                 val kingSquare = board.kingSquare(Light)
 
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
@@ -59,7 +97,20 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not kingside castle if the rookMove has moved before") {
-                val board = Board.parseHistory("F1F3,G1G3,H1H3,H3H1")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R|N|B|Q|K| | |R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
+                    .updated(Move.parse("h1g1")!!)
+                    .updated(Move.parse("e7e5")!!)
+                    .updated(Move.parse("g1h1")!!)
+
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -67,7 +118,16 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not kingside castle if moving through check") {
-                val board = Board.parseHistory("F1F3,G1G3,E7E2")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k| |n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | |b| | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P| |P|P|P|
+                    |R|N|B|Q|K| | |R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -75,7 +135,16 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should be able to queenside castle") {
-                val board = Board.parseHistory("H1H3,H3H1,B1B3,C1C3,D1D3")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R| | | |K|B|N|R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -83,7 +152,20 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not queenside castle if the rookMove has moved before") {
-                val board = Board.parseHistory("A1A3,A3A1,B1B3,C1C3,D1D3")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R| | | |K|B|N|R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
+                    .updated(Move.parse("a1c1")!!)
+                    .updated(Move.parse("e7e5")!!)
+                    .updated(Move.parse("c1a1")!!)
+
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -91,7 +173,16 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not queenside castle if moving through check") {
-                val board = Board.parseHistory("B1B3,C1C3,D1D3,C7C2")
+                val board = Snapshot.parse("""
+                    | |n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | |r| | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P| | |P|P|P|P|
+                    |R| | | |K|B|N|R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -99,7 +190,20 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not castle either way if the king has moved before") {
-                val board = Board.parseHistory("B1B3,C1C3,D1D3,F1F3,G1G3,E1D1,D1E1")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R| | | |K| | |R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
+                    .updated(Move.parse("e1d1")!!)
+                    .updated(Move.parse("e7e5")!!)
+                    .updated(Move.parse("d1e1")!!)
+
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -107,7 +211,17 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not castle if the king is blocked by his own pieces") {
-                val board = Board.parseHistory("E2E4")
+                val board = Snapshot.parse("""
+                    |r|n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P|P|P|P|P|
+                    |R|N|B|Q|K|B|N|R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
+
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
@@ -115,29 +229,20 @@ class KingCalculatorTests: ChessTestSuite() {
             }
 
             it("should not be allowed to castle to get out of check") {
-                val board = Board.parseHistory("F1F3,G1G3,D7D2")
+                val board = Snapshot.parse("""
+                    | |n|b|q|k|b|n|r|
+                    |p|p|p|p|p|p|p|p|
+                    | | | | |r| | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    | | | | | | | | |
+                    |P|P|P|P| |P|P|P|
+                    |R| | | |K| | |R|
+                """.trimIndent(), turn = Color.Light, allowCastle = true)
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
 
                 result.shouldNotContain { it is Move.Castle }
-            }
-        }
-
-        describe("timesSquareIsAttacked") {
-            it("should attack any adjacent square") {
-                val board = Board.parseHistory("E1B7,D7A6,E7B6,F7C6")
-
-                val expectedAttacks = listOf(
-                    Square(B, _6), Square(B, _8),
-                    Square(C, _6), Square(C, _7), Square(C, _8),
-                    Square(A, _6), Square(A, _7), Square(A, _8)
-                )
-
-                val attackedSquares = Board.SQUARES.filter {
-                    KingCalculator.attackers(it, Light, board).size == 1
-                }
-
-                attackedSquares.shouldBeEquivalentTo(expectedAttacks)
             }
         }
     }

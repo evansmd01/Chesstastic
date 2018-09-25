@@ -15,7 +15,7 @@ sealed class Move(val from: Square, val to: Square) {
         }
 
         fun parse(input: String): Move? {
-            val regex = Regex("""([a-h])([1-8])([a-h])([1-8])[qk]?""")
+            val regex = Regex("""([a-h])([1-8])([a-h])([1-8])[qn]?""")
             val match = regex.matchEntire(input.toLowerCase().trim())
             return if (match != null) {
                 val (fromFileIn, fromRankIn, toFileIn, toRankIn) = match.destructured
@@ -29,7 +29,7 @@ sealed class Move(val from: Square, val to: Square) {
                 )
                 when {
                     match.value.endsWith("q") -> Promotion(from, to, PieceKind.Queen)
-                    match.value.endsWith("k") -> Promotion(from, to, PieceKind.Knight)
+                    match.value.endsWith("n") -> Promotion(from, to, PieceKind.Knight)
                     else -> Basic(from, to)
                 }
             } else null
@@ -85,12 +85,14 @@ sealed class Move(val from: Square, val to: Square) {
     }
 
     class Promotion(from: Square, to: Square, val promotion: PieceKind): Move(from, to) {
-        val withKnight by lazy { Promotion(from, to, PieceKind.Knight) }
-        val withQueen by lazy { Promotion(from, to, PieceKind.Queen) }
-
+        
         override fun toString(): String {
             val kind = if (promotion == PieceKind.Queen) "q" else "n"
             return super.toString() + kind
+        }
+
+        override fun equals(other: Any?): Boolean {
+            return super.equals(other) || (promotion == PieceKind.Queen && other == Move.Basic(from, to))
         }
     }
 }

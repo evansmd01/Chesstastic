@@ -1,6 +1,6 @@
 package chesstastic.cli.commands
 
-import chesstastic.engine.entities.*
+import chesstastic.engine.entities.Move
 
 interface CommandParser {
     fun parse(input: String): Command?
@@ -11,7 +11,7 @@ sealed class Command {
         private val parsers = listOf(
             Import,
             Export,
-            Move,
+            MoveCommand,
             SetAi,
             SetStockfish,
             RunTask
@@ -23,23 +23,10 @@ sealed class Command {
             .firstOrNull { it != null }
     }
 
-    class Move(val from: Square, val to: Square): Command() {
+    class MoveCommand(val move: Move): Command() {
         companion object: CommandParser {
-            private val regex =
-                    """^\s*([a-hA-H][1-8])\s*([a-hA-H][1-8])\s*$"""
-                            .toRegex()
-
-            override fun parse(input: String): Move? {
-                val match = regex.matchEntire(input)
-                if (match != null) {
-                    val (fromInput, toInput) = match.destructured
-                    val maybeFrom = Square.parse(fromInput)
-                    val maybeTo = Square.parse(toInput)
-                    if(maybeFrom != null && maybeTo != null) {
-                        return Move(maybeFrom, maybeTo)
-                    }
-                }
-                return null
+            override fun parse(input: String): MoveCommand? {
+                return chesstastic.engine.entities.Move.parse(input)?.let { MoveCommand(it) }
             }
         }
     }

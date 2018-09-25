@@ -67,23 +67,12 @@ object CliGameLoop {
                             Color.Dark ->
                                 darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                         }
-                        is Command.Move -> {
+                        is Command.MoveCommand -> {
                             val move = board.legalMoves.firstOrNull {
-                                it.from == command.from && it.to == command.to
+                                it == command.move
                             }
                             if (move != null)
-                                if (move is chesstastic.engine.entities.Move.Promotion) {
-                                    promoteLoop@while (true) {
-                                        printlnColor(ConsoleColor.YELLOW, "Choose a Promotion! Enter 'Q' or 'K'")
-                                        val entry = readLine()?.toUpperCase()?.trim()
-                                        when (entry) {
-                                            "Q" -> { board = board.updatedWithoutValidation(move.withQueen); break@promoteLoop }
-                                            "K" -> { board = board.updatedWithoutValidation(move.withKnight); break@promoteLoop }
-                                        }
-                                    }
-                                } else {
-                                    board = board.updatedWithoutValidation(move)
-                                }
+                                board = board.updatedWithoutValidation(move)
                             else
                                 printlnRed("Invalid move: $input")
                         }

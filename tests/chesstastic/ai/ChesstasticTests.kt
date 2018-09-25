@@ -33,7 +33,7 @@ class ChesstasticTests: ChessTestSuite() {
 
                 while(!board.isCheckmate && !board.isStalemate) {
                     val player = if (board.historyMetadata.currentTurn == Color.Light) player1 else player2
-                    board = board.updated(player.selectMove(board))
+                    board = board.updatedWithoutValidation(player.selectMove(board))
                 }
             }
         }

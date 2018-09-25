@@ -1,7 +1,6 @@
 package chesstastic.ai
 
 import chesstastic.ai.heuristics.*
-import chesstastic.ai.Constants.Companion.Key.*
 import chesstastic.ai.heuristics.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception
@@ -34,7 +33,7 @@ class Chesstastic(
         val bestMovesForCurrentPlayer = moves
             .asSequence()
             .map { move ->
-                val updatedBoard = board.updated(move)
+                val updatedBoard = board.updatedWithoutValidation(move)
                 val branch = previous?.branch?.plus(move) ?: Branch(move)
                 Evaluation(branch, evaluate(updatedBoard), updatedBoard)
             }

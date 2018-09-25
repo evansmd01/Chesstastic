@@ -13,7 +13,7 @@ class BoardCalculator {
                 } else listOf()
             }
             return potentialMoves.filterNot { move ->
-                isKingInCheck(color, board.updated(move))
+                isKingInCheck(color, board.updatedWithoutValidation(move))
             }
         }
 

@@ -50,7 +50,7 @@ private class StockfishProcess(val process: Process, val reader: BufferedReader,
     fun getBestMove(moves: String, waitTime: Int): String? {
         sendCommand("position startpos moves $moves")
         sendCommand("go movetime $waitTime")
-        val bestMoveLine = getOutput(waitTime + 1000).lines().last { it.trim().isNotEmpty() }
+        val bestMoveLine = getOutput(waitTime + 250).lines().last { it.trim().isNotEmpty() }
         val match = Regex("""bestmove\s([a-h][1-8][a-h][1-8][qk]?)""").find(bestMoveLine)
         return match?.groupValues?.elementAt(1)
     }

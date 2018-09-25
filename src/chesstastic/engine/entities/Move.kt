@@ -43,10 +43,18 @@ sealed class Move(val from: Square, val to: Square) {
     }
 
     sealed class Castle(from: Square, to: Square): Move(from, to) {
-        abstract val rook: Basic
+        abstract val rookMove: Basic
+
+        override fun equals(other: Any?): Boolean {
+            return super.equals(other) || rookMove == other
+        }
+
+        override fun hashCode(): Int {
+            return super.hashCode() + rookMove.hashCode()
+        }
 
         class Kingside(val color: Color) : Castle(from(color), to(color)) {
-            override val rook: Basic = Basic(
+            override val rookMove: Basic = Basic(
                 Square(File.H, from.rank),
                 Square(File.F, from.rank)
             )
@@ -65,7 +73,7 @@ sealed class Move(val from: Square, val to: Square) {
         }
 
         class Queenside(val color: Color) : Castle(from(color), to(color)) {
-            override val rook: Basic = Basic(
+            override val rookMove: Basic = Basic(
                 Square(File.A, from.rank),
                 Square(File.D, from.rank)
             )

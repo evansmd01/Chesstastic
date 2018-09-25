@@ -58,7 +58,7 @@ class KingCalculatorTests: ChessTestSuite() {
                 result.shouldContain(Move.Castle.Kingside(Light))
             }
 
-            it("should not kingside castle if the rook has moved before") {
+            it("should not kingside castle if the rookMove has moved before") {
                 val board = Board.parseHistory("F1F3,G1G3,H1H3,H3H1")
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)
@@ -82,7 +82,7 @@ class KingCalculatorTests: ChessTestSuite() {
                 result.shouldContain(Move.Castle.Queenside(Light))
             }
 
-            it("should not queenside castle if the rook has moved before") {
+            it("should not queenside castle if the rookMove has moved before") {
                 val board = Board.parseHistory("A1A3,A3A1,B1B3,C1C3,D1D3")
                 val kingSquare = board.kingSquare(Light)
                 val result = KingCalculator.potentialMoves(Light, kingSquare, board)

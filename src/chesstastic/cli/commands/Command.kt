@@ -14,7 +14,8 @@ sealed class Command {
             Export,
             Move,
             SetAi,
-            SetStockfish
+            SetStockfish,
+            RunTask
         )
 
         fun parse(input: String): Command? = parsers
@@ -96,6 +97,16 @@ sealed class Command {
                 return if (match != null) {
                     val (depth, breadth) = match.destructured
                     SetAi(depth.toInt(), breadth.toInt())
+                } else null
+            }
+        }
+    }
+
+    data class RunTask(val taskName: String): Command() {
+        companion object: CommandParser {
+            override fun parse(input: String): RunTask? {
+                return if(input.toLowerCase().startsWith("run ")) {
+                    RunTask(input.substringAfter("run ").trim())
                 } else null
             }
         }

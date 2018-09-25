@@ -6,6 +6,7 @@ import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
 import chesstastic.engine.entities.*
+import chesstastic.tasks.Task
 import chesstastic.util.*
 import java.time.Duration
 
@@ -33,7 +34,7 @@ object CliGameLoop {
             val ai = if (board.historyMetadata.currentTurn == Color.Light) lightAI else darkAI
             when  {
                 ai != null -> {
-                    board = board.updated(ai.selectMove(board))
+                    board = board.updatedWithoutValidation(ai.selectMove(board))
                 }
                 else -> {
                     val input = readLine()?.toLowerCase()?.trim()
@@ -42,11 +43,20 @@ object CliGameLoop {
                         is Command.DisableMoveValidation -> {
                             validateMoves = false
                         }
+                        is Command.Import -> {
+                            board = Board.parseHistory(command.history)
+                        }
                         is Command.Export -> {
                             println()
                             println("State:\n" + Snapshot.from(board))
                             println()
                             println("History:\n" + board.historyMetadata.history)
+                            skipPrint = true
+                        }
+                        is Command.RunTask -> {
+                            val task = Task.get(command.taskName)
+                            if (task != null) task.execute()
+                            else printlnRed("Invalid task name: ${command.taskName}")
                             skipPrint = true
                         }
                         is Command.SetAi -> when(board.historyMetadata.currentTurn) {
@@ -60,9 +70,6 @@ object CliGameLoop {
                                 lightAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                             Color.Dark ->
                                 darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
-                        }
-                        is Command.Import -> {
-                            board = Board.parseHistory(command.history)
                         }
                         is Command.Move -> {
                             val move = if (validateMoves) {
@@ -78,16 +85,17 @@ object CliGameLoop {
                                         printlnColor(ConsoleColor.YELLOW, "Choose a Promotion! Enter 'Q' or 'K'")
                                         val entry = readLine()?.toUpperCase()?.trim()
                                         when (entry) {
-                                            "Q" -> { board = board.updated(move.withQueen); break@promoteLoop }
-                                            "K" -> { board = board.updated(move.withKnight); break@promoteLoop }
+                                            "Q" -> { board = board.updatedWithoutValidation(move.withQueen); break@promoteLoop }
+                                            "K" -> { board = board.updatedWithoutValidation(move.withKnight); break@promoteLoop }
                                         }
                                     }
                                 } else {
-                                    board = board.updated(move)
+                                    board = board.updatedWithoutValidation(move)
                                 }
                             else
                                 printlnRed("Invalid move: $input")
                         }
+                        is Command -> throw NotImplementedError("Command $input has not been handled in CliGameLoop")
                         else -> printlnRed("Invalid command: $input")
                     }
                 }

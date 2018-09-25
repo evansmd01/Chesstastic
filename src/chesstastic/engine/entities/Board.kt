@@ -19,6 +19,7 @@ class Board(
     private val inactivityLimit = 100 // TODO: Verify the "50 move rule" defines a "move" as both players having taken a turn, hence 100 here.
     private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
     val isStalemate by lazy { historyMetadata.inactivityCount >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
+    val isGameOver by lazy { isStalemate || isCheckmate }
 
     fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
 
@@ -34,9 +35,17 @@ class Board(
 
     fun isOccupiedByColor(square: Square, color: Color) = this[square]?.color == color
 
-    fun updated(move: Move): Board {
+    fun updatedWithoutValidation(move: Move): Board {
         val (newState, moveMetadata) = applyMove(move)
         return Board(newState, historyMetadata + moveMetadata)
+    }
+
+    fun updated(move: Move): Board {
+        // this both validates the move is legal
+        // and also replaces special moves that were parsed as basic moves
+        val legalMove = legalMoves.find { it == move }
+            ?: throw Exception("Unable to replay illegal move $move\n History: ${historyMetadata.history}")
+        return updatedWithoutValidation(legalMove)
     }
 
     private fun applyMove(move: Move): Pair<Array<Array<Piece?>>,MoveMetadata> {
@@ -52,8 +61,8 @@ class Board(
                 newState[move.captured.rank.index][move.captured.file.index] = null
             }
             is Move.Castle -> {
-                newState[move.rook.from.rank.index][move.rook.from.file.index] = null
-                newState[move.rook.to.rank.index][move.rook.to.file.index] = Piece(Rook, movingPiece.color)
+                newState[move.rookMove.from.rank.index][move.rookMove.from.file.index] = null
+                newState[move.rookMove.to.rank.index][move.rookMove.to.file.index] = Piece(Rook, movingPiece.color)
             }
             is Move.Promotion -> {
                 newState[move.to.rank.index][move.to.file.index] = Piece(move.promotion, movingPiece.color)

@@ -73,7 +73,7 @@ data class BoardMetadata(
                 squareMetadata[square] = SquareMetadata.from(square, piece)
             }
 
-            // materialize all that mutable data into these immutable types
+            // materialize all that mutable
             val lightMetadata = PlayerMetadata(
                 Light,
                 pieces = lightSquares,

@@ -93,13 +93,12 @@ class Board(
             } else board
         }
 
-        val SQUARES: List<Square> by lazy {
+        val SQUARES: List<Square> =
             File.values().flatMap { file ->
                 Rank.values().map { rank ->
                     Square(file, rank)
                 }
             }
-        }
 
         private val INITIAL_STATE: Array<Array<Piece?>> = arrayOf(
             arrayOf<Piece?>(

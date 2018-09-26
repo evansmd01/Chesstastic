@@ -1,3 +1,3 @@
 package chesstastic.engine.entities.metadata
 
-data class PinMetadata(val by: PieceMetadata, val to: PieceMetadata)
+data class PinMetadata(val pinned: PieceMetadata, val by: PieceMetadata, val to: PieceMetadata)

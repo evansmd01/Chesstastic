@@ -1,7 +1,7 @@
 package chesstastic.engine.entities.metadata.moves
 
 import chesstastic.engine.entities.*
-import chesstastic.engine.entities.Direction.Horizontal.*
+import chesstastic.engine.entities.Direction.HorizontalAndVertical.*
 import chesstastic.engine.entities.Direction.Diagonal.*
 import chesstastic.engine.entities.metadata.moves.LineMoves.Continuation
 
@@ -43,9 +43,9 @@ interface LineMovesIn<T: Enum<T>>: LineMoves {
     }
 }
 
-object HorizontalMoves: LineMovesIn<Direction.Horizontal> {
-    override val directions = Direction.Horizontal.values()
-    override fun Square.transform(direction: Direction.Horizontal): Square? = when (direction) {
+object RookAndQueenMoves: LineMovesIn<Direction.HorizontalAndVertical> {
+    override val directions = Direction.HorizontalAndVertical.values()
+    override fun Square.transform(direction: Direction.HorizontalAndVertical): Square? = when (direction) {
         U -> this.transform(0, 1)
         D -> this.transform(0, -1)
         L -> this.transform(-1, 0)
@@ -53,7 +53,7 @@ object HorizontalMoves: LineMovesIn<Direction.Horizontal> {
     }
 }
 
-object DiagonalMoves: LineMovesIn<Direction.Diagonal> {
+object BishopAndQueenMoves: LineMovesIn<Direction.Diagonal> {
     override val directions = Direction.Diagonal.values()
     override fun Square.transform(direction: Direction.Diagonal): Square? = when (direction) {
         UL -> this.transform(-1, 1)

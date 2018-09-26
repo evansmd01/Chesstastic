@@ -1,7 +1,7 @@
 package chesstastic.engine.entities
 
 object Direction {
-    enum class Horizontal {
+    enum class HorizontalAndVertical {
         U,D,L,R
     }
 

@@ -134,11 +134,11 @@ data class BoardMetadata(
                 KingMoves.calculate(Dark, darkMetadata.king.square, pieces, historyMetadata.darkCastleMetadata)
             )
             // queens and bishops
-            processLine(pieces, squareMetadata, lightMoves, lightMetadata.horizontalPieces, HorizontalMoves)
-            processLine(pieces, squareMetadata, lightMoves, lightMetadata.diagonalPieces, DiagonalMoves)
+            processLine(pieces, squareMetadata, lightMoves, lightMetadata.rooksAndQueens, RookAndQueenMoves)
+            processLine(pieces, squareMetadata, darkMoves, darkMetadata.rooksAndQueens, RookAndQueenMoves)
             // queens and rooks
-            processLine(pieces, squareMetadata, darkMoves, darkMetadata.horizontalPieces, HorizontalMoves)
-            processLine(pieces, squareMetadata, darkMoves, darkMetadata.diagonalPieces, DiagonalMoves)
+            processLine(pieces, squareMetadata, lightMoves, lightMetadata.bishopsAndQueens, BishopAndQueenMoves)
+            processLine(pieces, squareMetadata, darkMoves, darkMetadata.bishopsAndQueens, BishopAndQueenMoves)
 
             return validateMoves(squareMetadata,
                 lightMetadata.copy(moves = lightMoves),
@@ -172,6 +172,7 @@ data class BoardMetadata(
                                 // skewer
                                 squareMetadata[alreadyAttacked.square] = meta.copy(
                                     skewers = meta.skewers + SkewerMetadata(
+                                        skewered = alreadyAttacked,
                                         by = attackerMeta,
                                         to = PieceMetadata(foundPiece, move.to))
                                 )
@@ -179,6 +180,7 @@ data class BoardMetadata(
                                 // pin
                                 squareMetadata[alreadyAttacked.square] = meta.copy(
                                     pins = meta.pins + PinMetadata(
+                                        pinned = alreadyAttacked,
                                         by = attackerMeta,
                                         to = PieceMetadata(foundPiece, move.to))
                                 )

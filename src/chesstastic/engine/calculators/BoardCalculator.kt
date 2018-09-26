@@ -1,8 +1,8 @@
-package chesstastic.engine.position.calculators
+package chesstastic.engine.calculators
 
 import chesstastic.engine.entities.*
 
-// TODO: REPLACE THIS CLASS COMPLETELY WITH PositionalMetadata implementation.
+// TODO: REPLACE THIS CLASS COMPLETELY WITH BoardMetadata implementation.
 class BoardCalculator {
     companion object {
         fun legalMoves(board: Board, color: Color): Iterable<Move> {

@@ -1,9 +1,10 @@
-package chesstastic.engine.position.calculators
+package chesstastic.engine.calculators
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.metadata.HistoryMetadata
 
 object KingCalculator: MoveCalculator, AttackCalculator {
     override fun attackers(target: Square, attacker: Color, board: Board): List<Pair<Piece,Square>> {
@@ -29,8 +30,8 @@ object KingCalculator: MoveCalculator, AttackCalculator {
         val info = CastlingInfo(color, board.historyMetadata)
         return if (!info.metadata.kingHasMoved && !board.isInCheck(color)) {
             listOfNotNull(
-                tryCastle(board, info,  Move.Castle.Kingside(color)),
-                tryCastle(board, info,  Move.Castle.Queenside(color))
+                tryCastle(board, info, Move.Castle.Kingside(color)),
+                tryCastle(board, info, Move.Castle.Queenside(color))
             )
         } else listOf()
     }
@@ -69,7 +70,7 @@ object KingCalculator: MoveCalculator, AttackCalculator {
 
 
     private class CastlingInfo(val color: Color, history: HistoryMetadata) {
-        val metadata: CastleMetadata = when (color) {
+        val metadata: HistoryMetadata.CastleMetadata = when (color) {
             Color.Light -> history.lightCastleMetadata
             Color.Dark -> history.darkCastleMetadata
         }

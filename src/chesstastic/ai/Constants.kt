@@ -2,20 +2,20 @@ package chesstastic.ai
 
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.*
-import chesstastic.ai.Constants.Companion.Key.*
+import chesstastic.ai.Constants.Key.*
 
 class Constants(private val overrides: Map<String, Double>) {
-    companion object {
-        enum class Key {
-            QUEEN_VALUE,
-            KING_VALUE,
-            PAWN_VALUE,
-            ROOK_VALUE,
-            KNIGHT_VALUE,
-            BISHOP_VALUE,
-            DEVELOPMENT_WEIGHT,
-        }
+    enum class Key {
+        QUEEN_VALUE,
+        KING_VALUE,
+        PAWN_VALUE,
+        ROOK_VALUE,
+        KNIGHT_VALUE,
+        BISHOP_VALUE,
+        DEVELOPMENT_WEIGHT,
+    }
 
+    companion object {
         fun default(key: Key): Double = when (key) {
             QUEEN_VALUE -> 9.0
             KING_VALUE -> 0.0

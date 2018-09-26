@@ -1,8 +1,10 @@
 package chesstastic.engine.entities
 
-import chesstastic.engine.position.calculators.BoardCalculator
+import chesstastic.engine.calculators.BoardCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.metadata.HistoryMetadata
+import chesstastic.engine.entities.metadata.MoveMetadata
 
 
 class Board(
@@ -48,7 +50,7 @@ class Board(
         return updatedWithoutValidation(legalMove)
     }
 
-    private fun applyMove(move: Move): Pair<Array<Array<Piece?>>,MoveMetadata> {
+    private fun applyMove(move: Move): Pair<Array<Array<Piece?>>, MoveMetadata> {
         val movingPiece = get(move.from) ?: throw Error("Invalid move, there is no piece on ${move.from}")
         var captured: Piece? = state[move.to.rank.index][move.to.file.index]
         val newState = state.map { it.copyOf() }.toTypedArray()

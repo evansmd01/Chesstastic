@@ -97,7 +97,5 @@ sealed class Move(val from: Square, val to: Square) {
     }
 }
 
-data class MoveMetadata(val move: Move, val pieceKind: PieceKind, val captured: Piece?)
-
 
 

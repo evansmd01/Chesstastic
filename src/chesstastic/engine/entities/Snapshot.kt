@@ -40,8 +40,8 @@ object Snapshot {
             .toTypedArray()
         return Board(state, historyMetadata = HistoryMetadata.EMPTY.copy(
             currentTurn = turn,
-            lightCastleMetadata = HistoryMetadata.CastleMetadata(!allowCastle, !allowCastle, !allowCastle),
-            darkCastleMetadata = HistoryMetadata.CastleMetadata(!allowCastle, !allowCastle, !allowCastle)
+            lightCastleMetadata = HistoryMetadata.CastleMetadata.LIGHT.copy(kingHasMoved = !allowCastle),
+            darkCastleMetadata = HistoryMetadata.CastleMetadata.DARK.copy(kingHasMoved = !allowCastle)
         ))
     }
 

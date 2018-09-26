@@ -3,9 +3,8 @@ package chesstastic.engine.entities.metadata
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
-import chesstastic.engine.entities.metadata.moves.KingMoves
-import chesstastic.engine.entities.metadata.moves.KnightMoves
-import chesstastic.engine.entities.metadata.moves.PawnMoves
+import chesstastic.engine.entities.metadata.moves.*
+import chesstastic.engine.entities.metadata.moves.StraightLineMoves.Continuation.*
 
 /**
  * Precomputed information about the state of the position
@@ -28,21 +27,21 @@ data class BoardMetadata(
             val squareMetadata = mutableMapOf<Square, SquareMetadata>()
             val pieces = mutableMapOf<Square, Piece>()
 
-            val lightSquares = mutableSetOf<Square>()
-            val lightPawns = mutableSetOf<Square>()
-            val lightRooks = mutableSetOf<Square>()
-            val lightKnights = mutableSetOf<Square>()
-            val lightBishops = mutableSetOf<Square>()
-            val lightQueens = mutableSetOf<Square>()
-            var lightKingSquare: Square? = null
+            val lightSquares = mutableSetOf<PieceMetadata>()
+            val lightPawns = mutableSetOf<PieceMetadata>()
+            val lightRooks = mutableSetOf<PieceMetadata>()
+            val lightKnights = mutableSetOf<PieceMetadata>()
+            val lightBishops = mutableSetOf<PieceMetadata>()
+            val lightQueens = mutableSetOf<PieceMetadata>()
+            var lightKingSquare: PieceMetadata? = null
 
-            val darkSquares = mutableSetOf<Square>()
-            val darkPawns = mutableSetOf<Square>()
-            val darkRooks = mutableSetOf<Square>()
-            val darkKnights = mutableSetOf<Square>()
-            val darkBishops = mutableSetOf<Square>()
-            val darkQueens = mutableSetOf<Square>()
-            var darkKingSquare: Square? = null
+            val darkSquares = mutableSetOf<PieceMetadata>()
+            val darkPawns = mutableSetOf<PieceMetadata>()
+            val darkRooks = mutableSetOf<PieceMetadata>()
+            val darkKnights = mutableSetOf<PieceMetadata>()
+            val darkBishops = mutableSetOf<PieceMetadata>()
+            val darkQueens = mutableSetOf<PieceMetadata>()
+            var darkKingSquare: PieceMetadata? = null
 
             // Keeping to a SINGLE loop, gather all the squares/pieces
             Board.SQUARES.forEach { square ->
@@ -50,28 +49,28 @@ data class BoardMetadata(
                 if (piece != null) {
                     pieces[square] = piece
                     if (piece.color == Light) {
-                        lightSquares.add(square)
+                        lightSquares.add(PieceMetadata(piece, square))
                         when (piece.kind) {
-                            Pawn -> lightPawns.add(square)
-                            Rook -> lightRooks.add(square)
-                            Knight -> lightKnights.add(square)
-                            Bishop -> lightBishops.add(square)
-                            Queen -> lightQueens.add(square)
-                            King -> lightKingSquare = square
+                            Pawn -> lightPawns.add(PieceMetadata(piece, square))
+                            Rook -> lightRooks.add(PieceMetadata(piece, square))
+                            Knight -> lightKnights.add(PieceMetadata(piece, square))
+                            Bishop -> lightBishops.add(PieceMetadata(piece, square))
+                            Queen -> lightQueens.add(PieceMetadata(piece, square))
+                            King -> lightKingSquare = PieceMetadata(piece, square)
                         }
                     } else {
-                        darkSquares.add(square)
+                        darkSquares.add(PieceMetadata(piece, square))
                         when (piece.kind) {
-                            Pawn -> darkPawns.add(square)
-                            Rook -> darkRooks.add(square)
-                            Knight -> darkKnights.add(square)
-                            Bishop -> darkBishops.add(square)
-                            Queen -> darkQueens.add(square)
-                            King -> darkKingSquare = square
+                            Pawn -> darkPawns.add(PieceMetadata(piece, square))
+                            Rook -> darkRooks.add(PieceMetadata(piece, square))
+                            Knight -> darkKnights.add(PieceMetadata(piece, square))
+                            Bishop -> darkBishops.add(PieceMetadata(piece, square))
+                            Queen -> darkQueens.add(PieceMetadata(piece, square))
+                            King -> darkKingSquare = PieceMetadata(piece, square)
                         }
                     }
                 }
-                squareMetadata[square] = SquareMetadata(square, piece)
+                squareMetadata[square] = SquareMetadata.from(square, piece)
             }
 
             // materialize all that mutable data into these immutable types
@@ -115,35 +114,91 @@ data class BoardMetadata(
             val darkMoves = mutableSetOf<Move>()
             // pawn moves
             lightMoves.addAll(lightMetadata.pawns.flatMap {
-                PawnMoves.calculate(Light, it, pieces, historyMetadata)
+                PawnMoves.calculate(Light, it.square, pieces, historyMetadata)
             })
             darkMoves.addAll(darkMetadata.pawns.flatMap {
-                PawnMoves.calculate(Dark, it, pieces, historyMetadata)
+                PawnMoves.calculate(Dark, it.square, pieces, historyMetadata)
             })
             // knight moves
             lightMoves.addAll(lightMetadata.knights.flatMap {
-                KnightMoves.calculate(Light, it, pieces)
+                KnightMoves.calculate(Light, it.square, pieces)
             })
             darkMoves.addAll(darkMetadata.knights.flatMap {
-                KnightMoves.calculate(Dark, it, pieces)
+                KnightMoves.calculate(Dark, it.square, pieces)
             })
             // king moves
             lightMoves.addAll(
-                KingMoves.calculate(Light, lightMetadata.king, pieces, historyMetadata.lightCastleMetadata)
+                KingMoves.calculate(Light, lightMetadata.king.square, pieces, historyMetadata.lightCastleMetadata)
             )
             darkMoves.addAll(
-                KingMoves.calculate(Dark, darkMetadata.king, pieces, historyMetadata.darkCastleMetadata)
+                KingMoves.calculate(Dark, darkMetadata.king.square, pieces, historyMetadata.darkCastleMetadata)
             )
-            // straight line pieces
-                // moves
-
-                // pins
-
-                // skewers
+            // queens and bishops
+            processLine(Light, pieces, squareMetadata, lightMoves, lightMetadata.horizontalPieces, HorizontalMoves)
+            processLine(Light, pieces, squareMetadata, lightMoves, lightMetadata.diagonalPieces, DiagonalMoves)
+            // queens and rooks
+            processLine(Dark, pieces, squareMetadata, darkMoves, darkMetadata.horizontalPieces, HorizontalMoves)
+            processLine(Dark, pieces, squareMetadata, darkMoves, darkMetadata.diagonalPieces, DiagonalMoves)
 
             return validateMoves(squareMetadata,
                 lightMetadata.copy(moves = lightMoves),
                 darkMetadata.copy(moves = darkMoves))
+        }
+
+        private fun processLine(
+            color: Color,
+            pieces: Map<Square, Piece>,
+            squareMetadata: MutableMap<Square, SquareMetadata>,
+            moves: MutableSet<Move>,
+            fromPieces: Set<PieceMetadata>,
+            calculator: StraightLineMoves
+        ) {
+            fromPieces.forEach{ attackerMeta ->
+                var attackedPiece: PieceMetadata? = null
+                calculator.calculate(attackerMeta.square) { move ->
+                    val foundPiece = pieces[move.to]
+                    val meta = squareMetadata[move.to] ?: throw Error("No metadata at ${move.to}")
+                    val alreadyAttacked: PieceMetadata? = attackedPiece
+                    when {
+                        foundPiece?.color == color -> {
+                            // ally is supported
+                            squareMetadata[move.to] = meta.copy(
+                                supportedBy = meta.supportedBy + attackerMeta
+                            )
+                            Stop // because movement is blocked by ally
+                        }
+                        alreadyAttacked != null && foundPiece?.color == color.opposite -> {
+                            // enemy may be pinned or skewered
+                            if (alreadyAttacked.piece.kind > foundPiece.kind) {
+                                // skewer
+                                squareMetadata[alreadyAttacked.square] = meta.copy(
+                                    skewers = meta.skewers + SkewerMetadata(
+                                        by = attackerMeta,
+                                        to = PieceMetadata(foundPiece, move.to))
+                                )
+                            } else {
+                                // pin
+                                squareMetadata[alreadyAttacked.square] = meta.copy(
+                                    pins = meta.pins + PinMetadata(
+                                        by = attackerMeta,
+                                        to = PieceMetadata(foundPiece, move.to))
+                                )
+                            }
+                            Stop // no more attacks or moves
+                        }
+                        alreadyAttacked == null -> {
+                            // empty square or foundPiece (if not null) is attacked
+                            attackedPiece = foundPiece?.let { PieceMetadata(it, move.to) }
+                            squareMetadata[move.to] = meta.copy(
+                                attackedBy = meta.attackedBy + attackerMeta
+                            )
+                            moves.add(move)
+                            KeepGoing // to look for move moves, pins, or skewers
+                        }
+                        else -> KeepGoing // still searching for pins or skewers
+                    }
+                }
+            }
         }
 
         private fun validateMoves(
@@ -167,21 +222,44 @@ data class BoardMetadata(
  */
 data class SquareMetadata(
     val square: Square,
-    val occupant: Piece?
-)
+    val occupant: Piece?,
+    val attackedBy: Set<PieceMetadata>,
+    val supportedBy: Set<PieceMetadata>,
+    val pins: Set<PinMetadata>,
+    val skewers: Set<SkewerMetadata>
+) {
+    companion object {
+        fun from(square: Square, piece: Piece?) = SquareMetadata(
+            square,
+            piece,
+            emptySet(),
+            emptySet(),
+            emptySet(),
+            emptySet()
+        )
+    }
+}
 
 /**
  * Contextual information about one of the players' positions
  */
 data class PlayerMetadata(
     val color: Color,
-    val pieces: Set<Square>,
-    val pawns: Set<Square>,
-    val rooks: Set<Square>,
-    val knights: Set<Square>,
-    val bishops: Set<Square>,
-    val queens: Set<Square>,
-    val king: Square,
+    val pieces: Set<PieceMetadata>,
+    val pawns: Set<PieceMetadata>,
+    val rooks: Set<PieceMetadata>,
+    val knights: Set<PieceMetadata>,
+    val bishops: Set<PieceMetadata>,
+    val queens: Set<PieceMetadata>,
+    val king: PieceMetadata,
     val moves: Set<Move> = emptySet()
-)
+) {
+    val horizontalPieces = queens + rooks
+    val diagonalPieces = queens + bishops
+}
 
+data class PieceMetadata(val piece: Piece, val square: Square)
+
+data class PinMetadata(val by: PieceMetadata, val to: PieceMetadata)
+
+data class SkewerMetadata(val by: PieceMetadata, val to: PieceMetadata)

@@ -22,8 +22,8 @@ data class HistoryMetadata(
         HistoryMetadata(
             history = History(moveData.move, history),
             currentTurn = currentTurn.opposite,
-            lightCastleMetadata = lightCastleMetadata.updated(moveData.move.from, Light),
-            darkCastleMetadata = darkCastleMetadata.updated(moveData.move.from, Dark),
+            lightCastleMetadata = lightCastleMetadata.updated(moveData.move.from),
+            darkCastleMetadata = darkCastleMetadata.updated(moveData.move.from),
             inactivityCount = when {
                 moveData.pieceKind == PieceKind.Pawn -> 0
                 moveData.captured != null -> 0
@@ -36,8 +36,8 @@ data class HistoryMetadata(
         val EMPTY = HistoryMetadata(
             history = History(null, null),
             currentTurn = Light,
-            lightCastleMetadata = CastleMetadata.EMPTY,
-            darkCastleMetadata = CastleMetadata.EMPTY,
+            lightCastleMetadata = CastleMetadata.LIGHT,
+            darkCastleMetadata = CastleMetadata.DARK,
             inactivityCount = 0,
             moveCount = 0
         )
@@ -46,29 +46,47 @@ data class HistoryMetadata(
     data class CastleMetadata(
         val kingHasMoved: Boolean,
         val kingsideRookHasMoved: Boolean,
-        val queensideRookHasMoved: Boolean
+        val queensideRookHasMoved: Boolean,
+        val squares: CastleSquares
     ) {
-        fun updated(movedFrom: Square, color: Color): CastleMetadata {
-            val startSquares = if (color == Light) StartSquares.LIGHT else StartSquares.DARK
+        fun updated(movedFrom: Square): CastleMetadata {
             return when {
-                !kingHasMoved && movedFrom == startSquares.king ->
+                !kingHasMoved && movedFrom == squares.king ->
                     copy(kingHasMoved = true)
-                !kingsideRookHasMoved && movedFrom == startSquares.kingsideRook ->
+                !kingsideRookHasMoved && movedFrom == squares.kingsideRook ->
                     copy(kingsideRookHasMoved = true)
-                !queensideRookHasMoved && movedFrom == startSquares.queensideRook ->
+                !queensideRookHasMoved && movedFrom == squares.queensideRook ->
                     copy(queensideRookHasMoved = true)
                 else -> this
             }
         }
 
         companion object {
-            val EMPTY = CastleMetadata(false, false, false)
+            val LIGHT = CastleMetadata(false, false, false, CastleSquares.LIGHT)
+            val DARK = CastleMetadata(false, false, false, CastleSquares.DARK)
         }
 
-        data class StartSquares(val king: Square, val kingsideRook: Square, val queensideRook: Square) {
+        data class CastleSquares(
+            val king: Square,
+            val kingsideRook: Square,
+            val queensideRook: Square,
+            val kingsidePassing: Set<Square>,
+            val queensidePassing: Set<Square>) {
             companion object {
-                val LIGHT = StartSquares(Square(E, _1), Square(H, _1), Square(A, _1))
-                val DARK = StartSquares(Square(E, _8), Square(H, _8), Square(A, _8))
+                val LIGHT = CastleSquares(
+                    Square(E, _1),
+                    Square(H, _1),
+                    Square(A, _1),
+                    setOf(Square(F, _1), Square(G, _1)),
+                    setOf(Square(D, _1), Square(C, _1))
+                )
+                val DARK = CastleSquares(
+                    Square(E, _8),
+                    Square(H, _8),
+                    Square(A, _8),
+                    setOf(Square(F, _8), Square(G, _8)),
+                    setOf(Square(D, _8), Square(C, _8))
+                )
             }
         }
     }

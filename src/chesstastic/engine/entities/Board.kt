@@ -3,6 +3,7 @@ package chesstastic.engine.entities
 import chesstastic.engine.calculators.BoardCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.metadata.BoardMetadata
 import chesstastic.engine.entities.metadata.HistoryMetadata
 import chesstastic.engine.entities.metadata.MoveMetadata
 
@@ -12,6 +13,8 @@ class Board(
     val historyMetadata: HistoryMetadata = HistoryMetadata.EMPTY
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
+
+    val metadata by lazy { BoardMetadata.from(this) }
 
     val legalMoves by lazy { BoardCalculator.legalMoves(this, historyMetadata.currentTurn) }
 
@@ -75,7 +78,9 @@ class Board(
     }
 
     fun positionEquals(other: Board): Boolean = other.state.contentDeepEquals(this.state)
-    
+
+    override fun toString(): String = historyMetadata.history.toString()
+
     companion object {
         fun parseHistory(moves: String): Board {
             return replayMoves(Board(), Move.parseMany(moves))

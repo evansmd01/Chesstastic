@@ -16,27 +16,31 @@ object PawnMoves {
         fromSquare: Square,
         pieces: Map<Square, Piece>,
         historyMetadata: HistoryMetadata
-    ): Iterable<Move> {
+    ): List<MoveMetadata> {
         val rankDelta = rankDelta(color)
         val promotionRank = promotionRank(color)
 
         // try to move forward
-        val forwardMoves = mutableListOf<Move>()
+        val forwardMoves = mutableListOf<MoveMetadata>()
         val forwardOne = fromSquare.transform(0, rankDelta)!!
         var isBlocked = pieces[forwardOne] != null
         if (!isBlocked) {
             // promotion
             if (forwardOne.rank == promotionRank) {
-                forwardMoves.add(Move.Promotion(fromSquare, forwardOne, Queen))
-                forwardMoves.add(Move.Promotion(fromSquare, forwardOne, Knight))
+                forwardMoves.add(
+                    MoveMetadata(Move.Promotion(fromSquare, forwardOne, Queen), Piece(Pawn, color), null))
+                forwardMoves.add(MoveMetadata(
+                    Move.Promotion(fromSquare, forwardOne, Knight), Piece(Pawn, color), null))
             } else
-                forwardMoves.add(Move.Basic(fromSquare, forwardOne))
+                forwardMoves.add(
+                    MoveMetadata(Move.Basic(fromSquare, forwardOne), Piece(Pawn, color), null))
 
             // Double starting move
             if (fromSquare.rank == startingRank(color)) {
                 val forwardTwo = forwardOne.transform(0, rankDelta)!!
                 isBlocked = pieces[forwardTwo] != null
-                if (!isBlocked) forwardMoves.add(Move.Basic(fromSquare, forwardTwo))
+                if (!isBlocked) forwardMoves.add(
+                    MoveMetadata(Move.Basic(fromSquare, forwardTwo), Piece(Pawn, color), null))
             }
         }
 
@@ -45,18 +49,20 @@ object PawnMoves {
             fromSquare.transform(1, rankDelta),
             fromSquare.transform(-1, rankDelta)
         ).flatMap { target ->
-            val isOccupiedByOpponentPiece = pieces[target]?.color == color.opposite
-            val isPromotable = target.rank == promotionRank
-            when {
-                isOccupiedByOpponentPiece && isPromotable -> listOf(
-                    Move.Promotion(fromSquare, target, Queen),
-                    Move.Promotion(fromSquare, target, Knight)
-                )
-                isOccupiedByOpponentPiece -> listOf(Move.Basic(fromSquare, target))
-                isEnPassantEligible(color, fromSquare, target, historyMetadata) ->
-                    listOf(Move.EnPassant(fromSquare, target))
-                else -> listOf()
-            }
+            val occupant = pieces[target]?.let { PieceMetadata(it, target) }
+            if(occupant != null && occupant.piece.color == color.opposite) {
+                if (target.rank == promotionRank) {
+                    listOf(
+                        MoveMetadata(Move.Promotion(fromSquare, target, Queen), Piece(Pawn, color), occupant),
+                        MoveMetadata(Move.Promotion(fromSquare, target, Knight), Piece(Pawn, color), occupant)
+                    )
+                } else {
+                    listOf(MoveMetadata(Move.Basic(fromSquare, target), Piece(Pawn, color), occupant))
+                }
+            } else if (isEnPassantEligible(color, fromSquare, target, historyMetadata)) {
+                val move = Move.EnPassant(fromSquare, target)
+                listOf(MoveMetadata(move, Piece(Pawn, color), PieceMetadata(Piece(Pawn, color.opposite), move.captured)))
+            } else listOf()
         }
 
         return forwardMoves + captureMoves

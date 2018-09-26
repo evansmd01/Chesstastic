@@ -4,6 +4,7 @@ import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
 import chesstastic.engine.entities.File.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.metadata.CastleMetadata
 import chesstastic.engine.entities.metadata.HistoryMetadata
 
 object KingCalculator: MoveCalculator, AttackCalculator {
@@ -70,7 +71,7 @@ object KingCalculator: MoveCalculator, AttackCalculator {
 
 
     private class CastlingInfo(val color: Color, history: HistoryMetadata) {
-        val metadata: HistoryMetadata.CastleMetadata = when (color) {
+        val metadata: CastleMetadata = when (color) {
             Color.Light -> history.lightCastleMetadata
             Color.Dark -> history.darkCastleMetadata
         }

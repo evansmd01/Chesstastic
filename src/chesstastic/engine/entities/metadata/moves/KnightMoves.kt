@@ -1,14 +1,23 @@
 package chesstastic.engine.entities.metadata.moves
 
 import chesstastic.engine.entities.*
+import chesstastic.engine.entities.metadata.MoveMetadata
+import chesstastic.engine.entities.metadata.PieceMetadata
 
 object KnightMoves {
-    fun calculate(color: Color, fromSquare: Square, pieces: Map<Square, Piece>): Iterable<Move> =
+    fun calculate(color: Color, fromSquare: Square, pieces: Map<Square, Piece>): List<MoveMetadata> =
         squaresInRange(fromSquare)
-            .filterNot { pieces[it]?.color == color }
-            .map { Move.Basic(fromSquare, it) }
+            .asSequence()
+            .map { square ->
+                square to pieces[square]?.let { PieceMetadata(it, square) }
+            }
+            .filterNot { (_, meta) -> meta?.piece?.color == color }
+            .map { (square, maybeCaptured) ->
+                MoveMetadata(Move.Basic(fromSquare, square), Piece(PieceKind.Knight, color), maybeCaptured)
+            }
+            .toList()
 
-    private fun squaresInRange(fromSquare: Square): Iterable<Square> = listOfNotNull(
+    private fun squaresInRange(fromSquare: Square): List<Square> = listOfNotNull(
         fromSquare.transform(2, -1),
         fromSquare.transform(2, 1),
         fromSquare.transform(-2, -1),

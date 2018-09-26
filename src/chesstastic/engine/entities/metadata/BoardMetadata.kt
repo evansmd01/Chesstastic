@@ -93,14 +93,13 @@ data class BoardMetadata(
                 queens = darkQueens,
                 king = darkKingSquare ?: throw Exception("dark king was missing from the board: $board"))
 
-            return BoardMetadata(
-                board,
-                squareMetadata = processMoves(
-                    pieces, squareMetadata, board.historyMetadata, lightMetadata, darkMetadata
-                ),
-                lightMetadata = lightMetadata,
-                darkMetadata = darkMetadata
-            )
+            return processMoves(
+                pieces,
+                squareMetadata,
+                board.historyMetadata,
+                lightMetadata,
+                darkMetadata
+            )(board)
         }
 
         private fun processMoves(
@@ -109,9 +108,9 @@ data class BoardMetadata(
             historyMetadata: HistoryMetadata,
             lightMetadata: PlayerMetadata,
             darkMetadata: PlayerMetadata
-        ): Map<Square, SquareMetadata> {
-            val lightMoves = mutableSetOf<Move>()
-            val darkMoves = mutableSetOf<Move>()
+        ): (Board) -> BoardMetadata {
+            val lightMoves = mutableSetOf<MoveMetadata>()
+            val darkMoves = mutableSetOf<MoveMetadata>()
             // pawn moves
             lightMoves.addAll(lightMetadata.pawns.flatMap {
                 PawnMoves.calculate(Light, it.square, pieces, historyMetadata)
@@ -140,15 +139,17 @@ data class BoardMetadata(
             processLine(pieces, squareMetadata, lightMoves, lightMetadata.bishopsAndQueens, BishopAndQueenMoves)
             processLine(pieces, squareMetadata, darkMoves, darkMetadata.bishopsAndQueens, BishopAndQueenMoves)
 
-            return validateMoves(squareMetadata,
+            return validateMoves(
+                squareMetadata,
                 lightMetadata.copy(moves = lightMoves),
-                darkMetadata.copy(moves = darkMoves))
+                darkMetadata.copy(moves = darkMoves)
+            )
         }
 
         private fun processLine(
             pieces: Map<Square, Piece>,
             squareMetadata: MutableMap<Square, SquareMetadata>,
-            moves: MutableSet<Move>,
+            moves: MutableSet<MoveMetadata>,
             fromPieces: Set<PieceMetadata>,
             calculator: LineMoves
         ) {
@@ -189,11 +190,12 @@ data class BoardMetadata(
                         }
                         alreadyAttacked == null -> {
                             // empty square or foundPiece (if not null) is attacked
-                            attackedPiece = foundPiece?.let { PieceMetadata(it, move.to) }
+                            val maybeAttacked = foundPiece?.let { PieceMetadata(it, move.to) }
+                            attackedPiece = maybeAttacked
                             squareMetadata[move.to] = meta.copy(
                                 attackedBy = meta.attackedBy + attackerMeta
                             )
-                            moves.add(move)
+                            moves.add(MoveMetadata(move, attackerMeta.piece, maybeAttacked))
                             KeepGoing // to look for move moves, pins, or skewers
                         }
                         else -> KeepGoing // still searching for pins or skewers
@@ -203,22 +205,59 @@ data class BoardMetadata(
         }
 
         private fun validateMoves(
-            squares: MutableMap<Square, SquareMetadata>,
+            squareMetadata: MutableMap<Square, SquareMetadata>,
             lightMetadata: PlayerMetadata,
             darkMetadata: PlayerMetadata
-        ): Map<Square, SquareMetadata> {
+        ): (Board) -> BoardMetadata {
+            // king doesn't move into or through check
+            val lightMoves: MutableSet<MoveMetadata> =
+                filterInvalidKingMoves(squareMetadata, CastleMetadata.CastleSquares.LIGHT, lightMetadata.moves)
+            val darkMoves: MutableSet<MoveMetadata> =
+                filterInvalidKingMoves(squareMetadata, CastleMetadata.CastleSquares.DARK, darkMetadata.moves)
+
             // remove moves from pieces pinned to the king
-
-            // remove moves from king into attacked squares
-
-            // remove castles that pass through attacked squares
 
             // remove pins that aren't really pins
 
             // remove skewers that aren't really skewers
 
-            return squares
+            return { board -> BoardMetadata(
+                board,
+                squareMetadata,
+                lightMetadata.copy(moves = lightMoves),
+                darkMetadata.copy(moves = darkMoves)
+            )}
         }
+
+        private fun filterInvalidKingMoves(
+            squareMetadata: MutableMap<Square, SquareMetadata>,
+            castleSquares: CastleMetadata.CastleSquares,
+            moves: Set<MoveMetadata>
+        ): MutableSet<MoveMetadata> {
+            return moves.asSequence().filterNot { moveMeta ->
+                when (moveMeta.move) {
+                    // remove castles that pass through attacked squares
+                    is Move.Castle.Queenside -> castleSquares.queensidePassing
+                    is Move.Castle.Kingside -> castleSquares.kingsidePassing
+                    // remove moves from king into attacked squares
+                    else -> listOf(moveMeta.move.to)
+                }.any {
+                    isSquareAttacked(
+                        it,
+                        squareMetadata,
+                        attackerColor = moveMeta.piece.color.opposite
+                    )
+                }
+            }.toMutableSet()
+        }
+
+        private fun isSquareAttacked(
+            square: Square,
+            squareMetadata: MutableMap<Square, SquareMetadata>,
+            attackerColor: Color
+        ): Boolean = squareMetadata[square]?.attackedBy?.any {
+            it.piece.color == attackerColor
+        } ?: false
     }
 }
 

@@ -15,7 +15,7 @@ data class PlayerMetadata(
     val bishops: Set<PieceMetadata>,
     val queens: Set<PieceMetadata>,
     val king: PieceMetadata,
-    val moves: Set<Move> = emptySet()
+    val moves: Set<MoveMetadata> = emptySet()
 ) {
     val rooksAndQueens = rooks + queens
     val bishopsAndQueens = bishops + queens

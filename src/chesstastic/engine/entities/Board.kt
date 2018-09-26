@@ -6,6 +6,7 @@ import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.metadata.BoardMetadata
 import chesstastic.engine.entities.metadata.HistoryMetadata
 import chesstastic.engine.entities.metadata.MoveMetadata
+import chesstastic.engine.entities.metadata.PieceMetadata
 
 
 class Board(
@@ -55,14 +56,14 @@ class Board(
 
     private fun applyMove(move: Move): Pair<Array<Array<Piece?>>, MoveMetadata> {
         val movingPiece = get(move.from) ?: throw Error("Invalid move, there is no piece on ${move.from}")
-        var captured: Piece? = state[move.to.rank.index][move.to.file.index]
+        var captured: PieceMetadata? = state[move.to.rank.index][move.to.file.index]?.let { PieceMetadata(it, move.to) }
         val newState = state.map { it.copyOf() }.toTypedArray()
         newState[move.from.rank.index][move.from.file.index] = null
         newState[move.to.rank.index][move.to.file.index] = movingPiece
 
         when (move) {
             is Move.EnPassant -> {
-                captured = state[move.captured.rank.index][move.captured.file.index]
+                captured = PieceMetadata(Piece(Pawn, movingPiece.color.opposite), move.captured)
                 newState[move.captured.rank.index][move.captured.file.index] = null
             }
             is Move.Castle -> {
@@ -74,7 +75,7 @@ class Board(
             }
         }
 
-        return Pair(newState, MoveMetadata(move, movingPiece.kind, captured))
+        return Pair(newState, MoveMetadata(move, movingPiece, captured))
     }
 
     fun positionEquals(other: Board): Boolean = other.state.contentDeepEquals(this.state)

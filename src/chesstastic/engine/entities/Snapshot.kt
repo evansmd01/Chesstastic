@@ -2,6 +2,7 @@ package chesstastic.engine.entities
 
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
+import chesstastic.engine.entities.metadata.CastleMetadata
 import chesstastic.engine.entities.metadata.HistoryMetadata
 import chesstastic.util.transformIf
 
@@ -40,8 +41,8 @@ object Snapshot {
             .toTypedArray()
         return Board(state, historyMetadata = HistoryMetadata.EMPTY.copy(
             currentTurn = turn,
-            lightCastleMetadata = HistoryMetadata.CastleMetadata.LIGHT.copy(kingHasMoved = !allowCastle),
-            darkCastleMetadata = HistoryMetadata.CastleMetadata.DARK.copy(kingHasMoved = !allowCastle)
+            lightCastleMetadata = CastleMetadata.LIGHT.copy(kingHasMoved = !allowCastle),
+            darkCastleMetadata = CastleMetadata.DARK.copy(kingHasMoved = !allowCastle)
         ))
     }
 

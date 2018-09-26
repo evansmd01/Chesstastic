@@ -4,7 +4,7 @@ import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.metadata.moves.*
-import chesstastic.engine.entities.metadata.moves.StraightLineMoves.Continuation.*
+import chesstastic.engine.entities.metadata.moves.LineMoves.Continuation.*
 
 /**
  * Precomputed information about the state of the position
@@ -134,11 +134,11 @@ data class BoardMetadata(
                 KingMoves.calculate(Dark, darkMetadata.king.square, pieces, historyMetadata.darkCastleMetadata)
             )
             // queens and bishops
-            processLine(Light, pieces, squareMetadata, lightMoves, lightMetadata.horizontalPieces, HorizontalMoves)
-            processLine(Light, pieces, squareMetadata, lightMoves, lightMetadata.diagonalPieces, DiagonalMoves)
+            processLine(pieces, squareMetadata, lightMoves, lightMetadata.horizontalPieces, HorizontalMoves)
+            processLine(pieces, squareMetadata, lightMoves, lightMetadata.diagonalPieces, DiagonalMoves)
             // queens and rooks
-            processLine(Dark, pieces, squareMetadata, darkMoves, darkMetadata.horizontalPieces, HorizontalMoves)
-            processLine(Dark, pieces, squareMetadata, darkMoves, darkMetadata.diagonalPieces, DiagonalMoves)
+            processLine(pieces, squareMetadata, darkMoves, darkMetadata.horizontalPieces, HorizontalMoves)
+            processLine(pieces, squareMetadata, darkMoves, darkMetadata.diagonalPieces, DiagonalMoves)
 
             return validateMoves(squareMetadata,
                 lightMetadata.copy(moves = lightMoves),
@@ -146,12 +146,11 @@ data class BoardMetadata(
         }
 
         private fun processLine(
-            color: Color,
             pieces: Map<Square, Piece>,
             squareMetadata: MutableMap<Square, SquareMetadata>,
             moves: MutableSet<Move>,
             fromPieces: Set<PieceMetadata>,
-            calculator: StraightLineMoves
+            calculator: LineMoves
         ) {
             fromPieces.forEach{ attackerMeta ->
                 var attackedPiece: PieceMetadata? = null
@@ -160,14 +159,14 @@ data class BoardMetadata(
                     val meta = squareMetadata[move.to] ?: throw Error("No metadata at ${move.to}")
                     val alreadyAttacked: PieceMetadata? = attackedPiece
                     when {
-                        foundPiece?.color == color -> {
+                        foundPiece?.color == attackerMeta.piece.color -> {
                             // ally is supported
                             squareMetadata[move.to] = meta.copy(
                                 supportedBy = meta.supportedBy + attackerMeta
                             )
                             Stop // because movement is blocked by ally
                         }
-                        alreadyAttacked != null && foundPiece?.color == color.opposite -> {
+                        alreadyAttacked != null && foundPiece?.color == attackerMeta.piece.color.opposite -> {
                             // enemy may be pinned or skewered
                             if (alreadyAttacked.piece.kind > foundPiece.kind) {
                                 // skewer
@@ -211,6 +210,10 @@ data class BoardMetadata(
             // remove moves from king into attacked squares
 
             // remove castles that pass through attacked squares
+
+            // remove pins that aren't really pins
+
+            // remove skewers that aren't really skewers
 
             return squares
         }

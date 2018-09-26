@@ -1,7 +1,6 @@
 package chesstastic.engine.entities.metadata.moves
 
 import chesstastic.engine.entities.*
-import chesstastic.engine.entities.metadata.SquareMetadata
 
 object KnightMoves {
     fun calculate(color: Color, fromSquare: Square, pieces: Map<Square, Piece>): Iterable<Move> =

@@ -3,9 +3,9 @@ package chesstastic.engine.entities.metadata.moves
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Direction.Horizontal.*
 import chesstastic.engine.entities.Direction.Diagonal.*
-import chesstastic.engine.entities.metadata.moves.StraightLineMoves.Continuation
+import chesstastic.engine.entities.metadata.moves.LineMoves.Continuation
 
-interface StraightLineMoves {
+interface LineMoves {
     fun calculate(
         fromSquare: Square,
         process: (Move) -> Continuation
@@ -16,7 +16,7 @@ interface StraightLineMoves {
     }
 }
 
-interface StraightLineMovesIn<T: Enum<T>>: StraightLineMoves {
+interface LineMovesIn<T: Enum<T>>: LineMoves {
     fun Square.transform(direction: T): Square?
     val directions: Array<T>
 
@@ -43,7 +43,7 @@ interface StraightLineMovesIn<T: Enum<T>>: StraightLineMoves {
     }
 }
 
-object HorizontalMoves: StraightLineMovesIn<Direction.Horizontal> {
+object HorizontalMoves: LineMovesIn<Direction.Horizontal> {
     override val directions = Direction.Horizontal.values()
     override fun Square.transform(direction: Direction.Horizontal): Square? = when (direction) {
         U -> this.transform(0, 1)
@@ -53,7 +53,7 @@ object HorizontalMoves: StraightLineMovesIn<Direction.Horizontal> {
     }
 }
 
-object DiagonalMoves: StraightLineMovesIn<Direction.Diagonal> {
+object DiagonalMoves: LineMovesIn<Direction.Diagonal> {
     override val directions = Direction.Diagonal.values()
     override fun Square.transform(direction: Direction.Diagonal): Square? = when (direction) {
         UL -> this.transform(-1, 1)

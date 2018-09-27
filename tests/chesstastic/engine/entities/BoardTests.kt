@@ -1,6 +1,7 @@
 package chesstastic.engine.entities
 
 import chesstastic.testing.framework.ChessTestSuite
+import chesstastic.util.Snapshot
 
 @Suppress("unused")
 class BoardTests: ChessTestSuite() {

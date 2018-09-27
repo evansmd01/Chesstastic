@@ -419,7 +419,7 @@ object MetadataCalculator {
         kingInCheck: PieceMetadata,
         attacker: PieceMetadata
     ): (MoveMetadata) -> Boolean {
-        val pathToAttacker = kingInCheck.square.pathTo(attacker.square)
+        val pathToAttacker = kingInCheck.square.findPathTo(attacker.square)
         return { it.move.to in pathToAttacker }
     }
 }

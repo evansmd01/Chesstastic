@@ -1,10 +1,10 @@
-package chesstastic.engine.entities
+package chesstastic.util
 
+import chesstastic.engine.entities.*
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.metadata.CastleMetadata
 import chesstastic.engine.metadata.HistoryMetadata
-import chesstastic.util.transformIf
 
 /*
 COPY PASTE THAT SHIZ!

@@ -1,40 +1,6 @@
 package chesstastic.engine.entities
 
 sealed class Move(val from: Square, val to: Square) {
-    override fun equals(other: Any?): Boolean =
-        other is Move && other.toString() == toString()
-
-    override fun hashCode(): Int = toString().hashCode()
-
-    override fun toString(): String =
-        "${from.file}${from.rank}${to.file}${to.rank}".toLowerCase()
-
-    companion object {
-        fun parseMany(input: String): List<Move> {
-            return input.split(",", " ").mapNotNull { parse(it) }
-        }
-
-        fun parse(input: String): Move? {
-            val regex = Regex("""([a-h])([1-8])([a-h])([1-8])[qn]?""")
-            val match = regex.matchEntire(input.toLowerCase().trim())
-            return if (match != null) {
-                val (fromFileIn, fromRankIn, toFileIn, toRankIn) = match.destructured
-                val from = Square(
-                    File.valueOf(fromFileIn.toUpperCase()),
-                    Rank.valueOf("_$fromRankIn")
-                )
-                val to = Square(
-                    File.valueOf(toFileIn.toUpperCase()),
-                    Rank.valueOf("_$toRankIn")
-                )
-                when {
-                    match.value.endsWith("q") -> Promotion(from, to, PieceKind.Queen)
-                    match.value.endsWith("n") -> Promotion(from, to, PieceKind.Knight)
-                    else -> Basic(from, to)
-                }
-            } else null
-        }
-    }
 
     class Basic(from: Square, to: Square): Move(from, to)
 
@@ -93,6 +59,41 @@ sealed class Move(val from: Square, val to: Square) {
 
         override fun equals(other: Any?): Boolean {
             return super.equals(other) || (promotion == PieceKind.Queen && other == Move.Basic(from, to))
+        }
+    }
+
+    override fun equals(other: Any?): Boolean =
+        other is Move && other.toString() == toString()
+
+    override fun hashCode(): Int = toString().hashCode()
+
+    override fun toString(): String =
+        "${from.file}${from.rank}${to.file}${to.rank}".toLowerCase()
+
+    companion object {
+        fun parseMany(input: String): List<Move> {
+            return input.split(",", " ").mapNotNull { parse(it) }
+        }
+
+        fun parse(input: String): Move? {
+            val regex = Regex("""([a-h])([1-8])([a-h])([1-8])[qn]?""")
+            val match = regex.matchEntire(input.toLowerCase().trim())
+            return if (match != null) {
+                val (fromFileIn, fromRankIn, toFileIn, toRankIn) = match.destructured
+                val from = Square(
+                    File.valueOf(fromFileIn.toUpperCase()),
+                    Rank.valueOf("_$fromRankIn")
+                )
+                val to = Square(
+                    File.valueOf(toFileIn.toUpperCase()),
+                    Rank.valueOf("_$toRankIn")
+                )
+                when {
+                    match.value.endsWith("q") -> Promotion(from, to, PieceKind.Queen)
+                    match.value.endsWith("n") -> Promotion(from, to, PieceKind.Knight)
+                    else -> Basic(from, to)
+                }
+            } else null
         }
     }
 }

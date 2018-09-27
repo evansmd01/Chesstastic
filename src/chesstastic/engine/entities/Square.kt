@@ -9,10 +9,10 @@ data class Square(val file: File, val rank: Rank) {
         else null
     }
 
-    fun pathTo(target: Square): List<Square> {
+    fun findPathTo(target: Square): List<Square> {
         return if (this != target) {
             val next = moveTowards(target) ?: throw Exception("unable to move from $this towards $target")
-            next.pathTo(target) + next
+            next.findPathTo(target) + next
         } else emptyList()
     }
 
@@ -20,42 +20,21 @@ data class Square(val file: File, val rank: Rank) {
         when {
             // move up file
             target.rank == rank && target.file > file -> transform(1, 0)
-
             // move down file
             target.rank == rank && target.file < file -> transform(-1, 0)
-
             // move up rank
             target.file == file && target.rank > rank -> transform(0, 1)
-
             // move down rank
             target.file == file && target.rank < rank -> transform(0, -1)
-
             // move up file, up rank
             target.file > file && target.rank > rank -> transform(1, 1)
-
             // move up file, down rank
             target.file > file && target.rank < rank -> transform(1, -1)
-
             // move down file, up rank
             target.file < file && target.rank > rank -> transform(-1, 1)
-
             // move down file, down rank
             target.file < file && target.rank < rank -> transform(-1, -1)
-
             else -> null
         }
-
-
-    companion object {
-        fun parse(input: String): Square? {
-            val pattern = """^([A-H])([1-8])$""".toRegex()
-            val matchResult = pattern.matchEntire(input.toUpperCase())
-            if (matchResult != null) {
-                val (file, rank) = matchResult.destructured
-                return Square(File.valueOf(file), Rank.fromIndex(rank.toInt() - 1)!!)
-            }
-            return null
-        }
-    }
 }
 

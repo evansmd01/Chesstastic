@@ -269,7 +269,7 @@ data class BoardMetadata(
         }
 
         private fun disableAll(moves: MutableSet<MoveMetadata>, board: PotentialBoard) {
-            moves.forEach { disableMove(it, moves, board) }
+            moves.toList().forEach { disableMove(it, moves, board) }
         }
 
         private fun disableUnless(moves: MutableSet<MoveMetadata>, board: PotentialBoard, shouldKeep: (MoveMetadata) -> Boolean) {
@@ -361,7 +361,7 @@ data class BoardMetadata(
             moves: PotentialMoves,
             board: PotentialBoard
         ) {
-            moves.kingMoves.forEach { moveMeta ->
+            moves.kingMoves.toList().forEach { moveMeta ->
                 val shouldRemove = when (moveMeta.move) {
                     // remove castles that pass through attacked squares
                     is Move.Castle.Queenside -> castleSquares.queensidePassing

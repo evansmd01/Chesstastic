@@ -12,7 +12,7 @@ data class Square(val file: File, val rank: Rank) {
     fun pathTo(target: Square): List<Square> {
         return if (this != target) {
             val next = moveTowards(target) ?: throw Exception("unable to move from $this towards $target")
-            pathTo(next) + next
+            next.pathTo(target) + next
         } else emptyList()
     }
 

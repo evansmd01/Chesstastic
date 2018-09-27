@@ -22,7 +22,7 @@ class EvaluationPerformanceTests: ChessTestSuite() {
                             board = board.updated(move)
                             positionCount++
                             // todo: grab board score to really be sure evaluation got kicked off.
-                            Score.even
+                            val metadata = board.metadata
                         }
                     }.toList() // synchronously waits for the sequence to fully materialize
                 }

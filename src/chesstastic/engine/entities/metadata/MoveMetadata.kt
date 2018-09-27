@@ -7,4 +7,6 @@ import chesstastic.engine.entities.PieceKind
 /**
  * Contextual information about a move that was played
  */
-data class MoveMetadata(val move: Move, val piece: Piece, val captured: PieceMetadata?)
+data class MoveMetadata(val move: Move, val piece: Piece, val capturing: PieceMetadata?) {
+    val pieceMetadata = PieceMetadata(piece, move.from)
+}

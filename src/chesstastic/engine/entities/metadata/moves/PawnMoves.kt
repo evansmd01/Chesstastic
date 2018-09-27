@@ -14,7 +14,7 @@ object PawnMoves {
     fun calculate(
         color: Color,
         fromSquare: Square,
-        pieces: Map<Square, Piece>,
+        getPiece: (Square) -> Piece?,
         historyMetadata: HistoryMetadata
     ): List<MoveMetadata> {
         val rankDelta = rankDelta(color)
@@ -23,7 +23,7 @@ object PawnMoves {
         // try to move forward
         val forwardMoves = mutableListOf<MoveMetadata>()
         val forwardOne = fromSquare.transform(0, rankDelta)!!
-        var isBlocked = pieces[forwardOne] != null
+        var isBlocked = getPiece(forwardOne) != null
         if (!isBlocked) {
             // promotion
             if (forwardOne.rank == promotionRank) {
@@ -38,7 +38,7 @@ object PawnMoves {
             // Double starting move
             if (fromSquare.rank == startingRank(color)) {
                 val forwardTwo = forwardOne.transform(0, rankDelta)!!
-                isBlocked = pieces[forwardTwo] != null
+                isBlocked = getPiece(forwardTwo) != null
                 if (!isBlocked) forwardMoves.add(
                     MoveMetadata(Move.Basic(fromSquare, forwardTwo), Piece(Pawn, color), null))
             }
@@ -49,7 +49,7 @@ object PawnMoves {
             fromSquare.transform(1, rankDelta),
             fromSquare.transform(-1, rankDelta)
         ).flatMap { target ->
-            val occupant = pieces[target]?.let { PieceMetadata(it, target) }
+            val occupant = getPiece(target)?.let { PieceMetadata(it, target) }
             if(occupant != null && occupant.piece.color == color.opposite) {
                 if (target.rank == promotionRank) {
                     listOf(

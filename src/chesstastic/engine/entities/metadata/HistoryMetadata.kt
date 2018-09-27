@@ -24,7 +24,7 @@ data class HistoryMetadata(
             darkCastleMetadata = darkCastleMetadata.updated(moveData.move.from),
             inactivityCount = when {
                 moveData.piece.kind == PieceKind.Pawn -> 0
-                moveData.captured != null -> 0
+                moveData.capturing != null -> 0
                 else -> inactivityCount + 1
             },
             moveCount = moveCount + 1

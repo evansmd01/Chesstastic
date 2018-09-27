@@ -40,7 +40,7 @@ class BoardCalculatorTests : ChessTestSuite() {
         }
 
         describe("timesSquareIsAttacked") {
-            it("should detect multiple attacks from pieces of the same type") {
+            it("should detect multiple attacks from allPieces of the same type") {
                 val board = Board.parseHistory("E2E4,D7D5,H2H3,F7F5")
 
                 val result = BoardCalculator.findAttackers(Square(E, _4),

@@ -5,11 +5,11 @@ import chesstastic.engine.entities.metadata.MoveMetadata
 import chesstastic.engine.entities.metadata.PieceMetadata
 
 object KnightMoves {
-    fun calculate(color: Color, fromSquare: Square, pieces: Map<Square, Piece>): List<MoveMetadata> =
+    fun calculate(color: Color, fromSquare: Square, getPiece: (Square) -> Piece?): List<MoveMetadata> =
         squaresInRange(fromSquare)
             .asSequence()
             .map { square ->
-                square to pieces[square]?.let { PieceMetadata(it, square) }
+                square to getPiece(square)?.let { PieceMetadata(it, square) }
             }
             .filterNot { (_, meta) -> meta?.piece?.color == color }
             .map { (square, maybeCaptured) ->

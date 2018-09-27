@@ -35,7 +35,7 @@ class KingCalculatorTests: ChessTestSuite() {
                 result.shouldBeEquivalentTo(expectedMoves)
             }
 
-            it("should be blocked by it's own pieces") {
+            it("should be blocked by it's own allPieces") {
                 val board = Snapshot.parse("""
                     | | | | |k| | | |
                     | | | | | | | | |
@@ -210,7 +210,7 @@ class KingCalculatorTests: ChessTestSuite() {
                 result.shouldNotContain { it is Move.Castle }
             }
 
-            it("should not castle if the king is blocked by his own pieces") {
+            it("should not castle if the king is blocked by his own allPieces") {
                 val board = Snapshot.parse("""
                     |r|n|b|q|k|b|n|r|
                     |p|p|p|p|p|p|p|p|

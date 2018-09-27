@@ -31,7 +31,7 @@ class ChesstasticTests: ChessTestSuite() {
                 val player1 = Chesstastic(2, 2)
                 val player2 = Chesstastic(2, 2)
 
-                while(!board.isCheckmate && !board.isStalemate) {
+                while(!board.metadata.isCheckmate && !board.metadata.isStalemate) {
                     val player = if (board.historyMetadata.currentTurn == Color.Light) player1 else player2
                     board = board.updatedWithoutValidation(player.selectMove(board))
                 }

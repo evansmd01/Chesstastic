@@ -1,7 +1,6 @@
-package chesstastic.engine.entities.metadata
+package chesstastic.engine.metadata
 
 import chesstastic.engine.entities.Color
-import chesstastic.engine.entities.Move
 
 /**
  * Contextual information about one of the players' positions

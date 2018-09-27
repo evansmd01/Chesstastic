@@ -1,8 +1,7 @@
-package chesstastic.engine.entities.metadata
+package chesstastic.engine.metadata
 
 import chesstastic.engine.entities.Move
 import chesstastic.engine.entities.Piece
-import chesstastic.engine.entities.PieceKind
 
 /**
  * Contextual information about a move that was played

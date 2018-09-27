@@ -2,8 +2,8 @@ package chesstastic.engine.entities
 
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
-import chesstastic.engine.entities.metadata.CastleMetadata
-import chesstastic.engine.entities.metadata.HistoryMetadata
+import chesstastic.engine.metadata.CastleMetadata
+import chesstastic.engine.metadata.HistoryMetadata
 import chesstastic.util.transformIf
 
 /*

@@ -1,8 +1,9 @@
 package chesstastic.engine.entities
 
+import chesstastic.engine.calculators.MetadataCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
-import chesstastic.engine.entities.metadata.*
+import chesstastic.engine.metadata.*
 
 
 class Board(
@@ -11,15 +12,7 @@ class Board(
 ) {
     operator fun get(coord: Square): Piece? = state[coord.rank.index][coord.file.index]
 
-    val metadata by lazy { BoardMetadata.from(this) }
-
-    val legalMoves by lazy { metadata.currentPlayer.moves.all.map{ it.move } }
-    val isCheck by lazy { metadata.isInCheck(historyMetadata.currentTurn) }
-    val isCheckmate by lazy { legalMoves.isEmpty() && isCheck }
-    private val inactivityLimit = 100 // TODO: Verify the "50 move rule" defines a "move" as both players having taken a turn, hence 100 here.
-    private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
-    val isStalemate by lazy { historyMetadata.inactivityCount >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
-    val isGameOver by lazy { isStalemate || isCheckmate }
+    val metadata by lazy { MetadataCalculator.calculate(this) }
 
     fun updatedWithoutValidation(move: Move): Board {
         val (newState, moveMetadata) = applyMove(move)
@@ -29,7 +22,7 @@ class Board(
     fun updated(move: Move): Board {
         // this both validates the move is legal
         // and also replaces special moves that were parsed as basic moves
-        val legalMove = legalMoves.find { it == move }
+        val legalMove = metadata.legalMoves.find { it == move }
             ?: throw Exception("Unable to replay illegal move $move\n History: ${historyMetadata.history}")
         return updatedWithoutValidation(legalMove)
     }

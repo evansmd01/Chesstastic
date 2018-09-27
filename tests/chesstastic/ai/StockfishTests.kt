@@ -14,7 +14,7 @@ class StockfishTests: ChessTestSuite(){
 
                 val move = Stockfish(Duration.ofMillis(250)).selectMove(board)
 
-                board.legalMoves.shouldContain(move)
+                board.metadata.legalMoves.shouldContain(move)
             }
         }
     }

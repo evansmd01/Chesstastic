@@ -38,7 +38,7 @@ class BoardTests: ChessTestSuite() {
                     |R|N|B|Q|K|B|N|R|
                 """.trimIndent(), turn = Color.Dark)
 
-                board.isCheck.shouldBe(true)
+                board.metadata.isCheck.shouldBe(true)
             }
         }
 
@@ -55,7 +55,7 @@ class BoardTests: ChessTestSuite() {
                     |R|N|B| |K|B| |R|
                 """.trimIndent(), turn = Color.Dark)
 
-                board.isCheckmate.shouldBe(true)
+                board.metadata.isCheckmate.shouldBe(true)
             }
         }
 
@@ -72,7 +72,7 @@ class BoardTests: ChessTestSuite() {
                     | | | | | | | | |
                 """.trimIndent(), turn = Color.Light)
 
-                board.isStalemate.shouldBe(true)
+                board.metadata.isStalemate.shouldBe(true)
             }
 
             it("should detect stalemate due to only kings") {
@@ -87,13 +87,13 @@ class BoardTests: ChessTestSuite() {
                     | | | | | | | | |
                 """.trimIndent(), turn = Color.Light)
 
-                board.isStalemate.shouldBe(true)
+                board.metadata.isStalemate.shouldBe(true)
             }
 
             it("should detect stalemate due to inactivity") {
                 val repeatMoves = (0..25).joinToString(separator = "") { "D1E2,D8D7,E2D1,D7D8," }
                 val board = Board.parseHistory("E2E4,D7D5,$repeatMoves")
-                board.isStalemate.shouldBe(true)
+                board.metadata.isStalemate.shouldBe(true)
             }
         }
     }

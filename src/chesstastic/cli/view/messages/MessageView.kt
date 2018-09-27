@@ -32,9 +32,9 @@ interface MessageView {
 
     companion object {
         fun get(board: Board): MessageView = when {
-            board.isCheckmate -> CheckmateView
-            board.isStalemate -> StalemateView
-            board.isCheck -> CheckView
+            board.metadata.isCheckmate -> CheckmateView
+            board.metadata.isStalemate -> StalemateView
+            board.metadata.isCheck -> CheckView
             else -> EmptyMessage
         }
     }

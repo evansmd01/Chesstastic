@@ -23,7 +23,7 @@ class Chesstastic(
 
     private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: Evaluation? = null): Evaluation? {
         val currentTurn = board.historyMetadata.currentTurn
-        val moves = board.legalMoves.shuffled()
+        val moves = board.metadata.legalMoves.shuffled()
         // stop recursion if we've hit depth, ensuring we ended with an opponent response
         // , or if there are no legal moves left
         if((depth < 0 && currentTurn == player) || moves.isEmpty()) {
@@ -58,8 +58,8 @@ class Chesstastic(
     }
 
     private fun evaluate(board: Board): Score = when {
-        board.isCheckmate -> Score.forOnly(board.historyMetadata.currentTurn.opposite, Double.POSITIVE_INFINITY)
-        board.isStalemate -> Score.even
+        board.metadata.isCheckmate -> Score.forOnly(board.historyMetadata.currentTurn.opposite, Double.POSITIVE_INFINITY)
+        board.metadata.isStalemate -> Score.even
         else -> heuristics.asSequence().map { it.evaluate(board) }
             .fold(Score.even) { total, score -> total + score }
     }

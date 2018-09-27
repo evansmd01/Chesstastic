@@ -38,7 +38,7 @@ object GameGenerator: Task {
     private fun randomSeedBoard(): Board {
         var board = Board()
         for(i in 0..5) {
-            val moves = board.legalMoves.toList()
+            val moves = board.metadata.legalMoves.toList()
             val index = ThreadLocalRandom.current().nextInt(0, moves.size - 1)
             board = board.updatedWithoutValidation(moves[index])
         }
@@ -47,7 +47,7 @@ object GameGenerator: Task {
 
     private fun AIPlayer.playGame(board: Board): Board {
         return when {
-            board.isGameOver -> board
+            board.metadata.isGameOver -> board
             else -> {
                 val nextMove = selectMove(board)
                 print("$nextMove ")

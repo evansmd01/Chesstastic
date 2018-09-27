@@ -1,11 +1,11 @@
-package chesstastic.engine.entities.metadata.moves
+package chesstastic.engine.calculators.moves
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Direction.HorizontalAndVertical.*
 import chesstastic.engine.entities.Direction.Diagonal.*
-import chesstastic.engine.entities.metadata.moves.LineMoves.Continuation
+import chesstastic.engine.calculators.moves.LineMoveCalculator.Continuation
 
-interface LineMoves {
+interface LineMoveCalculator {
     fun calculate(
         fromSquare: Square,
         process: (Move) -> Continuation
@@ -16,7 +16,7 @@ interface LineMoves {
     }
 }
 
-interface LineMovesIn<T: Enum<T>>: LineMoves {
+interface LineMoveCalculatorIn<T: Enum<T>>: LineMoveCalculator {
     fun Square.transform(direction: T): Square?
     val directions: Array<T>
 
@@ -43,7 +43,7 @@ interface LineMovesIn<T: Enum<T>>: LineMoves {
     }
 }
 
-object RookAndQueenMoves: LineMovesIn<Direction.HorizontalAndVertical> {
+object RookAndQueenMoveCalculator: LineMoveCalculatorIn<Direction.HorizontalAndVertical> {
     override val directions = Direction.HorizontalAndVertical.values()
     override fun Square.transform(direction: Direction.HorizontalAndVertical): Square? = when (direction) {
         U -> this.transform(0, 1)
@@ -53,7 +53,7 @@ object RookAndQueenMoves: LineMovesIn<Direction.HorizontalAndVertical> {
     }
 }
 
-object BishopAndQueenMoves: LineMovesIn<Direction.Diagonal> {
+object BishopAndQueenMoveCalculator: LineMoveCalculatorIn<Direction.Diagonal> {
     override val directions = Direction.Diagonal.values()
     override fun Square.transform(direction: Direction.Diagonal): Square? = when (direction) {
         UL -> this.transform(-1, 1)

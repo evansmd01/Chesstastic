@@ -1,4 +1,4 @@
-package chesstastic.engine.entities.metadata
+package chesstastic.engine.metadata
 
 import chesstastic.engine.entities.File
 import chesstastic.engine.entities.Rank

@@ -21,11 +21,11 @@ object CliGameLoop {
             println()
             if (skipPrint) skipPrint = false
             else println(BoardView.render(board))
-            if (board.isCheckmate) {
+            if (board.metadata.isCheckmate) {
                 println(board.historyMetadata.history)
                 break@gameLoop
             }
-            if (board.isStalemate) {
+            if (board.metadata.isStalemate) {
                 println(board.historyMetadata.history)
                 break@gameLoop
             }
@@ -68,7 +68,7 @@ object CliGameLoop {
                                 darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
                         }
                         is Command.MoveCommand -> {
-                            val move = board.legalMoves.firstOrNull {
+                            val move = board.metadata.legalMoves.firstOrNull {
                                 it == command.move
                             }
                             if (move != null)

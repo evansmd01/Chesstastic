@@ -1,12 +1,8 @@
 package chesstastic.engine.entities
 
-import chesstastic.engine.calculators.BoardCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
-import chesstastic.engine.entities.metadata.BoardMetadata
-import chesstastic.engine.entities.metadata.HistoryMetadata
-import chesstastic.engine.entities.metadata.MoveMetadata
-import chesstastic.engine.entities.metadata.PieceMetadata
+import chesstastic.engine.entities.metadata.*
 
 
 class Board(
@@ -17,29 +13,13 @@ class Board(
 
     val metadata by lazy { BoardMetadata.from(this) }
 
-    val legalMoves by lazy { BoardCalculator.legalMoves(this, historyMetadata.currentTurn) }
-
-    val isCheck by lazy { isInCheck(historyMetadata.currentTurn) }
-    fun isInCheck(color: Color) = BoardCalculator.isKingInCheck(color, this)
-    val isCheckmate by lazy { legalMoves.count() == 0 && isCheck }
+    val legalMoves by lazy { metadata.currentPlayer.moves.all.map{ it.move } }
+    val isCheck by lazy { metadata.isInCheck(historyMetadata.currentTurn) }
+    val isCheckmate by lazy { legalMoves.isEmpty() && isCheck }
     private val inactivityLimit = 100 // TODO: Verify the "50 move rule" defines a "move" as both players having taken a turn, hence 100 here.
     private val remainingPieces by lazy { state.sumBy { it.filterNotNull().count() } }
     val isStalemate by lazy { historyMetadata.inactivityCount >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
     val isGameOver by lazy { isStalemate || isCheckmate }
-
-    fun isSquareAttacked(square: Square, attacker: Color) = BoardCalculator.isSquareAttacked(square, attacker, this)
-
-    fun kingSquare(color: Color): Square  {
-        return SQUARES.firstOrNull { square ->
-            val piece = this[square]
-            when {
-                piece?.kind == King && piece.color == color -> true
-                else -> false
-            }
-        } ?: throw Error("King is missing from the board.\nHistory: ${historyMetadata.history}")
-    }
-
-    fun isOccupiedByColor(square: Square, color: Color) = this[square]?.color == color
 
     fun updatedWithoutValidation(move: Move): Board {
         val (newState, moveMetadata) = applyMove(move)

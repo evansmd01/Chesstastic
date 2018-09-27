@@ -24,6 +24,12 @@ data class BoardMetadata(
     val lightPlayer: PlayerMetadata,
     val darkPlayer: PlayerMetadata
 ) {
+    val currentPlayer = if (board.historyMetadata.currentTurn == Light) lightPlayer else darkPlayer
+    fun isInCheck(color: Color): Boolean {
+        val king = if (color == Light) lightPlayer.king else darkPlayer.king
+        return squares[king.square]?.isAttackedBy?.any() ?: false
+    }
+
     companion object {
         fun from(board: Board): BoardMetadata {
             // Setup a bunch of mutable buckets to aggregate data efficiently
@@ -211,6 +217,10 @@ data class BoardMetadata(
         }
 
         private fun filterInvalidMoves(board: PotentialBoard) {
+            // remove invalid diagonal pawn moves
+            filterNonCapturingPawnMoves(board.lightMoves, board)
+            filterNonCapturingPawnMoves(board.darkMoves, board)
+
             // remove pins that aren't worthwhile
             filterFalsePins(board.lightMoves, board)
             filterFalsePins(board.darkMoves, board)
@@ -274,6 +284,19 @@ data class BoardMetadata(
 
         private fun disableUnless(moves: MutableSet<MoveMetadata>, board: PotentialBoard, shouldKeep: (MoveMetadata) -> Boolean) {
             moves.filterNot(shouldKeep).forEach { disableMove(it, moves, board) }
+        }
+
+        private fun filterNonCapturingPawnMoves(moves: PotentialMoves, board: PotentialBoard) {
+            moves.pawnMoves.toList().filterNot { moveMeta ->
+                when {
+                    // allow capturing
+                    moveMeta.capturing != null -> true
+                    // allow forward
+                    moveMeta.move.to.file == moveMeta.move.from.file -> true
+                    // else it's a diagonal non-capturing move
+                    else -> false // illegitimate
+                }
+            }.forEach { disableMove(it, moves.pawnMoves, board) }
         }
 
         private fun filterFalsePins(moves: PotentialMoves, board: PotentialBoard) {

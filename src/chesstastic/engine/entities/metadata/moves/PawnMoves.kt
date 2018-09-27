@@ -45,12 +45,15 @@ object PawnMoves {
         }
 
         // try to capture diagonals
-        val captureMoves = listOfNotNull(
+        val diagonalMoves = listOfNotNull(
             fromSquare.transform(1, rankDelta),
             fromSquare.transform(-1, rankDelta)
         ).flatMap { target ->
             val occupant = getPiece(target)?.let { PieceMetadata(it, target) }
-            if(occupant != null && occupant.piece.color == color.opposite) {
+            // allow diagonal moves to square that have no occupant.
+            // we want to get the moves so we can mark the squares as under attack
+            // we'll filter out the moves later
+            if(occupant == null && occupant?.piece?.color == color.opposite) {
                 if (target.rank == promotionRank) {
                     listOf(
                         MoveMetadata(Move.Promotion(fromSquare, target, Queen), Piece(Pawn, color), occupant),
@@ -65,7 +68,7 @@ object PawnMoves {
             } else listOf()
         }
 
-        return forwardMoves + captureMoves
+        return forwardMoves + diagonalMoves
     }
 
     private fun isEnPassantEligible(

@@ -7,9 +7,9 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 
 object TestReflection {
-    val testSuiteFactories: List<() -> ChessTestSuite> by lazy {
+    val testSuites: List<ChessTestSuite> by lazy {
         findTestClasses().map { kClass ->
-            { kClass.createInstance() as ChessTestSuite }
+            kClass.createInstance() as ChessTestSuite
         }
     }
 

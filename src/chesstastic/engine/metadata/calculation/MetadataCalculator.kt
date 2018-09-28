@@ -1,6 +1,8 @@
-package chesstastic.engine.calculators
+package chesstastic.engine.metadata.calculation
 
-import chesstastic.engine.calculators.moves.*
+import chesstastic.engine.metadata.calculation.models.PotentialBoard
+import chesstastic.engine.metadata.calculation.models.PotentialMoves
+import chesstastic.engine.metadata.calculation.moves.*
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
@@ -299,7 +301,14 @@ object MetadataCalculator {
                 // allow capturing
                 moveMeta.capturing != null -> true
                 // allow forward
-                moveMeta.move.to.file == moveMeta.move.from.file -> true
+                moveMeta.move.to.file == moveMeta.move.from.file -> {
+                    // but the square in from of the pawn is not attacked, since they can't capture forward
+                    val meta = board.squareMetadata[moveMeta.move.to]!!
+                    board.squareMetadata[moveMeta.move.to] = meta.copy(
+                        isAttackedBy = meta.isAttackedBy - moveMeta.pieceMetadata
+                    )
+                    true
+                }
                 // else it's a diagonal non-capturing move
                 else -> false // illegitimate
             }
@@ -307,7 +316,9 @@ object MetadataCalculator {
     }
 
     private fun filterFalsePins(moves: PotentialMoves, board: PotentialBoard) {
-        val illegitimatePins = moves.pins.filterNot { pin -> isPieceAtRisk(pin.pinned, pin.by, board) }
+        val illegitimatePins = moves.pins.filterNot { pin ->
+            pin.to.piece.kind == King || isPieceAtRisk(pin.pinned, pin.by, board)
+        }
         moves.pins.removeAll(illegitimatePins)
         illegitimatePins.forEach { pin ->
             val pinned = board.squareMetadata[pin.pinned.square]
@@ -398,7 +409,7 @@ object MetadataCalculator {
                 // remove moves from king into attacked squares
                 else -> listOf(moveMeta.move.to)
             }.any {
-                board.isSafeToMove(moveMeta.move.to, moveMeta.piece)
+                board.isNotSafeToMove(moveMeta.piece.color, moveMeta.move.to)
             }
             if(shouldRemove) { disableMove(moveMeta, moves.kingMoves, board) }
         }
@@ -474,73 +485,10 @@ object MetadataCalculator {
         kingInCheck: PieceMetadata,
         attacker: PieceMetadata
     ): (MoveMetadata) -> Boolean {
+        if (attacker.piece.kind == Knight) // can't block knight, only capture
+            return { it.move.to == attacker.square }
+        // otherwise, any move between the king and the attacker, or capturing the attacker, is valid.
         val pathToAttacker = kingInCheck.square.findPathTo(attacker.square)
         return { it.move.to in pathToAttacker }
     }
-}
-
-
-/**
- * Helper model for holding a bunch of mutable state while aggregating everything
- * during the big board metadata algorithm.
- *
- * Outside of this algorithm, I want the board metadata to be immutable,
- * so these are separate models for holding mutable collections
- */
-private data class PotentialBoard(
-    private val board: Board,
-    val squareMetadata: MutableMap<Square, SquareMetadata>,
-    val lightMoves: PotentialMoves,
-    val darkMoves: PotentialMoves,
-    val lightMetadata: PlayerMetadata,
-    val darkMetadata: PlayerMetadata
-) {
-    val historyMetadata = board.historyMetadata
-
-    val getPiece: (square: Square) -> Piece? = { board[it] }
-
-    fun isSafeToMove(square: Square, piece: Piece): Boolean {
-        val squareMeta = squareMetadata[square]
-            ?: throw Exception("Can find square meta at ${square}")
-        return squareMeta.isAttackedBy.any { it.piece.color == piece.color.opposite }
-            || squareMeta.isSupportedBy.any()
-    }
-
-    fun finalize() = BoardMetadata(
-        board,
-        squares = squareMetadata,
-        lightPlayer = lightMetadata.copy(moves = lightMoves.finalize()),
-        darkPlayer = darkMetadata.copy(moves = darkMoves.finalize())
-    )
-}
-
-private data class PotentialMoves(
-    val pawnMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val bishopMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val knightMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val rookMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val queenMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val kingMoves: MutableSet<MoveMetadata> = mutableSetOf(),
-    val pins: MutableSet<PinMetadata> = mutableSetOf(),
-    val skewers: MutableSet<SkewerMetadata> = mutableSetOf()
-) {
-    fun movesFor(kind: PieceKind): MutableSet<MoveMetadata> = when (kind) {
-        Pawn -> pawnMoves
-        Bishop -> bishopMoves
-        Knight -> knightMoves
-        Rook -> rookMoves
-        Queen -> queenMoves
-        King -> kingMoves
-    }
-
-    fun finalize() = PlayerMetadata.Moves(
-        pawnMoves = pawnMoves,
-        bishopMoves = bishopMoves,
-        knightMoves = knightMoves,
-        rookMoves = rookMoves,
-        queenMoves = queenMoves,
-        kingMoves = kingMoves,
-        pins = pins,
-        skewers = skewers
-    )
 }

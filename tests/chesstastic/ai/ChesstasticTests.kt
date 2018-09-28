@@ -25,7 +25,7 @@ class ChesstasticTests: ChessTestSuite() {
         }
 
         describe("full game") {
-            xit("should be able to play a full game without encountering errors") {
+            it("should be able to play a full game without encountering errors") {
                 var board = Board()
 
                 val player1 = Chesstastic(2, 2)

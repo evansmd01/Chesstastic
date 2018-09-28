@@ -166,6 +166,61 @@ class BoardTests: ChessTestSuite() {
 
                     canCaptureKing.shouldBe(false)
                 }
+
+                it("should be allowed to move king in front of pawn") {
+                    val board = Snapshot.parse("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | |n| |k| |n|N| |
+                        | | | |p| | | |p|
+                        | | | |N|p| |p|P|
+                        | | |P| | | |P| |
+                        | | | |K| |P| | |
+                        | | | | | | | | |
+                     """.trimIndent(), turn = Color.Light)
+
+                    board.metadata.lightPlayer.moves
+                        .kingMoves.map { it.move }
+                        .shouldContain(
+                            Move.parse("d2e3")
+                        )
+                }
+
+                it("should not be able to block check from a knight") {
+                    val board = Snapshot.parse("""
+                        | | | |k| | | |r|
+                        |Q| | |n| |N| |p|
+                        | |P| | | | | |n|
+                        | | | |p| | | |P|
+                        | | | | |P| | | |
+                        |b| | |B| | |P| |
+                        |P| |P| | |P| | |
+                        | | | | |K| | |R|
+                     """.trimIndent(), turn = Color.Dark)
+
+                    board.metadata.legalMoves.shouldBeEquivalentTo(setOf(
+                        Move.parse("h6f7"),
+                        Move.parse("d8e7"),
+                        Move.parse("d8e8"),
+                        Move.parse("d8c8")
+                    ))
+                }
+
+                it("should not be able to castle if the rook has been captured") {
+                    val board = Snapshot.parse("""
+                        |r| | | |k|b|n|r|
+                        |p|p|q| | |p|p|p|
+                        | | | | | | | | |
+                        | | |n| |p| | | |
+                        | | | |p|P| | | |
+                        |P| | |P| |b| |B|
+                        | |P|P| |N|P| |P|
+                        |R| |B|Q|K| | |R|
+                     """.trimIndent(), turn = Color.Dark, allowCastle = true)
+                        .updated(Move.parse("f3h1")!!) // capture the rook
+
+                    board.metadata.legalMoves.shouldNotContain(Move.parse("e1g1"))
+                }
             }
 
             describe("pins") {

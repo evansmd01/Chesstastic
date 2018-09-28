@@ -6,18 +6,18 @@ import chesstastic.engine.entities.Square
 
 data class CastleMetadata(
     val kingHasMoved: Boolean,
-    val kingsideRookHasMoved: Boolean,
-    val queensideRookHasMoved: Boolean,
+    val kingsideRookMovedOrCaptured: Boolean,
+    val queensideRookMovedOrCaptured: Boolean,
     val squares: CastleSquares
 ) {
-    fun updated(movedFrom: Square): CastleMetadata {
+    fun updated(removedFrom: Square): CastleMetadata {
         return when {
-            !kingHasMoved && movedFrom == squares.king ->
+            !kingHasMoved && removedFrom == squares.king ->
                 copy(kingHasMoved = true)
-            !kingsideRookHasMoved && movedFrom == squares.kingsideRook ->
-                copy(kingsideRookHasMoved = true)
-            !queensideRookHasMoved && movedFrom == squares.queensideRook ->
-                copy(queensideRookHasMoved = true)
+            !kingsideRookMovedOrCaptured && removedFrom == squares.kingsideRook ->
+                copy(kingsideRookMovedOrCaptured = true)
+            !queensideRookMovedOrCaptured && removedFrom == squares.queensideRook ->
+                copy(queensideRookMovedOrCaptured = true)
             else -> this
         }
     }

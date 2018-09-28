@@ -20,8 +20,12 @@ data class HistoryMetadata(
         HistoryMetadata(
             history = History(moveData.move, history),
             currentTurn = currentTurn.opposite,
-            lightCastleMetadata = lightCastleMetadata.updated(moveData.move.from),
-            darkCastleMetadata = darkCastleMetadata.updated(moveData.move.from),
+            lightCastleMetadata = lightCastleMetadata.updated(
+                if(currentTurn == Light) moveData.move.from else moveData.move.to
+            ),
+            darkCastleMetadata = darkCastleMetadata.updated(
+                if(currentTurn == Dark) moveData.move.from else moveData.move.to
+            ),
             inactivityCount = when {
                 moveData.piece.kind == PieceKind.Pawn -> 0
                 moveData.capturing != null -> 0

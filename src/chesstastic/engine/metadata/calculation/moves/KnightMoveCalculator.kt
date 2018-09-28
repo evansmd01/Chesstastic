@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators.moves
+package chesstastic.engine.metadata.calculation.moves
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.metadata.MoveMetadata
@@ -16,7 +16,7 @@ object KnightMoveCalculator {
                 val support = if (occupant?.piece?.color == color) occupant else null
                 MoveMetadata(
                     move = Move.Basic(fromSquare, square),
-                    piece = Piece(PieceKind.King, color),
+                    piece = Piece(PieceKind.Knight, color),
                     capturing = capture,
                     supporting = support
                 )

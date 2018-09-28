@@ -17,6 +17,7 @@ object CliGameLoop {
         var lightAI: AIPlayer? = null
         var darkAI: AIPlayer? = null
         gameLoop@ while (true) {
+
             println()
             println()
             if (skipPrint) skipPrint = false

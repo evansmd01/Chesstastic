@@ -3,11 +3,7 @@ package chesstastic.testing.framework
 import chesstastic.engine.entities.*
 import chesstastic.util.*
 
-abstract class ChessTestSuite: ChessTestContext(parent = null), AssertionHelpers {
-    init {
-        println("Running: ${javaClass.kotlin.simpleName}")
-    }
-}
+abstract class ChessTestSuite: ChessTestContext(parent = null), AssertionHelpers
 
 open class ChessTestContext(val parent: ChessTestContext?) {
     private val children = mutableListOf<ChessTestContext>()
@@ -24,30 +20,58 @@ open class ChessTestContext(val parent: ChessTestContext?) {
         else " "
     }
 
-    fun xit(scenario: String, apply: () -> Unit) {
-        skipCount++
-        printlnYellow("$indent- [SKIPPING] $scenario")
-    }
+    protected val tasks: MutableList<() -> Unit> = mutableListOf()
+    fun taskCount():Int = tasks.count() + children.sumBy { it.taskCount() }
 
-    fun it(scenario: String, apply: () -> Unit) {
-        try {
-            apply.invoke()
-            successCount++
-            printlnGreen("$indent- $scenario")
-        }
-        catch(error: Error) {
-            failCount++
-            printlnRed("$indent- it $scenario")
-            printlnRed("$indent   TEST FAILED: ${error.message}")
-            printlnRed("$indent   " + error.stackTrace.joinToString(separator = "\n$indent   ") { it.toString() })
+    protected val focusedTasks: MutableList<() -> Unit> = mutableListOf()
+    fun hasFocus() = focusedTasks.any()
+
+    fun execute() {
+        if (focusedTasks.any()) {
+            focusedTasks.forEach { it.invoke() }
+        } else {
+            tasks.forEach { it.invoke() }
         }
     }
 
-    fun describe(descriptor: String, apply: ChessTestContext.() -> Unit) {
-        printlnGreen("$indent- $descriptor")
-        val context = ChessTestContext(this)
-        children.add(context)
-        context.apply()
+    fun it(scenario: String, focus: Boolean = false, skip: Boolean = false, apply: () -> Unit) {
+        if (skip) {
+            tasks.add {
+                skipCount++
+                printlnYellow("$indent- [SKIPPING] $scenario")
+            }
+        } else {
+            (if (focus) focusedTasks else tasks).add {
+                try {
+                    apply.invoke()
+                    successCount++
+                    printlnGreen("$indent- $scenario")
+                } catch (error: Error) {
+                    failCount++
+                    printlnRed("$indent- it $scenario")
+                    printlnRed("$indent   TEST FAILED: ${error.message}")
+                    printlnRed("$indent   " + error.stackTrace.joinToString(separator = "\n$indent   ") { it.toString() })
+                }
+            }
+        }
+    }
+
+    fun describe(descriptor: String, focus: Boolean = false, skip: Boolean = false, apply: ChessTestContext.() -> Unit) {
+        val childContext = ChessTestContext(this)
+        childContext.apply()
+        children.add(childContext)
+
+        if (skip) {
+            tasks.add {
+                skipCount += childContext.taskCount()
+                printlnYellow("$indent- [SKIPPING] $descriptor")
+            }
+        } else {
+            (if (focus || childContext.hasFocus()) focusedTasks else tasks).add {
+                printlnGreen("$indent- $descriptor")
+                childContext.execute()
+            }
+        }
     }
 }
 
@@ -71,6 +95,10 @@ interface AssertionHelpers {
 
     fun <T> Collection<T>.shouldContain(expected: T) {
         if (!this.contains(expected)) throw AssertionError("$this did not contain $expected")
+    }
+
+    fun <T> Collection<T>.shouldNotContain(unexpected: T) {
+        if(this.contains(unexpected)) throw AssertionError("$this contained $unexpected")
     }
 
     fun <T> Collection<T>.shouldNotContain(unexpected: (T) -> Boolean) {

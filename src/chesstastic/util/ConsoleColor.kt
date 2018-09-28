@@ -20,3 +20,5 @@ fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
 fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)
 
 fun printlnYellow(message: String) = printlnColor(ConsoleColor.YELLOW, message)
+
+fun printlnCyan(message: String) = printlnColor(ConsoleColor.CYAN, message)

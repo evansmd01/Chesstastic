@@ -1,6 +1,6 @@
 package chesstastic.engine.entities
 
-import chesstastic.engine.calculators.MetadataCalculator
+import chesstastic.engine.metadata.calculation.MetadataCalculator
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.metadata.*
@@ -28,7 +28,7 @@ class Board(
     }
 
     private fun applyMove(move: Move): Pair<Array<Array<Piece?>>, MoveMetadata> {
-        val movingPiece = get(move.from) ?: throw Error("Invalid move, there is no piece on ${move.from}")
+        val movingPiece = get(move.from) ?: throw Exception("Invalid move $move.\nHistory: $this")
         var captured: PieceMetadata? = state[move.to.rank.index][move.to.file.index]?.let { PieceMetadata(it, move.to) }
         val newState = state.map { it.copyOf() }.toTypedArray()
         newState[move.from.rank.index][move.from.file.index] = null

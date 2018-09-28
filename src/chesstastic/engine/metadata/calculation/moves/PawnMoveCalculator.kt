@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators.moves
+package chesstastic.engine.metadata.calculation.moves
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*

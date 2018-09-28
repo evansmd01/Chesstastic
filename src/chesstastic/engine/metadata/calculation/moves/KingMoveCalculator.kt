@@ -1,4 +1,4 @@
-package chesstastic.engine.calculators.moves
+package chesstastic.engine.metadata.calculation.moves
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.metadata.CastleMetadata
@@ -33,12 +33,12 @@ object KingMoveCalculator {
         return if (!castleMetadata.kingHasMoved) {
             listOfNotNull(
                 when {
-                    castleMetadata.kingsideRookHasMoved -> null
+                    castleMetadata.kingsideRookMovedOrCaptured -> null
                     castleMetadata.squares.kingsidePassing.any { getPiece(it) != null } -> null
                     else -> MoveMetadata(Move.Castle.Kingside(color), Piece(PieceKind.King, color), null, null)
                 },
                 when {
-                    castleMetadata.queensideRookHasMoved -> null
+                    castleMetadata.queensideRookMovedOrCaptured -> null
                     castleMetadata.squares.queensidePassing.any { getPiece(it) != null } -> null
                     else -> MoveMetadata(Move.Castle.Queenside(color), Piece(PieceKind.King, color), null, null)
                 }

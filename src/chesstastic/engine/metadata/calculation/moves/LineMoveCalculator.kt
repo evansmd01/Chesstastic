@@ -1,9 +1,9 @@
-package chesstastic.engine.calculators.moves
+package chesstastic.engine.metadata.calculation.moves
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Direction.HorizontalAndVertical.*
 import chesstastic.engine.entities.Direction.Diagonal.*
-import chesstastic.engine.calculators.moves.LineMoveCalculator.Continuation
+import chesstastic.engine.metadata.calculation.moves.LineMoveCalculator.Continuation
 import chesstastic.engine.metadata.MoveMetadata
 import chesstastic.engine.metadata.PieceMetadata
 

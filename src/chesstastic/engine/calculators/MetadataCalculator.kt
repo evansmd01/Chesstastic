@@ -162,12 +162,11 @@ object MetadataCalculator {
     ) {
         fromPieces.forEach{ attacker ->
             calculator.calculate(attacker.square, attacker.piece, board.getPiece) { moveMeta, previousCapture ->
-                val toSquareMeta = board.squareMetadata[moveMeta.move.to]
-                    ?: throw Exception("No metadata at ${moveMeta.move.to}")
-
                 when {
                     moveMeta.supporting != null -> {
                         // ally is supported
+                        val toSquareMeta = board.squareMetadata[moveMeta.move.to]
+                            ?: throw Exception("No metadata at ${moveMeta.move.to}")
                         board.squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
                             isSupportedBy = toSquareMeta.isSupportedBy + attacker
                         )
@@ -183,8 +182,10 @@ object MetadataCalculator {
                                 to = moveMeta.capturing
                             )
                             moves.skewers.add(skewer)
-                            board.squareMetadata[previousCapture.square] = toSquareMeta.copy(
-                                skewers = toSquareMeta.skewers + skewer
+                            val prevSquareMeta = board.squareMetadata[previousCapture.square]
+                                ?: throw Exception("No metadata at ${previousCapture.square}")
+                            board.squareMetadata[previousCapture.square] = prevSquareMeta.copy(
+                                skewers = prevSquareMeta.skewers + skewer
                             )
                         } else {
                             // pin
@@ -194,13 +195,17 @@ object MetadataCalculator {
                                 to = moveMeta.capturing
                             )
                             moves.pins.add(pin)
-                            board.squareMetadata[previousCapture.square] = toSquareMeta.copy(
-                                pins = toSquareMeta.pins + pin
+                            val prevSquareMeta = board.squareMetadata[previousCapture.square]
+                                ?: throw Exception("No metadata at ${previousCapture.square}")
+                            board.squareMetadata[previousCapture.square] = prevSquareMeta.copy(
+                                pins = prevSquareMeta.pins + pin
                             )
                         }
                         LineMoveCalculator.Continuation.Stop // no more attacks or moves
                     }
                     previousCapture == null -> {
+                        val toSquareMeta = board.squareMetadata[moveMeta.move.to]
+                            ?: throw Exception("No metadata at ${moveMeta.move.to}")
                         board.squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
                             isAttackedBy = toSquareMeta.isAttackedBy + attacker
                         )

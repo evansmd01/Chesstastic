@@ -60,6 +60,22 @@ class BoardTests: ChessTestSuite() {
                 val result = board.metadata.isCheck
                 result.shouldBe(true)
             }
+
+            it("should detect queen check") {
+                val board = Snapshot.parse("""
+                    |r|n|b| |k| | |r|
+                    |p| | |p| |p|p|p|
+                    | | |p| |p| | | |
+                    | | | | | | |q| |
+                    | |P| | | | | | |
+                    |P| | | | | |K|P|
+                    |R| |P|P|B| |P| |
+                    | |N|B|Q| | |N|R|
+                """.trimIndent(), turn = Color.Light)
+
+                val result = board.metadata.isCheck
+                result.shouldBe(true)
+            }
         }
 
         describe("isCheckmate") {

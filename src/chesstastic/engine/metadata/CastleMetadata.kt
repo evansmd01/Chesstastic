@@ -1,8 +1,8 @@
 package chesstastic.engine.metadata
 
-import chesstastic.engine.entities.File
-import chesstastic.engine.entities.Rank
-import chesstastic.engine.entities.Square
+import chesstastic.engine.entities.File.*
+import chesstastic.engine.entities.Rank.*
+import chesstastic.engine.entities.*
 
 data class CastleMetadata(
     val kingHasMoved: Boolean,
@@ -31,22 +31,29 @@ data class CastleMetadata(
         val king: Square,
         val kingsideRook: Square,
         val queensideRook: Square,
-        val kingsidePassing: Set<Square>,
-        val queensidePassing: Set<Square>) {
+        val kingsidePassingCheck: Set<Square>,
+        val queensidePassingCheck: Set<Square>,
+        private val queensideExtraBlockingSquare: Square
+    ) {
+        val kingsideBlocking = kingsidePassingCheck
+        val queensideBlocking = queensidePassingCheck + queensideExtraBlockingSquare
+
         companion object {
             val LIGHT = CastleSquares(
-                Square(File.E, Rank._1),
-                Square(File.H, Rank._1),
-                Square(File.A, Rank._1),
-                setOf(Square(File.F, Rank._1), Square(File.G, Rank._1)),
-                setOf(Square(File.D, Rank._1), Square(File.C, Rank._1))
+                Square(E, _1),
+                Square(H, _1),
+                Square(A, _1),
+                setOf(Square(F, _1), Square(G, _1)),
+                setOf(Square(D, _1), Square(C, _1)),
+                Square(B, _1)
             )
             val DARK = CastleSquares(
-                Square(File.E, Rank._8),
-                Square(File.H, Rank._8),
-                Square(File.A, Rank._8),
-                setOf(Square(File.F, Rank._8), Square(File.G, Rank._8)),
-                setOf(Square(File.D, Rank._8), Square(File.C, Rank._8))
+                Square(E, _8),
+                Square(H, _8),
+                Square(A, _8),
+                setOf(Square(F, _8), Square(G, _8)),
+                setOf(Square(D, _8), Square(C, _8)),
+                Square(B, _8)
             )
         }
     }

@@ -221,6 +221,36 @@ class BoardTests: ChessTestSuite() {
 
                     board.metadata.legalMoves.shouldNotContain(Move.parse("e1g1"))
                 }
+
+                it("should not allow castling while in check") {
+                    val board = Snapshot.parse("""
+                        |r| | | |k|b| |r|
+                        |p|p|N| |p|p|p|p|
+                        | | | | | | | |n|
+                        | | | | | | | | |
+                        | | | |P| | | | |
+                        | | | | | | | | |
+                        |P|P|P| | |P|P|P|
+                        |R| |B|b|K|B| |R|
+                     """.trimIndent(), turn = Color.Dark, allowCastle = true)
+
+                    board.metadata.legalMoves.shouldNotContain(Move.parse("e8c8"))
+                }
+
+                it("should not allow castling through pieces") {
+                    val board = Snapshot.parse("""
+                        |r|n| | |k|b| |r|
+                        |p|p| | |p|p|p|p|
+                        | | | | | | | |n|
+                        | | | | | | | | |
+                        | | | |P| | | | |
+                        | | | | | | | | |
+                        |P|P|P| | |P|P|P|
+                        |R| |B|b|K|B| |R|
+                     """.trimIndent(), turn = Color.Dark, allowCastle = true)
+
+                    board.metadata.legalMoves.shouldNotContain(Move.parse("e8c8"))
+                }
             }
 
             describe("pins") {

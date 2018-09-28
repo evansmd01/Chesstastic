@@ -1,6 +1,5 @@
 package chesstastic.performance
 
-import chesstastic.ai.heuristics.Score
 import chesstastic.ai.training.TrainingDataFile
 import chesstastic.engine.entities.Board
 import chesstastic.testing.framework.ChessTestSuite

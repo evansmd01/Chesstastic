@@ -34,12 +34,12 @@ object KingMoveCalculator {
             listOfNotNull(
                 when {
                     castleMetadata.kingsideRookMovedOrCaptured -> null
-                    castleMetadata.squares.kingsidePassing.any { getPiece(it) != null } -> null
+                    castleMetadata.squares.kingsideBlocking.any { getPiece(it) != null } -> null
                     else -> MoveMetadata(Move.Castle.Kingside(color), Piece(PieceKind.King, color), null, null)
                 },
                 when {
                     castleMetadata.queensideRookMovedOrCaptured -> null
-                    castleMetadata.squares.queensidePassing.any { getPiece(it) != null } -> null
+                    castleMetadata.squares.queensideBlocking.any { getPiece(it) != null } -> null
                     else -> MoveMetadata(Move.Castle.Queenside(color), Piece(PieceKind.King, color), null, null)
                 }
             )

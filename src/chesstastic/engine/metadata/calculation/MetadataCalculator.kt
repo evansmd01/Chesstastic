@@ -404,12 +404,12 @@ object MetadataCalculator {
         moves.kingMoves.toList().forEach { moveMeta ->
             val shouldRemove = when (moveMeta.move) {
                 // remove castles that pass through attacked squares
-                is Move.Castle.Queenside -> castleSquares.queensidePassing + moveMeta.move.from
-                is Move.Castle.Kingside -> castleSquares.kingsidePassing + moveMeta.move.from
+                is Move.Castle.Queenside -> castleSquares.queensidePassingCheck + moveMeta.move.from
+                is Move.Castle.Kingside -> castleSquares.kingsidePassingCheck + moveMeta.move.from
                 // remove moves from king into attacked squares
                 else -> listOf(moveMeta.move.to)
             }.any {
-                board.isNotSafeToMove(moveMeta.piece.color, moveMeta.move.to)
+                board.isNotSafeToMove(moveMeta.piece.color, it)
             }
             if(shouldRemove) { disableMove(moveMeta, moves.kingMoves, board) }
         }

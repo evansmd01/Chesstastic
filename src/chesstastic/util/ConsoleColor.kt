@@ -13,8 +13,10 @@ class ConsoleColor {
     }
 }
 
+private fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
+
 fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
 
-fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
-
 fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)
+
+fun printlnYellow(message: String) = printlnColor(ConsoleColor.YELLOW, message)

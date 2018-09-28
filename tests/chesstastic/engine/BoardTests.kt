@@ -1,5 +1,7 @@
-package chesstastic.engine.entities
+package chesstastic.engine
 
+import chesstastic.engine.entities.Board
+import chesstastic.engine.entities.Color
 import chesstastic.testing.framework.ChessTestSuite
 import chesstastic.util.Snapshot
 
@@ -41,6 +43,22 @@ class BoardTests: ChessTestSuite() {
 
                 board.metadata.isCheck.shouldBe(true)
             }
+
+            it("should detect knight check") {
+                val board = Snapshot.parse("""
+                    |r|n|b|q| |b|n| |
+                    | |p|p|k| | | | |
+                    |p| | |p| |p| |r|
+                    | | | | |N| |p| |
+                    | | | |P| | | |N|
+                    | | | |K| | | | |
+                    |P|P|P| |P|P|P|P|
+                    |R| | |Q| |B| |R|
+                """.trimIndent(), turn = Color.Dark)
+
+                val result = board.metadata.isCheck
+                result.shouldBe(true)
+            }
         }
 
         describe("isCheckmate") {
@@ -56,7 +74,8 @@ class BoardTests: ChessTestSuite() {
                     |R|N|B| |K|B| |R|
                 """.trimIndent(), turn = Color.Dark)
 
-                board.metadata.isCheckmate.shouldBe(true)
+                val result = board.metadata.isCheckmate
+                result.shouldBe(true)
             }
         }
 

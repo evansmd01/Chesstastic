@@ -48,7 +48,7 @@ class Board(
             }
         }
 
-        return Pair(newState, MoveMetadata(move, movingPiece, captured))
+        return Pair(newState, MoveMetadata(move, movingPiece, captured, null))
     }
 
     fun positionEquals(other: Board): Boolean = other.state.contentDeepEquals(this.state)

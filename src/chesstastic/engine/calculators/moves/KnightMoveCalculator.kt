@@ -11,9 +11,15 @@ object KnightMoveCalculator {
             .map { square ->
                 square to getPiece(square)?.let { PieceMetadata(it, square) }
             }
-            .filterNot { (_, meta) -> meta?.piece?.color == color }
-            .map { (square, maybeCaptured) ->
-                MoveMetadata(Move.Basic(fromSquare, square), Piece(PieceKind.Knight, color), maybeCaptured)
+            .map { (square, occupant) ->
+                val capture = if (occupant?.piece?.color == color.opposite) occupant else null
+                val support = if (occupant?.piece?.color == color) occupant else null
+                MoveMetadata(
+                    move = Move.Basic(fromSquare, square),
+                    piece = Piece(PieceKind.King, color),
+                    capturing = capture,
+                    supporting = support
+                )
             }
             .toList()
 

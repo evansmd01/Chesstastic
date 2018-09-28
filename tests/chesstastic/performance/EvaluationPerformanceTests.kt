@@ -6,10 +6,11 @@ import chesstastic.engine.entities.Board
 import chesstastic.testing.framework.ChessTestSuite
 import chesstastic.util.Stopwatch
 
+@Suppress("unused")
 class EvaluationPerformanceTests: ChessTestSuite() {
     init {
         describe("evaluating the scores of ever position in 20 games") {
-            it("records performance") {
+            xit("records performance") {
                 val filename = "100-games.txt"
                 val file = TrainingDataFile(filename)
                 var positionCount = 0
@@ -22,7 +23,7 @@ class EvaluationPerformanceTests: ChessTestSuite() {
                             board = board.updated(move)
                             positionCount++
                             // todo: grab board score to really be sure evaluation got kicked off.
-                            val metadata = board.metadata
+                            val meta = board.metadata
                         }
                     }.toList() // synchronously waits for the sequence to fully materialize
                 }

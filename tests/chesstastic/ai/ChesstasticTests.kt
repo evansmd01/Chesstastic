@@ -15,10 +15,10 @@ class ChesstasticTests: ChessTestSuite() {
                 val mock = MockHeuristic()
                 val subject = Chesstastic(3, 3, heuristicFactories = listOf({ _ -> mock }))
 
-                val selectedMove: Move = subject.selectMove(board)
+                val selectedMove = subject.selectMove(board)
 
-                val bestEvaluation: EvaluationRecord = mock.bestEvaluationFor(board.historyMetadata.currentTurn)
-                val bestFirstMove: Move = bestEvaluation.board.historyMetadata.history.first()!!
+                val bestEvaluation = mock.bestEvaluationFor(board.historyMetadata.currentTurn)
+                val bestFirstMove = bestEvaluation.board.historyMetadata.history.first()!!
 
                 selectedMove.shouldBe(bestFirstMove)
             }
@@ -40,7 +40,7 @@ class ChesstasticTests: ChessTestSuite() {
     }
 }
 
-class MockHeuristic: Heuristic {
+private class MockHeuristic: Heuristic {
     private val records = mutableListOf<EvaluationRecord>()
 
     fun bestEvaluationFor(color: Color): EvaluationRecord {
@@ -77,6 +77,7 @@ class MockHeuristic: Heuristic {
         return score
     }
 
+    data class EvaluationRecord(val score: Score, val board: Board)
 }
 
-data class EvaluationRecord(val score: Score, val board: Board)
+

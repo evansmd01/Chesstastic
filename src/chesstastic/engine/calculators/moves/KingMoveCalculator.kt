@@ -12,9 +12,15 @@ object KingMoveCalculator {
             .map { square ->
                 square to getPiece(square)?.let { PieceMetadata(it, square) }
             }
-            .filterNot { (_, meta) -> meta?.piece?.color == color }
-            .map { (square, maybeCaptured) ->
-                MoveMetadata(Move.Basic(fromSquare, square), Piece(PieceKind.King, color), maybeCaptured)
+            .map { (square, occupant) ->
+                val capture = if (occupant?.piece?.color == color.opposite) occupant else null
+                val support = if (occupant?.piece?.color == color) occupant else null
+                MoveMetadata(
+                    move = Move.Basic(fromSquare, square),
+                    piece = Piece(PieceKind.King, color),
+                    capturing = capture,
+                    supporting = support
+                )
             }
             .toList()
 
@@ -29,12 +35,12 @@ object KingMoveCalculator {
                 when {
                     castleMetadata.kingsideRookHasMoved -> null
                     castleMetadata.squares.kingsidePassing.any { getPiece(it) != null } -> null
-                    else -> MoveMetadata(Move.Castle.Kingside(color), Piece(PieceKind.King, color), null)
+                    else -> MoveMetadata(Move.Castle.Kingside(color), Piece(PieceKind.King, color), null, null)
                 },
                 when {
                     castleMetadata.queensideRookHasMoved -> null
                     castleMetadata.squares.queensidePassing.any { getPiece(it) != null } -> null
-                    else -> MoveMetadata(Move.Castle.Queenside(color), Piece(PieceKind.King, color), null)
+                    else -> MoveMetadata(Move.Castle.Queenside(color), Piece(PieceKind.King, color), null, null)
                 }
             )
         } else listOf()

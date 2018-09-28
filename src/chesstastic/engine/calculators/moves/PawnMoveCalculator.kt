@@ -28,19 +28,19 @@ object PawnMoveCalculator {
             // promotion
             if (forwardOne.rank == promotionRank) {
                 forwardMoves.add(
-                    MoveMetadata(Move.Promotion(fromSquare, forwardOne, Queen), Piece(Pawn, color), null))
+                    MoveMetadata(Move.Promotion(fromSquare, forwardOne, Queen), Piece(Pawn, color), null, null))
                 forwardMoves.add(MoveMetadata(
-                    Move.Promotion(fromSquare, forwardOne, Knight), Piece(Pawn, color), null))
+                    Move.Promotion(fromSquare, forwardOne, Knight), Piece(Pawn, color), null, null))
             } else
                 forwardMoves.add(
-                    MoveMetadata(Move.Basic(fromSquare, forwardOne), Piece(Pawn, color), null))
+                    MoveMetadata(Move.Basic(fromSquare, forwardOne), Piece(Pawn, color), null, null))
 
             // Double starting move
             if (fromSquare.rank == startingRank(color)) {
                 val forwardTwo = forwardOne.transform(0, rankDelta)!!
                 isBlocked = getPiece(forwardTwo) != null
                 if (!isBlocked) forwardMoves.add(
-                    MoveMetadata(Move.Basic(fromSquare, forwardTwo), Piece(Pawn, color), null))
+                    MoveMetadata(Move.Basic(fromSquare, forwardTwo), Piece(Pawn, color), null, null))
             }
         }
 
@@ -50,22 +50,22 @@ object PawnMoveCalculator {
             fromSquare.transform(-1, rankDelta)
         ).flatMap { target ->
             val occupant = getPiece(target)?.let { PieceMetadata(it, target) }
-            // allow diagonal moves to square that have no occupant.
-            // we want to get the moves so we can mark the squares as under attack
-            // we'll filter out the moves later
-            if(occupant == null && occupant?.piece?.color == color.opposite) {
-                if (target.rank == promotionRank) {
-                    listOf(
-                        MoveMetadata(Move.Promotion(fromSquare, target, Queen), Piece(Pawn, color), occupant),
-                        MoveMetadata(Move.Promotion(fromSquare, target, Knight), Piece(Pawn, color), occupant)
-                    )
-                } else {
-                    listOf(MoveMetadata(Move.Basic(fromSquare, target), Piece(Pawn, color), occupant))
+            val capturing = if (occupant?.piece?.color == color.opposite) occupant else null
+            val supporting = if (occupant?.piece?.color == color) occupant else null
+            when {
+                isEnPassantEligible(color, fromSquare, target, historyMetadata) -> {
+                    val move = Move.EnPassant(fromSquare, target)
+                    listOf(MoveMetadata(move, Piece(Pawn, color), PieceMetadata(Piece(Pawn, color.opposite), move.captured), null))
                 }
-            } else if (isEnPassantEligible(color, fromSquare, target, historyMetadata)) {
-                val move = Move.EnPassant(fromSquare, target)
-                listOf(MoveMetadata(move, Piece(Pawn, color), PieceMetadata(Piece(Pawn, color.opposite), move.captured)))
-            } else listOf()
+                target.rank == promotionRank -> listOf(
+                    MoveMetadata(Move.Promotion(fromSquare, target, Queen), Piece(Pawn, color),
+                        capturing = capturing, supporting = supporting),
+                    MoveMetadata(Move.Promotion(fromSquare, target, Knight), Piece(Pawn, color),
+                        capturing = capturing, supporting = supporting)
+                )
+                else -> listOf(MoveMetadata(Move.Basic(fromSquare, target), Piece(Pawn, color),
+                    capturing = capturing, supporting = supporting))
+            }
         }
 
         return forwardMoves + diagonalMoves

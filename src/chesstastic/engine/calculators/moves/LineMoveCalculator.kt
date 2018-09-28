@@ -4,11 +4,15 @@ import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Direction.HorizontalAndVertical.*
 import chesstastic.engine.entities.Direction.Diagonal.*
 import chesstastic.engine.calculators.moves.LineMoveCalculator.Continuation
+import chesstastic.engine.metadata.MoveMetadata
+import chesstastic.engine.metadata.PieceMetadata
 
 interface LineMoveCalculator {
     fun calculate(
         fromSquare: Square,
-        process: (Move) -> Continuation
+        piece: Piece,
+        getPiece: (Square) -> Piece?,
+        process: (move: MoveMetadata, previousCapture: PieceMetadata?) -> Continuation
     )
 
     enum class Continuation {
@@ -22,23 +26,34 @@ interface LineMoveCalculatorIn<T: Enum<T>>: LineMoveCalculator {
 
     override fun calculate(
         fromSquare: Square,
-        process: (Move) -> Continuation
+        piece: Piece,
+        getPiece: (Square) -> Piece?,
+        process: (move: MoveMetadata, previousCapture: PieceMetadata?) -> Continuation
     ) {
-        directions.forEach { moveInDirection(it, fromSquare, fromSquare, process) }
+        directions.forEach { moveInDirection(it, piece, getPiece, fromSquare, fromSquare, null, process) }
     }
 
     private fun moveInDirection(
         direction: T,
+        piece: Piece,
+        getPiece: (Square) -> Piece?,
         fromSquare: Square,
         previousSquare: Square,
-        process: (Move) -> Continuation
+        previousCapture: PieceMetadata?,
+        process: (move: MoveMetadata, previousCapture: PieceMetadata?) -> Continuation
     ) {
         val toSquare = previousSquare.transform(direction)
         if(toSquare != null) {
-            val then = process(Move.Basic(fromSquare, toSquare))
-            if (then == Continuation.KeepGoing) {
-                moveInDirection(direction, fromSquare, toSquare, process)
-            }
+            val occupant = getPiece(toSquare)
+            val capture = if (occupant?.color == piece.color.opposite) PieceMetadata(occupant, toSquare) else null
+            val support = if (occupant?.color == piece.color) PieceMetadata(occupant, toSquare) else null
+            val moveMeta = MoveMetadata(Move.Basic(fromSquare, toSquare), piece, capturing = capture, supporting = support)
+            if (previousCapture == null || capture != null) {
+                val then = process(moveMeta, previousCapture)
+                if (then == Continuation.KeepGoing) {
+                    moveInDirection(direction, piece, getPiece, fromSquare, toSquare, previousCapture, process)
+                }
+            } else moveInDirection(direction, piece, getPiece, fromSquare, toSquare, previousCapture, process)
         }
     }
 }

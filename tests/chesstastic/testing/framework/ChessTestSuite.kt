@@ -15,11 +15,18 @@ open class ChessTestContext(val parent: ChessTestContext?) {
     fun totalSuccessCount(): Int = successCount + children.sumBy { it.totalSuccessCount() }
     private var failCount = 0
     fun totalFailCount(): Int = failCount + children.sumBy { it.totalFailCount() }
+    private var skipCount = 0
+    fun totalSkipCount(): Int = skipCount + children.sumBy { it.totalSkipCount() }
 
     private val indent: String by lazy {
         if(parent != null)
             parent.indent + "  "
         else " "
+    }
+
+    fun xit(scenario: String, apply: () -> Unit) {
+        skipCount++
+        printlnYellow("$indent- [SKIPPING] $scenario")
     }
 
     fun it(scenario: String, apply: () -> Unit) {

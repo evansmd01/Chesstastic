@@ -21,17 +21,23 @@ data class BoardMetadata(
     val lightPlayer: PlayerMetadata,
     val darkPlayer: PlayerMetadata
 ) {
-    val currentPlayer = if (board.historyMetadata.currentTurn == Light) lightPlayer else darkPlayer
-    fun isInCheck(color: Color): Boolean {
+    private val currentPlayer = if (board.historyMetadata.currentTurn == Light) lightPlayer else darkPlayer
+    private fun isInCheck(color: Color): Boolean {
         val king = if (color == Light) lightPlayer.king else darkPlayer.king
-        return squares[king.square]?.isAttackedBy?.any() ?: false
+        val kingSquare = squares[king.square] ?: throw Exception("Could not find king square")
+        return kingSquare.isAttackedBy.any()
     }
 
     val legalMoves by lazy { currentPlayer.moves.all.map{ it.move } }
-    val isCheck by lazy { isInCheck(board.historyMetadata.currentTurn) }
-    val isCheckmate by lazy { legalMoves.isEmpty() && isCheck }
-    private val inactivityLimit = 100 // TODO: Verify the "50 move rule" defines a "move" as both players having taken a turn, hence 100 here.
-    private val remainingPieces by lazy { (lightPlayer.allPieces + darkPlayer.allPieces).size }
-    val isStalemate by lazy { board.historyMetadata.inactivityCount >= inactivityLimit || (legalMoves.count() == 0 && !isCheck) || remainingPieces <= 2 }
-    val isGameOver by lazy { isStalemate || isCheckmate }
+    val isCheck = isInCheck(board.historyMetadata.currentTurn)
+    val isCheckmate = isCheck && currentPlayer.moves.all.isEmpty()
+    val isStalemate by lazy {
+        val inactivityLimit = 100 // TODO: Verify the "50 move rule" counts 1 move as 2 players moving. i.e. a turn.
+        val inactivityLimitReached = board.historyMetadata.inactivityCount >= inactivityLimit
+        val noLegalMoves = currentPlayer.moves.all.isEmpty() && !isCheck
+        val remainingPieces = (lightPlayer.allPieces + darkPlayer.allPieces).size
+        inactivityLimitReached || noLegalMoves || remainingPieces <= 2
+    }
+
+    val isGameOver = isStalemate || isCheckmate
 }

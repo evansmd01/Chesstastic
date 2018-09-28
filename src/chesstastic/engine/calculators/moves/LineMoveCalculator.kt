@@ -51,7 +51,7 @@ interface LineMoveCalculatorIn<T: Enum<T>>: LineMoveCalculator {
             if (previousCapture == null || capture != null) {
                 val then = process(moveMeta, previousCapture)
                 if (then == Continuation.KeepGoing) {
-                    moveInDirection(direction, piece, getPiece, fromSquare, toSquare, previousCapture, process)
+                    moveInDirection(direction, piece, getPiece, fromSquare, toSquare, capture, process)
                 }
             } else moveInDirection(direction, piece, getPiece, fromSquare, toSquare, previousCapture, process)
         }

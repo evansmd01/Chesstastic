@@ -56,24 +56,24 @@ interface AssertionHelpers {
         if (this != expected) throw AssertionError("$this did not equal $expected")
     }
 
-    fun <T> Iterable<T>.shouldBe(expected: Iterable<T>) {
+    fun <T> Collection<T>.shouldBe(expected: Collection<T>) {
         if (this != expected) throw AssertionError("$this did not equal $expected")
     }
 
-    fun <T> Iterable<T>.shouldBeEquivalentTo(expected: Iterable<T>) {
+    fun <T> Collection<T>.shouldBeEquivalentTo(expected: Collection<T>) {
         if (this.count() != expected.count()) throw AssertionError("$this was not equivalent to $expected")
         this.shouldContainAll(expected)
     }
 
-    fun <T> Iterable<T>.shouldContainAll(expected: Iterable<T>) {
+    fun <T> Collection<T>.shouldContainAll(expected: Collection<T>) {
         if (!expected.all{ this.contains(it) }) throw AssertionError("$this did not contain all of $expected")
     }
 
-    fun <T> Iterable<T>.shouldContain(expected: T) {
+    fun <T> Collection<T>.shouldContain(expected: T) {
         if (!this.contains(expected)) throw AssertionError("$this did not contain $expected")
     }
 
-    fun <T> Iterable<T>.shouldNotContain(unexpected: (T) -> Boolean) {
+    fun <T> Collection<T>.shouldNotContain(unexpected: (T) -> Boolean) {
         if(this.any(unexpected)) throw AssertionError("$this contained $unexpected")
     }
 

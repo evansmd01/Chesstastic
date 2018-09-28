@@ -1,9 +1,6 @@
 package chesstastic.engine
 
-import chesstastic.engine.entities.Board
-import chesstastic.engine.entities.Color
-import chesstastic.engine.entities.PieceKind
-import chesstastic.engine.entities.Rank
+import chesstastic.engine.entities.*
 import chesstastic.testing.framework.ChessTestSuite
 import chesstastic.util.Snapshot
 
@@ -168,6 +165,26 @@ class BoardTests: ChessTestSuite() {
                     val canCaptureKing = board.metadata.lightPlayer.moves.queenMoves.any { it.capturing?.piece?.kind == PieceKind.King }
 
                     canCaptureKing.shouldBe(false)
+                }
+            }
+
+            describe("pins") {
+                it("should not allow pieces to move if they are pinned to the king") {
+                    val board = Snapshot.parse("""
+                        |r|n| | | | | | |
+                        |p|p| |k| |p|p| |
+                        | | | | |p| | | |
+                        | | |p| | | | | |
+                        | | | | |p| | |N|
+                        | | | | | | | |B|
+                        |P| |Q|P| |P| | |
+                        | |R| | |K| | |R|
+                     """.trimIndent(), turn = Color.Dark)
+
+                    board.metadata.squares[Square(File.E, Rank._6)]?.pins?.isNotEmpty().shouldBe(true)
+                    board.metadata.legalMoves.shouldNotContain {
+                        it == Move.Basic(Square(File.E, Rank._6), Square(File.E, Rank._5))
+                    }
                 }
             }
         }

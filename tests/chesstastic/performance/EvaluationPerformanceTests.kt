@@ -10,7 +10,7 @@ import chesstastic.util.Stopwatch
 class EvaluationPerformanceTests: ChessTestSuite() {
     init {
         describe("evaluating the scores of ever position in 20 games") {
-            xit("records performance") {
+            it("records performance") {
                 val filename = "100-games.txt"
                 val file = TrainingDataFile(filename)
                 var positionCount = 0

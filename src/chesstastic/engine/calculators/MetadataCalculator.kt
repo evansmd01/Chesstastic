@@ -427,6 +427,8 @@ object MetadataCalculator {
                 disableUnless(moves.rookMoves, board, isValidMove)
                 disableUnless(moves.bishopMoves, board, isValidMove)
                 disableUnless(moves.queenMoves, board, isValidMove)
+                // and check that king moves don't stay in check
+                filterKingMovesThatRemainInCheck(king, attackers, moves.kingMoves, board)
             }
             else -> {
                 // check from more than one attacker.
@@ -438,8 +440,31 @@ object MetadataCalculator {
                 disableAll(moves.knightMoves, board)
                 disableAll(moves.bishopMoves, board)
                 disableAll(moves.queenMoves, board)
+                // and check that king moves don't stay in check
+                filterKingMovesThatRemainInCheck(king, attackers, moves.kingMoves, board)
             }
         }
+    }
+
+    /**
+     * there are already other checks to ensure the king doesn't move INTO check
+     * but we need to add an extra check here that the king doesn't move
+     * to the square opposite it's attacker (if attacker is a straight line)
+     * that square behind the king won't be marked as attacked, so it will look like a valid move
+     * but the king will still be attacked there.
+     */
+    private fun filterKingMovesThatRemainInCheck(
+        king: PieceMetadata,
+        attackers: List<PieceMetadata>,
+        kingMoves: MutableSet<MoveMetadata>,
+        board: PotentialBoard
+    ) {
+        attackers.filter { it.piece.kind in setOf(Queen, Rook, Bishop) }
+            .forEach { attackerMeta ->
+                val moveBack = king.square.moveAwayFrom(attackerMeta.square)
+                kingMoves.filter { it.move.to == moveBack }
+                    .forEach{ disableMove(it, kingMoves, board) }
+            }
     }
 
     /**

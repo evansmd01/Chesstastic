@@ -3,6 +3,7 @@ package chesstastic.engine
 import chesstastic.engine.entities.Board
 import chesstastic.engine.entities.Color
 import chesstastic.engine.entities.PieceKind
+import chesstastic.engine.entities.Rank
 import chesstastic.testing.framework.ChessTestSuite
 import chesstastic.util.Snapshot
 
@@ -136,9 +137,24 @@ class BoardTests: ChessTestSuite() {
 
         describe("metadata") {
             describe("player moves") {
+                it("Can't make a king move that stays in check, when in check") {
+                    val board = Snapshot.parse("""
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | |k| |R|p| | | |
+                        | | | | | | | |P|
+                        | | | | | | | | |
+                        | | |P| |K| | | |
+                        | | | | | | | | |
+                     """.trimIndent(), turn = Color.Dark)
+
+                    val hasIllegalMove = board.metadata.darkPlayer.moves.kingMoves.any { it.move.to.rank == Rank._5 }
+                    hasIllegalMove.shouldBe(false)
+                }
+
                 it("Can't move the queen through pieces") {
-                    it("should detect stalemate due to no legal moves") {
-                        val board = Snapshot.parse("""
+                    val board = Snapshot.parse("""
                         |r|n|b|q|k|b|n|r|
                         |p| | |p|p|p| |p|
                         | | |p| | | | | |
@@ -149,10 +165,9 @@ class BoardTests: ChessTestSuite() {
                         |R|N|B| |K|B|N|R|
                      """.trimIndent(), turn = Color.Light)
 
-                        val canCaptureKing = board.metadata.lightPlayer.moves.queenMoves.any { it.capturing?.piece?.kind == PieceKind.King }
+                    val canCaptureKing = board.metadata.lightPlayer.moves.queenMoves.any { it.capturing?.piece?.kind == PieceKind.King }
 
-                        canCaptureKing.shouldBe(false)
-                    }
+                    canCaptureKing.shouldBe(false)
                 }
             }
         }

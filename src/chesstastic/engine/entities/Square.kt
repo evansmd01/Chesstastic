@@ -16,24 +16,26 @@ data class Square(val file: File, val rank: Rank) {
         } else emptyList()
     }
 
-    private fun moveTowards(target: Square): Square? =
+    fun moveAwayFrom(target: Square): Square? = moveTowards(target, -1)
+
+    private fun moveTowards(target: Square, steps: Int = 1): Square? =
         when {
             // move up file
-            target.rank == rank && target.file > file -> transform(1, 0)
+            target.rank == rank && target.file > file -> transform(steps, 0)
             // move down file
-            target.rank == rank && target.file < file -> transform(-1, 0)
+            target.rank == rank && target.file < file -> transform(-steps, 0)
             // move up rank
-            target.file == file && target.rank > rank -> transform(0, 1)
+            target.file == file && target.rank > rank -> transform(0, steps)
             // move down rank
-            target.file == file && target.rank < rank -> transform(0, -1)
+            target.file == file && target.rank < rank -> transform(0, -steps)
             // move up file, up rank
-            target.file > file && target.rank > rank -> transform(1, 1)
+            target.file > file && target.rank > rank -> transform(steps, steps)
             // move up file, down rank
-            target.file > file && target.rank < rank -> transform(1, -1)
+            target.file > file && target.rank < rank -> transform(steps, -steps)
             // move down file, up rank
-            target.file < file && target.rank > rank -> transform(-1, 1)
+            target.file < file && target.rank > rank -> transform(-steps, steps)
             // move down file, down rank
-            target.file < file && target.rank < rank -> transform(-1, -1)
+            target.file < file && target.rank < rank -> transform(-steps, -steps)
             else -> null
         }
 }

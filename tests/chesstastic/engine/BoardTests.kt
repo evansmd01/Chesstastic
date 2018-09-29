@@ -266,6 +266,25 @@ class BoardTests: ChessTestSuite() {
 
                     board.metadata.legalMoves.shouldNotContain(Move.parse("c1d1"))
                 }
+
+                it("Can't castle after capturing", focus = true) {
+                    val board = Snapshot.parse("""
+                        |r|n|b|q|k| | |r|
+                        |p|p|p|p| |B|p|p|
+                        | | | | | |n| | |
+                        | | |b| |p| | | |
+                        | | | | |P| | | |
+                        | | | | | |N| | |
+                        |P|P|P|P| |P|P|P|
+                        |R|N|B|Q|K| | |R|
+                     """.trimIndent(), turn = Color.Dark)
+                        .updated(Move.parse("e8f7")!!)
+                        .updated(Move.parse("f3e5")!!)
+
+                    board.historyMetadata.darkCastleMetadata.kingHasMoved.shouldBe(true)
+                    board.metadata.legalMoves.shouldNotContain { it is Move.Castle }
+                    board.metadata.darkPlayer.moves.kingMoves.shouldNotContain { it.move is Move.Castle }
+                }
             }
 
             describe("pins") {

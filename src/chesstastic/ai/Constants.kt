@@ -19,6 +19,12 @@ class Constants(private val overrides: Map<String, Double>) {
         CONTROL_OF_CENTER,
         CENTRAL_OCCUPANT_SCORE,
         CENTRAL_ATTACK_SCORE,
+
+        // castling
+        CASTLING,
+        QUEENSIDE_CASTLE_BONUS,
+        KINGSIDE_CASTLE_BONUS,
+        CANNOT_CASTLE_PENALTY,
     }
 
     companion object {
@@ -36,6 +42,12 @@ class Constants(private val overrides: Map<String, Double>) {
             CONTROL_OF_CENTER -> 10.0
             CENTRAL_OCCUPANT_SCORE -> 1.0
             CENTRAL_ATTACK_SCORE -> 1.0
+
+            // castling
+            CASTLING -> 10.0
+            QUEENSIDE_CASTLE_BONUS -> 4.0
+            KINGSIDE_CASTLE_BONUS -> 5.0
+            CANNOT_CASTLE_PENALTY -> 5.0
         }
     }
 

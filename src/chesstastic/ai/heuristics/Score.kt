@@ -33,6 +33,10 @@ data class Score(val light: Double, val dark: Double) {
         }
 
         fun fromImbalance(light: Double, dark: Double): Score {
+            if (light < 0 || dark < 0)
+                throw Exception("Invalid score. Cannot have values of less than zero. " +
+                    "Apply penalties as bonuses to the opponent")
+
             val min = Math.max(light, dark)
             val diff = Math.abs(light - dark)
             val imbalance = diff / min

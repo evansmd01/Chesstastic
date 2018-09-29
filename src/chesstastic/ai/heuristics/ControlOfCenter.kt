@@ -32,3 +32,4 @@ class ControlOfCenter(override val constants: Constants): Heuristic {
         return Score.fromImbalance(light, dark)
     }
 }
+

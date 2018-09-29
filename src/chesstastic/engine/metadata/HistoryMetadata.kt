@@ -16,16 +16,26 @@ data class HistoryMetadata(
     val inactivityCount: Int,
     val moveCount: Int
 ) {
-    operator fun plus(moveData: MoveMetadata) =
-        HistoryMetadata(
+    operator fun plus(moveData: MoveMetadata): HistoryMetadata {
+        var newLightCastle = lightCastleMetadata
+        var newDarkCastle = darkCastleMetadata
+        if(moveData.move is Move.Castle) when (moveData.piece.color) {
+            Light -> newLightCastle = lightCastleMetadata.copy(castled = moveData.move)
+            Dark -> newDarkCastle = lightCastleMetadata.copy(castled = moveData.move)
+        } else {
+            newLightCastle = lightCastleMetadata.updated(
+                if (currentTurn == Light) moveData.move.from else moveData.move.to
+            )
+            newDarkCastle = darkCastleMetadata.updated(
+                if (currentTurn == Dark) moveData.move.from else moveData.move.to
+            )
+        }
+
+        return HistoryMetadata(
             history = History(moveData.move, history),
             currentTurn = currentTurn.opposite,
-            lightCastleMetadata = lightCastleMetadata.updated(
-                if(currentTurn == Light) moveData.move.from else moveData.move.to
-            ),
-            darkCastleMetadata = darkCastleMetadata.updated(
-                if(currentTurn == Dark) moveData.move.from else moveData.move.to
-            ),
+            lightCastleMetadata = newLightCastle,
+            darkCastleMetadata = newDarkCastle,
             inactivityCount = when {
                 moveData.piece.kind == PieceKind.Pawn -> 0
                 moveData.capturing != null -> 0
@@ -33,6 +43,7 @@ data class HistoryMetadata(
             },
             moveCount = moveCount + 1
         )
+    }
 
     companion object {
         val EMPTY = HistoryMetadata(

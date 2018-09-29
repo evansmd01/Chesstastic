@@ -19,7 +19,8 @@ interface Heuristic {
     companion object {
         val factories = setOf<(Constants) -> Heuristic>(
             { Material(it) },
-            { ControlOfCenter(it) }
+            { ControlOfCenter(it) },
+            { Castling(it) }
         )
     }
 }

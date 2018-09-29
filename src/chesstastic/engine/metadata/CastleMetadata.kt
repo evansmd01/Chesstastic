@@ -8,7 +8,8 @@ data class CastleMetadata(
     val kingHasMoved: Boolean,
     val kingsideRookMovedOrCaptured: Boolean,
     val queensideRookMovedOrCaptured: Boolean,
-    val squares: CastleSquares
+    val squares: CastleSquares,
+    val castled: Move.Castle?
 ) {
     fun updated(removedFrom: Square): CastleMetadata {
         return when {
@@ -23,8 +24,8 @@ data class CastleMetadata(
     }
 
     companion object {
-        val LIGHT = CastleMetadata(false, false, false, CastleSquares.LIGHT)
-        val DARK = CastleMetadata(false, false, false, CastleSquares.DARK)
+        val LIGHT = CastleMetadata(false, false, false, CastleSquares.LIGHT, null)
+        val DARK = CastleMetadata(false, false, false, CastleSquares.DARK, null)
     }
 
     data class CastleSquares(

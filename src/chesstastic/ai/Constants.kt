@@ -25,6 +25,11 @@ class Constants(private val overrides: Map<String, Double>) {
         QUEENSIDE_CASTLE_BONUS,
         KINGSIDE_CASTLE_BONUS,
         CANNOT_CASTLE_PENALTY,
+
+        // pins & skewers
+        PINS_AND_SKEWERS,
+        PIN_BONUS,
+        SKEWER_BONUS,
     }
 
     companion object {
@@ -48,6 +53,11 @@ class Constants(private val overrides: Map<String, Double>) {
             QUEENSIDE_CASTLE_BONUS -> 4.0
             KINGSIDE_CASTLE_BONUS -> 5.0
             CANNOT_CASTLE_PENALTY -> 5.0
+
+            // pins and skewers
+            PINS_AND_SKEWERS -> 10.0
+            PIN_BONUS -> 5.0
+            SKEWER_BONUS -> 5.0
         }
     }
 

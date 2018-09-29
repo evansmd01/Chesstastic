@@ -20,7 +20,8 @@ interface Heuristic {
         val factories = setOf<(Constants) -> Heuristic>(
             { Material(it) },
             { ControlOfCenter(it) },
-            { Castling(it) }
+            { Castling(it) },
+            { PinsAndSkewers(it) }
         )
     }
 }

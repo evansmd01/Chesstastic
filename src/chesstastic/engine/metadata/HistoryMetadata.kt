@@ -20,8 +20,8 @@ data class HistoryMetadata(
         var newLightCastle = lightCastleMetadata
         var newDarkCastle = darkCastleMetadata
         if(moveData.move is Move.Castle) when (moveData.piece.color) {
-            Light -> newLightCastle = lightCastleMetadata.copy(castled = moveData.move)
-            Dark -> newDarkCastle = lightCastleMetadata.copy(castled = moveData.move)
+            Light -> newLightCastle = lightCastleMetadata.copy(castled = moveData.move, kingHasMoved = true)
+            Dark -> newDarkCastle = darkCastleMetadata.copy(castled = moveData.move, kingHasMoved = true)
         } else {
             newLightCastle = lightCastleMetadata.updated(
                 if (currentTurn == Light) moveData.move.from else moveData.move.to

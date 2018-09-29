@@ -252,7 +252,7 @@ class BoardTests: ChessTestSuite() {
                     board.metadata.legalMoves.shouldNotContain(Move.parse("e8c8"))
                 }
 
-                it("can't move a piece that doesn't escape check", focus = true) {
+                it("can't move a piece that doesn't escape check") {
                     val board = Snapshot.parse("""
                         |r| |b|q|k| |n|r|
                         |p|p|p|p|p| | |p|

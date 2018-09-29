@@ -25,8 +25,7 @@ data class PotentialSquare(
         skewers = skewers
     )
 
-    private val groupedByColor = isAttackedBy.groupBy { it.piece.color }
-    fun attackedBy(color: Color) = groupedByColor[color] ?: emptyList()
+    fun attackedBy(color: Color) = isAttackedBy.filter { it.piece.color == color }
 
     companion object {
         fun from(square: Square, piece: Piece?) = PotentialSquare(

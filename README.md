@@ -30,7 +30,7 @@ If you're curious, [check out the Pivotal Tracker board!](https://www.pivotaltra
 
 **22 Sep 18** - AI plays it's first game against Stockfish (world's leading chess AI). Get's destroyed. 
 
-**28 Sep 18** - Optimized positional metadata processing to evaluate ~10k positions / second
+**28 Sep 18** - Optimized positional metadata processing to evaluate **> 10k positions / second**
 
 **28 Sep 18** - First working heuristics get created. AI starts fighting for control of the center. Still rudimentary, but much more exciting to watch.
 
@@ -51,7 +51,7 @@ Check it out:
 
 ![Code](https://i.gyazo.com/894ede9b464bece6eb2a13ba2c24c40f.png)
 
-![Output](https://i.gyazo.com/e77fde4ab773b723dbb92e911ae1aaa3.png)
+![Output](https://i.gyazo.com/8dc871e0aa96d711ff6008c23f329b2c.png)
 
 
 ## Installing Stockfish

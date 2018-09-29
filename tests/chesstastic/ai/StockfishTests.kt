@@ -8,7 +8,7 @@ import java.time.Duration
 @Suppress("unused")
 class StockfishTests: ChessTestSuite(){
     init {
-        describe("selectMove") {
+        describe("selectMove", skip = true) {
             it("should select a legal move") {
                 val board = Board.parseHistory("e2e4 e7e5")
 

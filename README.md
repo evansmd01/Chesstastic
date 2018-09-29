@@ -2,13 +2,21 @@
 
 Just a fun little chess game I made to experiment with Kotlin and because I've always wanted to build a chess AI. 
 
-![Screenshot](https://i.gyazo.com/337df6aa1b8bb5d907d772852f6d7780.png)
+![Screenshot](https://i.gyazo.com/e82175d99b7c47005e01dc5316159c59.png)
 
 ![Checkmate](https://i.gyazo.com/c3d43c29ea5428d9e32afd7bcb8b4dce.png)
 
 ## Backlog
 
+- The next steps are to add more heuristics and tweak them to a reasonable starting balance. 
+
+- Then I'll be adding a genetic learning algorithm to essentially spawn many generations of slightly tweaked weighting criteria, using pre-evaluated positional scores from Stockfish initially.
+
+- Then, once it's a fairly strong player, I'll start playing it against stockfish for large sets of games. Using the same genetic algorithm to find small improvements. 
+
 If you're curious, [check out the Pivotal Tracker board!](https://www.pivotaltracker.com/n/projects/2199679)
+
+*P.S. Pivotal Rulez, JIRA Droolz. Come at me, bro!*
 
 ## Milestones:
 
@@ -22,17 +30,29 @@ If you're curious, [check out the Pivotal Tracker board!](https://www.pivotaltra
 
 **22 Sep 18** - AI plays it's first game against Stockfish (world's leading chess AI). Get's destroyed. 
 
-## Where the dependencies at?
+**28 Sep 18** - Optimized positional metadata processing to evaluate ~10k positions / second
 
-You may have noticed I'm not pulling in any external dependencies. Professionally this is a terrible idea. If a library already exists that can do what you need done, don't waste time re-inventing the wheel. Developer time is expensive and it's irresponsible to waste it. 
+**28 Sep 18** - First working heuristics get created. AI starts fighting for control of the center. Still rudimentary, but much more exciting to watch.
 
-That said, if you want to really learn a new language (and you're not charging for your time), don't use libraries. Building your own frameworks and libraries is the best way I've found to learn all the little ins and outs of how to bend the syntax to your will. Plus it's more fun. Win - win. 
+## Testing Framework
 
-So for this project, I'm limiting myself to the standard library. Kotlin makes it easy anyway. Check out the testing framework! 
+Kotlin is so cool. 
 
-## Description of Algorithms
+I wrote my own testing framework because I figured it would help learn Kotlin to roll my own instead of pulling one in, and it seemed like a good use of the builder syntax Kotlin is so proud of. 
 
-// TODO: add descriptions for minimax, positional evaluation, and genetic learning. 
+The whole thing is only ~200 lines of code, and includes: 
+- nested description blocks, 
+- skipping tests, 
+- running individual tests, 
+- tracking time and results, 
+- and a few fluent assertion helpers.
+
+Check it out:
+
+![Code](https://i.gyazo.com/894ede9b464bece6eb2a13ba2c24c40f.png)
+
+![Output](https://i.gyazo.com/e77fde4ab773b723dbb92e911ae1aaa3.png)
+
 
 ## Installing Stockfish
 

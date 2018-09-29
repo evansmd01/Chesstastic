@@ -1,11 +1,14 @@
 package chesstastic.ai.heuristics
 
 import chesstastic.ai.Constants
+import chesstastic.ai.Constants.Key.*
 import chesstastic.engine.entities.Board
-import chesstastic.engine.entities.Color.Light
+import chesstastic.engine.entities.Color.*
 
-class Material(private val constants: Constants): Heuristic {
-    override fun evaluate(board: Board): Score {
+class Material(override val constants: Constants): Heuristic {
+    override val key = MATERIAL
+
+    override fun calculateBaseScore(board: Board): Score {
         var light = 0.0
         var dark = 0.0
 
@@ -18,7 +21,7 @@ class Material(private val constants: Constants): Heuristic {
             }
         }
 
-        return Score(light, dark)
+        return Score.fromImbalance(light, dark)
     }
 }
 

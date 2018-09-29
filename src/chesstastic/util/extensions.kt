@@ -15,3 +15,5 @@ fun Duration.format(): String {
 operator fun Duration.div(int: Int): Duration = Duration.ofMillis(this.toMillis() / int)
 
 fun Long.format(digits: Int): String = String.format("%0${digits}d", this)
+
+fun Int.times(string: String): String = (1..this).joinToString(separator = ""){ string }

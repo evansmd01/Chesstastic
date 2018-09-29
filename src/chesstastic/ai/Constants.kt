@@ -6,35 +6,47 @@ import chesstastic.ai.Constants.Key.*
 
 class Constants(private val overrides: Map<String, Double>) {
     enum class Key {
-        QUEEN_VALUE,
-        KING_VALUE,
-        PAWN_VALUE,
-        ROOK_VALUE,
-        KNIGHT_VALUE,
-        BISHOP_VALUE,
-        DEVELOPMENT_WEIGHT,
+        // Heuristic Weights
+        MATERIAL,
+        QUEEN_MATERIAL_VALUE,
+        KING_MATERIAL_VALUE,
+        PAWN_MATERIAL_VALUE,
+        ROOK_MATERIAL_VALUE,
+        KNIGHT_MATERIAL_VALUE,
+        BISHOP_MATERIAL_VALUE,
+
+        // control of center
+        CONTROL_OF_CENTER,
+        CENTRAL_OCCUPANT_SCORE,
+        CENTRAL_ATTACK_SCORE,
     }
 
     companion object {
         fun default(key: Key): Double = when (key) {
-            QUEEN_VALUE -> 9.0
-            KING_VALUE -> 0.0
-            PAWN_VALUE -> 1.0
-            ROOK_VALUE -> 5.0
-            KNIGHT_VALUE -> 3.0
-            BISHOP_VALUE -> 3.0
-            DEVELOPMENT_WEIGHT -> 20.0
+            // Heuristic Weights
+            MATERIAL -> 20.0
+            QUEEN_MATERIAL_VALUE -> 9.0
+            KING_MATERIAL_VALUE -> 0.0
+            PAWN_MATERIAL_VALUE -> 1.0
+            ROOK_MATERIAL_VALUE -> 5.0
+            KNIGHT_MATERIAL_VALUE -> 3.0
+            BISHOP_MATERIAL_VALUE -> 3.0
+
+            // control of center
+            CONTROL_OF_CENTER -> 10.0
+            CENTRAL_OCCUPANT_SCORE -> 1.0
+            CENTRAL_ATTACK_SCORE -> 1.0
         }
     }
 
     operator fun get(key: Key): Double = overrides[key.name] ?: default(key)
 
     fun pieceValue(pieceKind: PieceKind): Double = when(pieceKind) {
-        Queen -> this[QUEEN_VALUE]
-        King -> this[KING_VALUE]
-        Rook -> this[ROOK_VALUE]
-        Bishop -> this[BISHOP_VALUE]
-        Knight -> this[KNIGHT_VALUE]
-        Pawn -> this[PAWN_VALUE]
+        Queen -> this[QUEEN_MATERIAL_VALUE]
+        King -> this[KING_MATERIAL_VALUE]
+        Rook -> this[ROOK_MATERIAL_VALUE]
+        Bishop -> this[BISHOP_MATERIAL_VALUE]
+        Knight -> this[KNIGHT_MATERIAL_VALUE]
+        Pawn -> this[PAWN_MATERIAL_VALUE]
     }
 }

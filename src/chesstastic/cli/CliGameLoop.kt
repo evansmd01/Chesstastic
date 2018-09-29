@@ -5,6 +5,8 @@ import chesstastic.ai.Chesstastic
 import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
 import chesstastic.cli.view.BoardView
+import chesstastic.cli.view.EvaluationView
+import chesstastic.cli.view.ScoreView
 import chesstastic.engine.entities.*
 import chesstastic.tasks.Task
 import chesstastic.util.*
@@ -17,11 +19,17 @@ object CliGameLoop {
         var lightAI: AIPlayer? = null
         var darkAI: AIPlayer? = null
         gameLoop@ while (true) {
-
             println()
             println()
             if (skipPrint) skipPrint = false
-            else println(BoardView.render(board))
+            else {
+                println(BoardView.render(board))
+                val evaluation = Chesstastic().evaluate(board)
+                println(ScoreView.render(evaluation.finalScore))
+                println()
+                println(EvaluationView.render(evaluation))
+                println()
+            }
             if (board.metadata.isCheckmate) {
                 println(board.historyMetadata.history)
                 break@gameLoop

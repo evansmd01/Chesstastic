@@ -10,23 +10,23 @@ interface AIPlayer {
 }
 
 class Chesstastic(
-    private val depth: Int,
-    private val breadth: Int,
+    private val depth: Int = 3,
+    private val breadth: Int = 3,
     private val constants: Constants = Constants(emptyMap()),
-    heuristicFactories: List<(Constants) -> Heuristic> = Heuristic.factories
+    heuristicFactories: Set<(Constants) -> Heuristic> = Heuristic.factories
 ): AIPlayer {
     private val heuristics = heuristicFactories.map { it(constants) }
 
     override fun selectMove(board: Board): Move =
-        findBestBranch(board.historyMetadata.currentTurn, board, depth, breadth)?.branch?.move ?:
-        throw Exception("Could not find a move")
+        findBestBranch(board.historyMetadata.currentTurn, board, depth, breadth)?.branch?.move
+            ?: throw Exception("Could not find a move")
 
     private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: Evaluation? = null): Evaluation? {
         val currentTurn = board.historyMetadata.currentTurn
         val moves = board.metadata.legalMoves.shuffled()
         // stop recursion if we've hit depth, ensuring we ended with an opponent response
         // , or if there are no legal moves left
-        if((depth < 0 && currentTurn == player) || moves.isEmpty()) {
+        if ((depth < 0 && currentTurn == player) || moves.isEmpty()) {
             return previous
         }
 
@@ -35,13 +35,13 @@ class Chesstastic(
             .map { move ->
                 val updatedBoard = board.updatedWithoutValidation(move)
                 val branch = previous?.branch?.plus(move) ?: Branch(move)
-                Evaluation(branch, evaluate(updatedBoard), updatedBoard)
+                Evaluation(branch, evaluate(updatedBoard).finalScore, updatedBoard)
             }
             .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
             .toList()
 
 
-        val bestEvaluations = when(currentTurn) {
+        val bestEvaluations = when (currentTurn) {
             player -> bestMovesForCurrentPlayer.take(breadth)
             else -> bestMovesForCurrentPlayer.take(1)
         }
@@ -57,12 +57,11 @@ class Chesstastic(
         return bestBranches.first()
     }
 
-    private fun evaluate(board: Board): Score = when {
-        board.metadata.isCheckmate -> Score.forOnly(board.historyMetadata.currentTurn.opposite, Double.POSITIVE_INFINITY)
-        board.metadata.isStalemate -> Score.even
-        else -> heuristics.asSequence().map { it.evaluate(board) }
-            .fold(Score.even) { total, score -> total + score }
-    }
+    fun evaluate(board: Board) = PositionEvaluation(
+        winner = if (board.metadata.isCheckmate) board.historyMetadata.currentTurn.opposite else null,
+        stalemate = board.metadata.isStalemate,
+        heuristics = heuristics.map { it.evaluate(board) }
+    )
 }
 
 private data class Branch(val move: Move, val next: Branch? = null) {

@@ -13,7 +13,7 @@ class ChesstasticTests: ChessTestSuite() {
             it("should select the move that results in the best possible score") {
                 val board = Board()
                 val mock = MockHeuristic()
-                val subject = Chesstastic(3, 3, heuristicFactories = listOf({ _ -> mock }))
+                val subject = Chesstastic(3, 3, heuristicFactories = setOf({ _ -> mock }))
 
                 val selectedMove = subject.selectMove(board)
 
@@ -41,6 +41,9 @@ class ChesstasticTests: ChessTestSuite() {
 }
 
 private class MockHeuristic: Heuristic {
+    override val constants: Constants = Constants(emptyMap())
+    override val key = Constants.Key.MATERIAL
+
     private val records = mutableListOf<EvaluationRecord>()
 
     fun bestEvaluationFor(color: Color): EvaluationRecord {
@@ -69,7 +72,7 @@ private class MockHeuristic: Heuristic {
         return bestOptionForPlayer!!
     }
 
-    override fun evaluate(board: Board): Score {
+    override fun calculateBaseScore(board: Board): Score {
         val light = ThreadLocalRandom.current().nextDouble()
         val dark = ThreadLocalRandom.current().nextDouble()
         val score = Score(light, dark)

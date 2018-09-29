@@ -251,6 +251,21 @@ class BoardTests: ChessTestSuite() {
 
                     board.metadata.legalMoves.shouldNotContain(Move.parse("e8c8"))
                 }
+
+                it("can't move a piece that doesn't escape check", focus = true) {
+                    val board = Snapshot.parse("""
+                        |r| |b|q|k| |n|r|
+                        |p|p|p|p|p| | |p|
+                        | | | | | | | | |
+                        | | | | |b|p| | |
+                        | | | | | | | | |
+                        | | | |P|P| |K| |
+                        | | |P|N| | | |P|
+                        | | |Q| | |B|N|R|
+                     """.trimIndent(), turn = Color.Light)
+
+                    board.metadata.legalMoves.shouldNotContain(Move.parse("c1d1"))
+                }
             }
 
             describe("pins") {

@@ -1,4 +1,4 @@
-package chesstastic.engine.metadata.calculation.models
+package chesstastic.engine.metadata.calculation.potential
 
 import chesstastic.engine.entities.PieceKind
 import chesstastic.engine.metadata.MoveMetadata

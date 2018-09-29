@@ -14,18 +14,4 @@ data class SquareMetadata(
     val isSupportedBy: Set<PieceMetadata>,
     val pins: Set<PinMetadata>,
     val skewers: Set<SkewerMetadata>
-) {
-    private val groupedByColor = isAttackedBy.groupBy { it.piece.color }
-    fun attackedBy(color: Color) = groupedByColor[color] ?: emptyList()
-
-    companion object {
-        fun from(square: Square, piece: Piece?) = SquareMetadata(
-            square,
-            piece,
-            emptySet(),
-            emptySet(),
-            emptySet(),
-            emptySet()
-        )
-    }
-}
+)

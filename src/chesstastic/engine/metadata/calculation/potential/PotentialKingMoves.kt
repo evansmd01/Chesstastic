@@ -1,11 +1,11 @@
-package chesstastic.engine.metadata.calculation.moves
+package chesstastic.engine.metadata.calculation.potential
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.metadata.CastleMetadata
 import chesstastic.engine.metadata.MoveMetadata
 import chesstastic.engine.metadata.PieceMetadata
 
-object KingMoveCalculator {
+object PotentialKingMoves {
     fun calculate(color: Color, fromSquare: Square, getPiece: (Square) -> Piece?, castleMetadata: CastleMetadata): List<MoveMetadata> {
         val regularMoves = adjacentSquares(fromSquare)
             .asSequence()

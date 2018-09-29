@@ -1,8 +1,6 @@
 package chesstastic.engine.metadata.calculation
 
-import chesstastic.engine.metadata.calculation.models.PotentialBoard
-import chesstastic.engine.metadata.calculation.models.PotentialMoves
-import chesstastic.engine.metadata.calculation.moves.*
+import chesstastic.engine.metadata.calculation.potential.*
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
@@ -10,82 +8,7 @@ import chesstastic.engine.metadata.*
 
 object MetadataCalculator {
     fun calculate(board: Board): BoardMetadata {
-        // Setup a bunch of mutable buckets to aggregate data efficiently
-        val squareMetadata = mutableMapOf<Square, SquareMetadata>()
-
-        val lightSquares = mutableSetOf<PieceMetadata>()
-        val lightPawns = mutableSetOf<PieceMetadata>()
-        val lightRooks = mutableSetOf<PieceMetadata>()
-        val lightKnights = mutableSetOf<PieceMetadata>()
-        val lightBishops = mutableSetOf<PieceMetadata>()
-        val lightQueens = mutableSetOf<PieceMetadata>()
-        var lightKingSquare: PieceMetadata? = null
-
-        val darkSquares = mutableSetOf<PieceMetadata>()
-        val darkPawns = mutableSetOf<PieceMetadata>()
-        val darkRooks = mutableSetOf<PieceMetadata>()
-        val darkKnights = mutableSetOf<PieceMetadata>()
-        val darkBishops = mutableSetOf<PieceMetadata>()
-        val darkQueens = mutableSetOf<PieceMetadata>()
-        var darkKingSquare: PieceMetadata? = null
-
-        // Keeping to a SINGLE loop, gather all the squares/pieces
-        Board.SQUARES.forEach { square ->
-            val piece = board[square]
-            if (piece != null) {
-                if (piece.color == Light) {
-                    lightSquares.add(PieceMetadata(piece, square))
-                    when (piece.kind) {
-                        Pawn -> lightPawns.add(PieceMetadata(piece, square))
-                        Rook -> lightRooks.add(PieceMetadata(piece, square))
-                        Knight -> lightKnights.add(PieceMetadata(piece, square))
-                        Bishop -> lightBishops.add(PieceMetadata(piece, square))
-                        Queen -> lightQueens.add(PieceMetadata(piece, square))
-                        King -> lightKingSquare = PieceMetadata(piece, square)
-                    }
-                } else {
-                    darkSquares.add(PieceMetadata(piece, square))
-                    when (piece.kind) {
-                        Pawn -> darkPawns.add(PieceMetadata(piece, square))
-                        Rook -> darkRooks.add(PieceMetadata(piece, square))
-                        Knight -> darkKnights.add(PieceMetadata(piece, square))
-                        Bishop -> darkBishops.add(PieceMetadata(piece, square))
-                        Queen -> darkQueens.add(PieceMetadata(piece, square))
-                        King -> darkKingSquare = PieceMetadata(piece, square)
-                    }
-                }
-            }
-            squareMetadata[square] = SquareMetadata.from(square, piece)
-        }
-
-        // materialize all that mutable
-        val lightMetadata = PlayerMetadata(
-            Light,
-            allPieces = lightSquares,
-            pawns = lightPawns,
-            rooks = lightRooks,
-            knights = lightKnights,
-            bishops = lightBishops,
-            queens = lightQueens,
-            king = lightKingSquare ?: throw Exception("light king was missing from the board: $board"))
-        val darkMetadata = PlayerMetadata(
-            Dark,
-            allPieces = darkSquares,
-            pawns = darkPawns,
-            rooks = darkRooks,
-            knights = darkKnights,
-            bishops = darkBishops,
-            queens = darkQueens,
-            king = darkKingSquare ?: throw Exception("dark king was missing from the board: $board"))
-
-        val potentialBoard = PotentialBoard(
-            board,
-            squareMetadata,
-            PotentialMoves(),
-            PotentialMoves(),
-            lightMetadata,
-            darkMetadata
-        )
+        val potentialBoard = PotentialBoard.from(board)
         processMoves(potentialBoard)
         return potentialBoard.finalize()
     }
@@ -93,65 +16,58 @@ object MetadataCalculator {
     private fun processMoves(board: PotentialBoard) {
         // pawn moves
         board.lightMoves.pawnMoves.addAll(board.lightMetadata.pawns.flatMap {
-            PawnMoveCalculator.calculate(Light, it.square, board.getPiece, board.historyMetadata)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialPawnMoves.calculate(Light, it.square, board.getPiece, board.historyMetadata)
+                .mapNotNull { move -> processMove(move, board.squares) }
         })
         board.darkMoves.pawnMoves.addAll(board.darkMetadata.pawns.flatMap {
-            PawnMoveCalculator.calculate(Dark, it.square, board.getPiece, board.historyMetadata)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialPawnMoves.calculate(Dark, it.square, board.getPiece, board.historyMetadata)
+                .mapNotNull { move -> processMove(move, board.squares) }
         })
         // knight moves
         board.lightMoves.knightMoves.addAll(board.lightMetadata.knights.flatMap {
-            KnightMoveCalculator.calculate(Light, it.square, board.getPiece)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialKnightMoves.calculate(Light, it.square, board.getPiece)
+                .mapNotNull { move -> processMove(move, board.squares) }
         })
         board.darkMoves.knightMoves.addAll(board.darkMetadata.knights.flatMap {
-            KnightMoveCalculator.calculate(Dark, it.square, board.getPiece)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialKnightMoves.calculate(Dark, it.square, board.getPiece)
+                .mapNotNull { move -> processMove(move, board.squares) }
         })
         // king moves
         board.lightMoves.kingMoves.addAll(
-            KingMoveCalculator.calculate(Light, board.lightMetadata.king.square, board.getPiece, board.historyMetadata.lightCastleMetadata)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialKingMoves.calculate(Light, board.lightMetadata.king.square, board.getPiece, board.historyMetadata.lightCastleMetadata)
+                .mapNotNull { move -> processMove(move, board.squares) }
         )
         board.darkMoves.kingMoves.addAll(
-            KingMoveCalculator.calculate(Dark, board.darkMetadata.king.square, board.getPiece, board.historyMetadata.darkCastleMetadata)
-                .mapNotNull { move -> processMove(move, board.squareMetadata) }
+            PotentialKingMoves.calculate(Dark, board.darkMetadata.king.square, board.getPiece, board.historyMetadata.darkCastleMetadata)
+                .mapNotNull { move -> processMove(move, board.squares) }
         )
 
         // queens and bishops
         processLineMoves(board, board.lightMoves,
-            board.lightMetadata.rooksAndQueens, RookAndQueenMoveCalculator)
+            board.lightMetadata.rooksAndQueens, RookAndQueenPotentialLineMoves)
         processLineMoves(board, board.darkMoves,
-            board.darkMetadata.rooksAndQueens, RookAndQueenMoveCalculator)
+            board.darkMetadata.rooksAndQueens, RookAndQueenPotentialLineMoves)
         // queens and rooks
         processLineMoves(board, board.lightMoves,
-            board.lightMetadata.bishopsAndQueens, BishopAndQueenMoveCalculator)
+            board.lightMetadata.bishopsAndQueens, BishopAndQueenPotentialLineMoves)
         processLineMoves(board, board.darkMoves,
-            board.darkMetadata.bishopsAndQueens, BishopAndQueenMoveCalculator)
+            board.darkMetadata.bishopsAndQueens, BishopAndQueenPotentialLineMoves)
 
         filterInvalidMoves(board)
     }
 
     private fun processMove(
         moveMeta: MoveMetadata,
-        squareMetadata: MutableMap<Square, SquareMetadata>
+        squareMetadata: Map<Square, PotentialSquare>
     ): MoveMetadata? {
-        val toSquareMeta = squareMetadata[moveMeta.move.to] ?: throw Exception("No metadata at ${moveMeta.move.to}")
         when {
             // if supporting, mark support and filter out move, because you can't move on top of your pieces
             moveMeta.supporting != null -> {
-                squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
-                    isSupportedBy = toSquareMeta.isSupportedBy + moveMeta.pieceMetadata
-                )
+                squareMetadata[moveMeta.move.to]?.isSupportedBy?.add(moveMeta.pieceMetadata)
                 return null
             }
             // otherwise, mark the empty square, or occupied enemy square as attacked.
-            else -> {
-                squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
-                    isAttackedBy = toSquareMeta.isAttackedBy + moveMeta.pieceMetadata
-                )
-            }
+            else -> squareMetadata[moveMeta.move.to]?.isAttackedBy?.add(moveMeta.pieceMetadata)
         }
         return moveMeta
     }
@@ -160,19 +76,15 @@ object MetadataCalculator {
         board: PotentialBoard,
         moves: PotentialMoves,
         fromPieces: Set<PieceMetadata>,
-        calculator: LineMoveCalculator
+        calculator: PotentialLineMoves
     ) {
         fromPieces.forEach{ attacker ->
             calculator.calculate(attacker.square, attacker.piece, board.getPiece) { moveMeta, previousCapture ->
                 when {
                     moveMeta.supporting != null -> {
                         // ally is supported
-                        val toSquareMeta = board.squareMetadata[moveMeta.move.to]
-                            ?: throw Exception("No metadata at ${moveMeta.move.to}")
-                        board.squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
-                            isSupportedBy = toSquareMeta.isSupportedBy + attacker
-                        )
-                        LineMoveCalculator.Continuation.Stop // because movement is blocked by ally
+                        board.squares[moveMeta.move.to]?.isSupportedBy?.add(attacker)
+                        PotentialLineMoves.Continuation.Stop // because movement is blocked by ally
                     }
                     previousCapture != null && moveMeta.capturing != null -> {
                         // enemy may be pinned or skewered
@@ -184,11 +96,7 @@ object MetadataCalculator {
                                 to = moveMeta.capturing
                             )
                             moves.skewers.add(skewer)
-                            val prevSquareMeta = board.squareMetadata[previousCapture.square]
-                                ?: throw Exception("No metadata at ${previousCapture.square}")
-                            board.squareMetadata[previousCapture.square] = prevSquareMeta.copy(
-                                skewers = prevSquareMeta.skewers + skewer
-                            )
+                            board.squares[previousCapture.square]?.skewers?.add(skewer)
                         } else {
                             // pin
                             val pin = PinMetadata(
@@ -197,29 +105,21 @@ object MetadataCalculator {
                                 to = moveMeta.capturing
                             )
                             moves.pins.add(pin)
-                            val prevSquareMeta = board.squareMetadata[previousCapture.square]
-                                ?: throw Exception("No metadata at ${previousCapture.square}")
-                            board.squareMetadata[previousCapture.square] = prevSquareMeta.copy(
-                                pins = prevSquareMeta.pins + pin
-                            )
+                            board.squares[previousCapture.square]?.pins?.add(pin)
                         }
-                        LineMoveCalculator.Continuation.Stop // no more attacks or moves
+                        PotentialLineMoves.Continuation.Stop // no more attacks or moves
                     }
                     previousCapture == null -> {
-                        val toSquareMeta = board.squareMetadata[moveMeta.move.to]
-                            ?: throw Exception("No metadata at ${moveMeta.move.to}")
-                        board.squareMetadata[moveMeta.move.to] = toSquareMeta.copy(
-                            isAttackedBy = toSquareMeta.isAttackedBy + attacker
-                        )
+                        board.squares[moveMeta.move.to]?.isAttackedBy?.add(attacker)
                         when (attacker.piece.kind) {
                             Queen -> moves.queenMoves.add(moveMeta)
                             Bishop -> moves.bishopMoves.add(moveMeta)
                             Rook -> moves.rookMoves.add(moveMeta)
                             else -> throw Exception("Cannot process straight line moves for $attacker")
                         }
-                        LineMoveCalculator.Continuation.KeepGoing // to look for move moves, pins, or skewers
+                        PotentialLineMoves.Continuation.KeepGoing // to look for move moves, pins, or skewers
                     }
-                    else -> LineMoveCalculator.Continuation.KeepGoing // still searching for pins or skewers
+                    else -> PotentialLineMoves.Continuation.KeepGoing // still searching for pins or skewers
                 }
             }
         }
@@ -268,20 +168,20 @@ object MetadataCalculator {
         // remove attacks from enemy pieces (except king, that would break check)
         // but don't remove attacks from empty squares, those are still valid for blockading the king
         if (moveMeta.capturing != null && moveMeta.capturing.piece.kind != King) {
-            val attackedSquare = board.squareMetadata[moveMeta.move.to]
+            val attackedSquare = board.squares[moveMeta.move.to]
                 ?: throw Exception("Square ${moveMeta.move.to} not found")
 
             // it's not really skewered if the attack can't be made
-            val skewer = attackedSquare.skewers.filter { it.by == pieceMeta }
+            val skewer = attackedSquare.skewers.firstOrNull { it.by == pieceMeta }
 
             // unless pinned to king, any lesser pin is not really a pin if the attack can't be made
-            val pin = attackedSquare.pins.filter { it.by == pieceMeta && it.to.piece.kind != King }
+            val pin = attackedSquare.pins.firstOrNull { it.by == pieceMeta && it.to.piece.kind != King }
 
-            board.squareMetadata[moveMeta.move.to] = attackedSquare.copy(
-                isAttackedBy = attackedSquare.isAttackedBy - pieceMeta,
-                skewers = attackedSquare.skewers - skewer,
-                pins = attackedSquare.pins - pin
-            )
+            board.squares[moveMeta.move.to]?.apply {
+                isAttackedBy.remove(pieceMeta)
+                skewers.remove(skewer)
+                pins.remove(pin)
+            }
         }
 
         fromSet.remove(moveMeta)
@@ -303,10 +203,7 @@ object MetadataCalculator {
                 // allow forward
                 moveMeta.move.to.file == moveMeta.move.from.file -> {
                     // but the square in from of the pawn is not attacked, since they can't capture forward
-                    val meta = board.squareMetadata[moveMeta.move.to]!!
-                    board.squareMetadata[moveMeta.move.to] = meta.copy(
-                        isAttackedBy = meta.isAttackedBy - moveMeta.pieceMetadata
-                    )
+                    board.squares[moveMeta.move.to]?.isAttackedBy?.remove(moveMeta.pieceMetadata)
                     true
                 }
                 // else it's a diagonal non-capturing move
@@ -321,11 +218,7 @@ object MetadataCalculator {
         }
         moves.pins.removeAll(illegitimatePins)
         illegitimatePins.forEach { pin ->
-            val pinned = board.squareMetadata[pin.pinned.square]
-                ?: throw Exception("Could not find ${pin.pinned.square}")
-            board.squareMetadata[pin.pinned.square] = pinned.copy(
-                pins = pinned.pins - pin
-            )
+            board.squares[pin.pinned.square]?.pins?.remove(pin)
         }
     }
 
@@ -336,11 +229,7 @@ object MetadataCalculator {
         }
         moves.skewers.removeAll(illegitimateSkewers)
         illegitimateSkewers.forEach { skewer ->
-            val skewered = board.squareMetadata[skewer.skewered.square]
-                ?: throw Exception("Could not find ${skewer.skewered.square}")
-            board.squareMetadata[skewer.skewered.square] = skewered.copy(
-                skewers = skewered.skewers - skewer
-            )
+            board.squares[skewer.skewered.square]?.skewers?.remove(skewer)
         }
     }
 
@@ -353,7 +242,7 @@ object MetadataCalculator {
             // it's pinned to a higher value piece than the attacker, attacker would happily trade
             pieceMeta.piece.kind > attacker.piece.kind -> true // it's legit
             // it's pinned to a completely unsupported hanging piece, attacker would get a freebie
-            board.squareMetadata[pieceMeta.square]?.isSupportedBy?.isEmpty() ?: true -> true // it's legit
+            board.squares[pieceMeta.square]?.isSupportedBy?.isEmpty() ?: true -> true // it's legit
             else -> false // it's not a legitimate pin
         }
     }
@@ -384,10 +273,7 @@ object MetadataCalculator {
 
             // remove support from allies
             player.allPieces.forEach { ally ->
-                val allySquareMeta = board.squareMetadata[ally.square] ?: throw Exception("Could not find ${ally.square}")
-                board.squareMetadata[ally.square] = allySquareMeta.copy(
-                    isSupportedBy = allySquareMeta.isSupportedBy - pin.pinned
-                )
+                board.squares[ally.square]?.isSupportedBy?.remove(pin.pinned)
             }
         }
     }
@@ -427,7 +313,7 @@ object MetadataCalculator {
         board: PotentialBoard
     ) {
         val king = playerMetadata.king
-        val attackers = board.squareMetadata[king.square]?.attackedBy(king.piece.color.opposite) ?: emptyList()
+        val attackers = board.squares[king.square]?.attackedBy(king.piece.color.opposite) ?: emptyList()
         when (attackers.size) {
             0 -> return // filter nothing
             1 -> {

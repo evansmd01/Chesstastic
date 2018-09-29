@@ -1,13 +1,13 @@
-package chesstastic.engine.metadata.calculation.moves
+package chesstastic.engine.metadata.calculation.potential
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Direction.HorizontalAndVertical.*
 import chesstastic.engine.entities.Direction.Diagonal.*
-import chesstastic.engine.metadata.calculation.moves.LineMoveCalculator.Continuation
+import chesstastic.engine.metadata.calculation.potential.PotentialLineMoves.Continuation
 import chesstastic.engine.metadata.MoveMetadata
 import chesstastic.engine.metadata.PieceMetadata
 
-interface LineMoveCalculator {
+interface PotentialLineMoves {
     fun calculate(
         fromSquare: Square,
         piece: Piece,
@@ -20,7 +20,7 @@ interface LineMoveCalculator {
     }
 }
 
-interface LineMoveCalculatorIn<T: Enum<T>>: LineMoveCalculator {
+interface PotentialLineMovesIn<T: Enum<T>>: PotentialLineMoves {
     fun Square.transform(direction: T): Square?
     val directions: Array<T>
 
@@ -58,7 +58,7 @@ interface LineMoveCalculatorIn<T: Enum<T>>: LineMoveCalculator {
     }
 }
 
-object RookAndQueenMoveCalculator: LineMoveCalculatorIn<Direction.HorizontalAndVertical> {
+object RookAndQueenPotentialLineMoves: PotentialLineMovesIn<Direction.HorizontalAndVertical> {
     override val directions = Direction.HorizontalAndVertical.values()
     override fun Square.transform(direction: Direction.HorizontalAndVertical): Square? = when (direction) {
         U -> this.transform(0, 1)
@@ -68,7 +68,7 @@ object RookAndQueenMoveCalculator: LineMoveCalculatorIn<Direction.HorizontalAndV
     }
 }
 
-object BishopAndQueenMoveCalculator: LineMoveCalculatorIn<Direction.Diagonal> {
+object BishopAndQueenPotentialLineMoves: PotentialLineMovesIn<Direction.Diagonal> {
     override val directions = Direction.Diagonal.values()
     override fun Square.transform(direction: Direction.Diagonal): Square? = when (direction) {
         UL -> this.transform(-1, 1)

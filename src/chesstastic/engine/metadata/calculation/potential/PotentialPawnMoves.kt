@@ -1,4 +1,4 @@
-package chesstastic.engine.metadata.calculation.moves
+package chesstastic.engine.metadata.calculation.potential
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.entities.Rank.*
@@ -6,7 +6,7 @@ import chesstastic.engine.entities.Color.*
 import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.metadata.*
 
-object PawnMoveCalculator {
+object PotentialPawnMoves {
     private fun rankDelta(color: Color) = if (color == Light) 1 else -1
     private fun enPassantRank(color: Color): Rank = if (color == Light) _5 else _4
     private fun promotionRank(color: Color): Rank = if (color == Light) _8 else _1

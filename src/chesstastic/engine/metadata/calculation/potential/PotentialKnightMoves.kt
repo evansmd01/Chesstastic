@@ -1,10 +1,10 @@
-package chesstastic.engine.metadata.calculation.moves
+package chesstastic.engine.metadata.calculation.potential
 
 import chesstastic.engine.entities.*
 import chesstastic.engine.metadata.MoveMetadata
 import chesstastic.engine.metadata.PieceMetadata
 
-object KnightMoveCalculator {
+object PotentialKnightMoves {
     fun calculate(color: Color, fromSquare: Square, getPiece: (Square) -> Piece?): List<MoveMetadata> =
         squaresInRange(fromSquare)
             .asSequence()

@@ -1,10 +1,10 @@
 package chesstastic.ai.heuristics
 
-import chesstastic.ai.Constants
-import chesstastic.ai.Constants.Key.*
+import chesstastic.ai.Weights
+import chesstastic.ai.Weights.Key.*
 import chesstastic.engine.entities.*
 
-class ControlOfCenter(override val constants: Constants): Heuristic {
+class ControlOfCenter(override val weights: Weights): Heuristic {
     override val key = CONTROL_OF_CENTER
 
     override fun calculateBaseScore(board: Board): Score {
@@ -16,15 +16,15 @@ class ControlOfCenter(override val constants: Constants): Heuristic {
                 val squareMeta = board.metadata.squares[Square(File.fromIndex(file)!!, Rank.fromIndex(rank)!!)]!!
                 when (squareMeta.occupant?.color) {
                     Color.Light ->
-                        light += constants[CENTRAL_OCCUPANT_SCORE]
+                        light += weights[CENTRAL_OCCUPANT_SCORE]
                     Color.Dark ->
-                        dark += constants[CENTRAL_OCCUPANT_SCORE]
+                        dark += weights[CENTRAL_OCCUPANT_SCORE]
                 }
                 squareMeta.isAttackedBy.forEach { when(it.piece.color) {
                     Color.Light ->
-                        light += constants[CENTRAL_ATTACK_SCORE]
+                        light += weights[CENTRAL_ATTACK_SCORE]
                     Color.Dark ->
-                        dark += constants[CENTRAL_ATTACK_SCORE]
+                        dark += weights[CENTRAL_ATTACK_SCORE]
                 } }
             }
         }

@@ -1,23 +1,23 @@
 package chesstastic.ai.heuristics
 
-import chesstastic.ai.Constants
+import chesstastic.ai.Weights
 import chesstastic.engine.entities.Board
 import chesstastic.engine.entities.Color
 
 interface Heuristic {
-    val key: Constants.Key
-    val constants: Constants
+    val key: Weights.Key
+    val weights: Weights
 
     fun calculateBaseScore(board: Board): Score
 
     fun evaluate(board: Board) = HeuristicSummary(
         key = key,
         baseScore = calculateBaseScore(board),
-        modifier = constants[key]
+        modifier = weights[key]
     )
 
     companion object {
-        val factories = setOf<(Constants) -> Heuristic>(
+        val factories = setOf<(Weights) -> Heuristic>(
             { Material(it) },
             { ControlOfCenter(it) },
             { Castling(it) },
@@ -43,7 +43,7 @@ data class PositionEvaluation(
 }
 
 data class HeuristicSummary(
-    val key: Constants.Key,
+    val key: Weights.Key,
     val baseScore: Score,
     val modifier: Double
 ) {

@@ -1,5 +1,7 @@
 package chesstastic.performance
 
+import chesstastic.ai.Chesstastic
+import chesstastic.ai.heuristics.PositionEvaluation
 import chesstastic.ai.training.TrainingDataFile
 import chesstastic.engine.entities.Board
 import chesstastic.testing.framework.ChessTestSuite
@@ -8,8 +10,9 @@ import chesstastic.util.Stopwatch
 @Suppress("unused")
 class EvaluationPerformanceTests: ChessTestSuite() {
     init {
+        val chesstastic = Chesstastic()
         describe("evaluating the scores of every position from 100 games") {
-            it("records performance", skip = false) {
+            it("records performance") {
                 val filename = "100-games.txt"
                 val file = TrainingDataFile(filename)
                 var positionCount = 0
@@ -21,10 +24,9 @@ class EvaluationPerformanceTests: ChessTestSuite() {
                             // since it's needed to grab legal moves
                             board = board.updated(move)
                             positionCount++
-                            // todo: grab board score to really be sure evaluation got kicked off.
-                            val meta = board.metadata
+                            chesstastic.evaluate(board)
                         }
-                    }.toList() // synchronously waits for the sequence to fully materialize
+                    }.toList() //materializes/evaluates the sequence
                 }
                 PerformanceLog.log(
                     description = "Evaluate all positions in $filename",

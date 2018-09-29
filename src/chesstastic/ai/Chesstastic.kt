@@ -12,10 +12,10 @@ interface AIPlayer {
 class Chesstastic(
     private val depth: Int = 3,
     private val breadth: Int = 3,
-    private val constants: Constants = Constants(emptyMap()),
-    heuristicFactories: Set<(Constants) -> Heuristic> = Heuristic.factories
+    private val weights: Weights = Weights(emptyMap()),
+    heuristicFactories: Set<(Weights) -> Heuristic> = Heuristic.factories
 ): AIPlayer {
-    private val heuristics = heuristicFactories.map { it(constants) }
+    private val heuristics = heuristicFactories.map { it(weights) }
 
     override fun selectMove(board: Board): Move =
         findBestBranch(board.historyMetadata.currentTurn, board, depth, breadth)?.branch?.move

@@ -41,8 +41,8 @@ class ChesstasticTests: ChessTestSuite() {
 }
 
 private class MockHeuristic: Heuristic {
-    override val constants: Constants = Constants(emptyMap())
-    override val key = Constants.Key.MATERIAL
+    override val weights: Weights = Weights(emptyMap())
+    override val key = Weights.Key.MATERIAL
 
     private val records = mutableListOf<EvaluationRecord>()
 

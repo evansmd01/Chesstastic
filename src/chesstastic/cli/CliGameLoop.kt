@@ -24,14 +24,10 @@ object CliGameLoop {
             println()
             if (skipPrint) skipPrint = false
             else {
-                val evaluation = Chesstastic().evaluate(board)
-                val evaluationView = EvaluationView.render(evaluation)
+                val evaluationView = EvaluationView.render(Chesstastic().evaluate(board))
                 val boardView = BoardView.render(board)
-                val scoreView = ScoreView.render(evaluation.finalScore)
                 val columnsView = ColumnsView.render(boardView, evaluationView)
                 println(columnsView)
-                println()
-                println(scoreView)
                 println()
             }
             if (board.metadata.isCheckmate) {

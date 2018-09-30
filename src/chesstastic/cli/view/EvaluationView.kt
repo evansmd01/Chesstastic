@@ -5,7 +5,7 @@ import chesstastic.ai.heuristics.models.Score
 import chesstastic.util.*
 
 object EvaluationView {
-    private val indent = "     "
+    private val indent = "   "
     private val separator = "|  "
 
     private fun Score.format(): String =
@@ -14,19 +14,19 @@ object EvaluationView {
 
     fun render(evaluation: PositionEvaluation): String {
         return evaluation.heuristics.joinToString(
-            prefix = indent + "HEURISTIC NAME".padded(30)
+            prefix = indent + "HEURISTIC NAME".padded(32)
                 + separator + "    BASE SCORE".padded(20)
                 + separator + "MODIFIER".padded(10)
-                + separator + "      TOTAL\n  ${98.times("-")}\n",
-            separator = "\n"
+                + separator + "      TOTAL\n${100.times("-")}\n",
+            separator = "\n",
+            postfix = "\n${100.times("-")}\n\n" + ScoreView.render(evaluation.finalScore)
         ) {
-
             val title = it.key.toString().toLowerCase().replace("_", " ").capitalize()
             val baseScore = it.imbalance.score.format()
             val modifier = " %.2f".format(it.weight)
             val total = it.weightedScore.format()
 
-            indent + title.padded(30) +
+            indent + title.padded(32) +
                 separator + baseScore.padded(20) +
                 separator + modifier.padded(10) +
                 separator + total

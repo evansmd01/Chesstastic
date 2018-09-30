@@ -23,7 +23,7 @@ object ScoreView {
         val lightScore = if (score.favors(Color.Light)) score.ratioInFavorOf(Color.Light) else 1.0
         val darkScore = if(score.favors(Color.Dark)) score.ratioInFavorOf(Color.Light) else 1.0
 
-        return "    %.2f - $lightBar$darkBar - %.2f".format(lightScore, darkScore)
+        return "   %.2f - $lightBar$darkBar - %.2f".format(lightScore, darkScore)
     }
 
     private fun segments(score: Score): Pair<Int, Int> =

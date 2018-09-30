@@ -1,10 +1,9 @@
 package chesstastic.performance
 
 import chesstastic.ai.Chesstastic
-import chesstastic.ai.heuristics.PositionEvaluation
 import chesstastic.ai.training.TrainingDataFile
 import chesstastic.engine.entities.Board
-import chesstastic.testing.framework.ChessTestSuite
+import chesstastic.tests.framework.ChessTestSuite
 import chesstastic.util.Stopwatch
 
 @Suppress("unused")

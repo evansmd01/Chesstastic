@@ -1,4 +1,4 @@
-package chesstastic.testing.framework
+package chesstastic.tests.framework
 
 import java.io.File
 import java.net.URLClassLoader

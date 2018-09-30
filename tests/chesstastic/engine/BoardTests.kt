@@ -1,7 +1,7 @@
 package chesstastic.engine
 
 import chesstastic.engine.entities.*
-import chesstastic.testing.framework.ChessTestSuite
+import chesstastic.tests.framework.ChessTestSuite
 import chesstastic.util.Snapshot
 
 @Suppress("unused")

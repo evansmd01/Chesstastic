@@ -3,7 +3,7 @@ package chesstastic.ai
 import chesstastic.ai.heuristics.Heuristic
 import chesstastic.ai.heuristics.Score
 import chesstastic.engine.entities.*
-import chesstastic.testing.framework.ChessTestSuite
+import chesstastic.tests.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom
 
 @Suppress("unused")

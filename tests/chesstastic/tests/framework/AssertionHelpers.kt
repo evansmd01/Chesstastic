@@ -1,4 +1,4 @@
-package chesstastic.testing.framework
+package chesstastic.tests.framework
 
 import chesstastic.engine.entities.Board
 import chesstastic.util.Snapshot

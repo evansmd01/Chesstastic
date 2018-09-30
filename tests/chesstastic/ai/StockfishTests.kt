@@ -1,7 +1,7 @@
 package chesstastic.ai
 
 import chesstastic.engine.entities.Board
-import chesstastic.testing.framework.ChessTestSuite
+import chesstastic.tests.framework.ChessTestSuite
 import chesstastic.ai.stockfish.Stockfish
 import java.time.Duration
 

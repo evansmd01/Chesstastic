@@ -1,6 +1,6 @@
 package chesstastic.cli.view
 
-import chesstastic.ai.heuristics.PositionEvaluation
+import chesstastic.ai.heuristics.models.PositionEvaluation
 import chesstastic.ai.heuristics.models.Score
 import chesstastic.util.*
 

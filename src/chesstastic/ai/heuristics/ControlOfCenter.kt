@@ -3,7 +3,6 @@ package chesstastic.ai.heuristics
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
 import chesstastic.ai.heuristics.models.Imbalance
-import chesstastic.ai.heuristics.models.Score
 import chesstastic.engine.entities.*
 
 class ControlOfCenter(override val weights: Weights): Heuristic {

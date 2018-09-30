@@ -30,12 +30,18 @@ class Weights(private val overrides: Map<String, Double>) {
         PINS_AND_SKEWERS,
         PIN_BONUS,
         SKEWER_BONUS,
+
+        // pawn promotion
+        PAWN_PROMOTION,
+        PROMOTION_1_RANK_AWAY,
+        PROMOTION_2_RANKS_AWAY,
+        PROMOTION_3_RANKS_AWAY,
     }
 
     companion object {
         fun default(key: Key): Double = when (key) {
             // Heuristic Weights
-            MATERIAL -> 10.0
+            MATERIAL -> 25.0
             QUEEN_MATERIAL_VALUE -> 9.0
             KING_MATERIAL_VALUE -> 0.0
             PAWN_MATERIAL_VALUE -> 1.0
@@ -58,6 +64,12 @@ class Weights(private val overrides: Map<String, Double>) {
             PINS_AND_SKEWERS -> 1.0
             PIN_BONUS -> 5.0
             SKEWER_BONUS -> 5.0
+
+            // pawn promotion
+            PAWN_PROMOTION -> 1.0
+            PROMOTION_1_RANK_AWAY -> 7.0
+            PROMOTION_2_RANKS_AWAY -> 4.0
+            PROMOTION_3_RANKS_AWAY -> 2.0
         }
     }
 

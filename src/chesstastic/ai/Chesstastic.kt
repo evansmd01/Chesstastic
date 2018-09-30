@@ -1,6 +1,7 @@
 package chesstastic.ai
 
 import chesstastic.ai.heuristics.*
+import chesstastic.ai.heuristics.models.PositionEvaluation
 import chesstastic.ai.heuristics.models.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception

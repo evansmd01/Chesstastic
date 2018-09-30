@@ -28,7 +28,6 @@ object CliGameLoop {
                 val boardView = BoardView.render(board)
                 val columnsView = ColumnsView.render(boardView, evaluationView)
                 println(columnsView)
-                println()
             }
             if (board.metadata.isCheckmate) {
                 println(board.historyMetadata.history)

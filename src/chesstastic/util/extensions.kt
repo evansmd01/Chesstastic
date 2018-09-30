@@ -17,3 +17,9 @@ operator fun Duration.div(int: Int): Duration = Duration.ofMillis(this.toMillis(
 fun Long.format(digits: Int): String = String.format("%0${digits}d", this)
 
 fun Int.times(string: String): String = (1..this).joinToString(separator = ""){ string }
+
+fun String.padded(toFit: Int): String {
+    return this + (toFit - this.practicalLength()).times(" ")
+}
+
+fun String.practicalLength(): Int = ConsoleColor.all.fold(this) { acc, color -> acc.replace(color, "")}.length

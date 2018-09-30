@@ -51,6 +51,5 @@ object BoardView {
         sb.appendln(fileLabels)
         return sb.toString()
     }
-
 }
 

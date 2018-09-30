@@ -2,12 +2,14 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
+import chesstastic.ai.heuristics.models.Imbalance
+import chesstastic.ai.heuristics.models.Score
 import chesstastic.engine.entities.Board
 
 class PinsAndSkewers(override val weights: Weights): Heuristic {
     override val key = PINS_AND_SKEWERS
 
-    override fun calculateBaseScore(board: Board): Score {
+    override fun calculateImbalance(board: Board): Imbalance {
         var light = 0.0
         var dark = 0.0
 
@@ -33,6 +35,6 @@ class PinsAndSkewers(override val weights: Weights): Heuristic {
             dark += lesserPieceValue * weights[SKEWER_BONUS]
         }
 
-        return Score.fromImbalance(light, dark)
+        return Imbalance(light, dark)
     }
 }

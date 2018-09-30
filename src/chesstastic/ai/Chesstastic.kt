@@ -1,7 +1,7 @@
 package chesstastic.ai
 
 import chesstastic.ai.heuristics.*
-import chesstastic.ai.heuristics.Score
+import chesstastic.ai.heuristics.models.Score
 import chesstastic.engine.entities.*
 import java.lang.Exception
 

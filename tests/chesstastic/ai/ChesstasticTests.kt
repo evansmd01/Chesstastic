@@ -1,7 +1,8 @@
 package chesstastic.ai
 
 import chesstastic.ai.heuristics.Heuristic
-import chesstastic.ai.heuristics.Score
+import chesstastic.ai.heuristics.models.Imbalance
+import chesstastic.ai.heuristics.models.Score
 import chesstastic.engine.entities.*
 import chesstastic.tests.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom
@@ -72,12 +73,12 @@ private class MockHeuristic: Heuristic {
         return bestOptionForPlayer!!
     }
 
-    override fun calculateBaseScore(board: Board): Score {
+    override fun calculateImbalance(board: Board): Imbalance {
         val light = ThreadLocalRandom.current().nextDouble()
         val dark = ThreadLocalRandom.current().nextDouble()
-        val score = Score(light, dark)
-        records.add(EvaluationRecord(score, board))
-        return score
+        val imbalance = Imbalance(light, dark)
+        records.add(EvaluationRecord(imbalance.score, board))
+        return imbalance
     }
 
     data class EvaluationRecord(val score: Score, val board: Board)

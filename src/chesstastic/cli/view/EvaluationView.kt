@@ -1,14 +1,11 @@
 package chesstastic.cli.view
 
 import chesstastic.ai.heuristics.PositionEvaluation
-import chesstastic.ai.heuristics.Score
-import chesstastic.util.ConsoleColor
-import chesstastic.util.times
+import chesstastic.ai.heuristics.models.Score
+import chesstastic.util.*
 
 object EvaluationView {
     private val indent = "     "
-
-    private fun String.padded(toFit: Int) = this +  (toFit - this.length).times(" ")
     private val separator = "|  "
 
     private fun Score.format(): String =
@@ -25,12 +22,12 @@ object EvaluationView {
         ) {
 
             val title = it.key.toString().toLowerCase().replace("_", " ").capitalize()
-            val baseScore = it.baseScore.format()
-            val modifier = " %.2f".format(it.modifier)
-            val total = it.effectiveScore.format()
+            val baseScore = it.imbalance.score.format()
+            val modifier = " %.2f".format(it.weight)
+            val total = it.weightedScore.format()
 
             indent + title.padded(30) +
-                separator + baseScore.padded(38) +
+                separator + baseScore.padded(20) +
                 separator + modifier.padded(10) +
                 separator + total
         }

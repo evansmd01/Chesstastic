@@ -1,10 +1,8 @@
-package chesstastic.ai.heuristics
+package chesstastic.ai.heuristics.models
 
 import chesstastic.engine.entities.Color
-import javafx.scene.effect.Light
 
 data class Score(val light: Double, val dark: Double) {
-    constructor(light: Int, dark: Int) : this(light.toDouble(), dark.toDouble())
 
     operator fun plus(other: Score): Score = Score(other.light + light, other.dark + dark)
 
@@ -14,7 +12,7 @@ data class Score(val light: Double, val dark: Double) {
 
     fun ratioInFavorOf(color: Color): Double =
         when {
-            this == even -> 1.0
+            light == dark -> 1.0
             color == Color.Light -> light / dark
             else -> dark / light
         }
@@ -25,26 +23,12 @@ data class Score(val light: Double, val dark: Double) {
     }
 
     companion object {
-        val even = Score(0.0, 0.0)
+        val EVEN = Score(0.0, 0.0)
 
         fun checkmate(winner: Color) = when (winner) {
             Color.Light -> Score(Double.POSITIVE_INFINITY, 0.0)
             Color.Dark -> Score(0.0, Double.POSITIVE_INFINITY)
         }
-
-        fun fromImbalance(light: Double, dark: Double): Score {
-            if (light < 0 || dark < 0)
-                throw Exception("Invalid score. Cannot have values of less than zero. " +
-                    "Apply penalties as bonuses to the opponent")
-
-            val min = Math.max(light, dark)
-            val diff = Math.abs(light - dark)
-            val imbalance = diff / min
-            return when  {
-                light > dark -> Score(imbalance, 0.0)
-                dark > light -> Score(0.0, imbalance)
-                else -> even
-            }
-        }
     }
 }
+

@@ -19,6 +19,7 @@ object CliGameLoop {
         var skipPrint = false
         var lightAI: AIPlayer? = null
         var darkAI: AIPlayer? = null
+        var promptAiMoves = true
         gameLoop@ while (true) {
             println()
             println()
@@ -37,11 +38,20 @@ object CliGameLoop {
                 println(board.historyMetadata.history)
                 break@gameLoop
             }
-            print("${board.historyMetadata.currentTurn} player's turn: ")
+            val lastMove = board.historyMetadata.history.mostRecent
+            print("${if(lastMove != null) "${board.historyMetadata.currentTurn.opposite} played $lastMove. " else ""}${board.historyMetadata.currentTurn} player's turn. Enter a move: ")
             val ai = if (board.historyMetadata.currentTurn == Color.Light) lightAI else darkAI
             when  {
                 ai != null -> {
                     board = board.updatedWithoutValidation(ai.selectMove(board))
+                    if(promptAiMoves) {
+                        println()
+                        printlnYellow("Press enter for next move, or type 'auto' to stop being prompted.")
+                        val response = readLine()
+                        if(response?.toLowerCase() == "auto") {
+                            promptAiMoves = false
+                        }
+                    }
                 }
                 else -> {
                     val input = readLine()?.toLowerCase()?.trim()

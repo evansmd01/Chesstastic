@@ -1,5 +1,7 @@
 package chesstastic.util
 
+import chesstastic.engine.entities.Color
+
 class ConsoleColor {
     companion object {
         const val RESET = "\u001B[0m"
@@ -15,12 +17,17 @@ class ConsoleColor {
     }
 }
 
-private fun printlnColor(colorEncoding: String, message: String) = println("$colorEncoding$message${ConsoleColor.RESET}")
+private fun applyConsoleColor(colorEncoding: String, message: String) = "$colorEncoding$message${ConsoleColor.RESET}"
 
-fun printlnRed(message: String) = printlnColor(ConsoleColor.RED, message)
+fun printlnRed(message: String) = println(applyConsoleColor(ConsoleColor.RED, message))
 
-fun printlnGreen(message: String) = printlnColor(ConsoleColor.GREEN, message)
+fun printlnGreen(message: String) = println(applyConsoleColor(ConsoleColor.GREEN, message))
 
-fun printlnYellow(message: String) = printlnColor(ConsoleColor.YELLOW, message)
+fun printlnYellow(message: String) = println(applyConsoleColor(ConsoleColor.YELLOW, message))
 
-fun printlnCyan(message: String) = printlnColor(ConsoleColor.CYAN, message)
+fun printlnCyan(message: String) = println(applyConsoleColor(ConsoleColor.CYAN, message))
+
+fun String.applyColor(color: Color): String = applyConsoleColor(when (color) {
+    Color.Light -> ConsoleColor.CYAN
+    Color.Dark -> ConsoleColor.PURPLE
+}, this)

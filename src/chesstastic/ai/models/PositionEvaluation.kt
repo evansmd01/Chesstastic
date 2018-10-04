@@ -1,4 +1,4 @@
-package chesstastic.ai.heuristics.models
+package chesstastic.ai.models
 
 import chesstastic.engine.entities.Color
 

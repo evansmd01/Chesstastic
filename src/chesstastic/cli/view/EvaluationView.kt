@@ -1,25 +1,10 @@
 package chesstastic.cli.view
 
-import chesstastic.ai.heuristics.models.Imbalance
-import chesstastic.ai.heuristics.models.PositionEvaluation
-import chesstastic.ai.heuristics.models.Score
+import chesstastic.ai.models.*
 import chesstastic.engine.entities.Color
 import chesstastic.util.*
 
-object EvaluationView {
-    private fun Double.format() = "%.2f".format(this)
-    private val indent = "   "
-    private val separator = "|  "
-
-    private fun Score.format(): String {
-        val lightString = light.format()
-        val darkString = dark.format()
-        return when {
-            light > dark -> "${lightString.applyColor(Color.Light)} to $darkString"
-            light < dark -> "$lightString to ${darkString.applyColor(Color.Dark)}"
-            else -> "$lightString to $darkString"
-        }
-    }
+object EvaluationView: TableView() {
 
     private fun Imbalance.format(): String {
         val lightString = if (light > 0) light.format().applyColor(Color.Light) else light.format()
@@ -55,3 +40,4 @@ object EvaluationView {
         }
     }
 }
+

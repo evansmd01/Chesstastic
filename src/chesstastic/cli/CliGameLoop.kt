@@ -2,12 +2,10 @@ package chesstastic.cli
 
 import chesstastic.ai.AIPlayer
 import chesstastic.ai.Chesstastic
+import chesstastic.ai.models.BranchEvaluation
 import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
-import chesstastic.cli.view.BoardView
-import chesstastic.cli.view.ColumnsView
-import chesstastic.cli.view.EvaluationView
-import chesstastic.cli.view.ScoreView
+import chesstastic.cli.view.*
 import chesstastic.engine.entities.*
 import chesstastic.tasks.Task
 import chesstastic.util.*
@@ -20,14 +18,17 @@ object CliGameLoop {
         var lightAI: AIPlayer? = null
         var darkAI: AIPlayer? = null
         var promptAiMoves = true
+        var lastBranchChosen: BranchEvaluation? = null
         gameLoop@ while (true) {
             println()
             println()
             if (skipPrint) skipPrint = false
             else {
-                val evaluationView = EvaluationView.render(Chesstastic().evaluate(board))
-                val boardView = BoardView.render(board)
-                val columnsView = ColumnsView.render(boardView, evaluationView)
+                var rightColumn = EvaluationView.render(Chesstastic().evaluate(board))
+                if (lastBranchChosen != null)
+                    rightColumn += "\n\n" + BranchView.render(lastBranchChosen)
+                val leftColumn = BoardView.render(board)
+                val columnsView = ColumnsView.render(leftColumn, rightColumn)
                 println(columnsView)
             }
             if (board.metadata.isCheckmate) {
@@ -44,6 +45,9 @@ object CliGameLoop {
             when  {
                 ai != null -> {
                     board = board.updatedWithoutValidation(ai.selectMove(board))
+                    if (ai is Chesstastic)
+                        lastBranchChosen = ai.lastBranchChosen
+
                     if(promptAiMoves) {
                         println()
                         printlnYellow("Press enter for next move, or type 'auto' to stop being prompted.")
@@ -75,9 +79,9 @@ object CliGameLoop {
                         }
                         is Command.SetAi -> when(board.historyMetadata.currentTurn) {
                             Color.Light->
-                                lightAI = Chesstastic(command.depth, command.breadth)
+                                lightAI = Chesstastic(depth = command.depth, breadth = command.breadth)
                             Color.Dark ->
-                                darkAI = Chesstastic(command.depth, command.breadth)
+                                darkAI = Chesstastic(depth = command.depth, breadth = command.breadth)
                         }
                         is Command.SetStockfish -> when(board.historyMetadata.currentTurn) {
                             Color.Light ->

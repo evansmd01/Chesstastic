@@ -1,8 +1,8 @@
 package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
-import chesstastic.ai.heuristics.models.HeuristicResult
-import chesstastic.ai.heuristics.models.Imbalance
+import chesstastic.ai.models.HeuristicResult
+import chesstastic.ai.models.Imbalance
 import chesstastic.engine.entities.Board
 
 interface Heuristic {

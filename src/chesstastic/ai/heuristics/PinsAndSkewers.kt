@@ -2,8 +2,7 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
-import chesstastic.ai.heuristics.models.Imbalance
-import chesstastic.ai.heuristics.models.Score
+import chesstastic.ai.models.Imbalance
 import chesstastic.engine.entities.Board
 
 class PinsAndSkewers(override val weights: Weights): Heuristic {

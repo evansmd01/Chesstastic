@@ -1,6 +1,6 @@
 package chesstastic.cli.view
 
-import chesstastic.ai.heuristics.models.Score
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.Color
 import chesstastic.util.ConsoleColor
 

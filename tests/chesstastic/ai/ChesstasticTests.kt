@@ -1,8 +1,8 @@
 package chesstastic.ai
 
 import chesstastic.ai.heuristics.Heuristic
-import chesstastic.ai.heuristics.models.Imbalance
-import chesstastic.ai.heuristics.models.Score
+import chesstastic.ai.models.Imbalance
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.*
 import chesstastic.tests.framework.ChessTestSuite
 import java.util.concurrent.ThreadLocalRandom

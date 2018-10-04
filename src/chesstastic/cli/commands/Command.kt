@@ -65,7 +65,7 @@ sealed class Command {
         }
     }
 
-    data class SetAi(val breadth: Int = 0, val depth: Int = 0): Command() {
+    data class SetAi(val depth: Int = 0, val breadth: Int = 0): Command() {
         companion object : CommandParser {
             private val regex = """set\s+ai\s+(\d+)\s+(\d+)""".toRegex()
             override fun parse(input: String): SetAi? {

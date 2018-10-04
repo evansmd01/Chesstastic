@@ -11,14 +11,12 @@ object BranchView: TableView() {
     fun render(branchEval: BranchEvaluation): String {
         val pairs = branchEval.branch.toPairs().toList()
 
-        val message = "branch: ${branchEval.branch}\npairs: $pairs\nHistory: ${branchEval.board}"
-
         return "SELECTED BRANCH\n${100.times("-")}\n" + pairs.joinToString(
             prefix = indent + "MOVE".padded(10) +
                 separator + "RESPONSE".padded(10) +
                 "\n${100.times("-")}\n",
             separator = "\n",
-            postfix = "\n${100.times("-")}\nEXPECTED SCORE: ${branchEval.score.format()}\n$message")
+            postfix = "\n${100.times("-")}\nEXPECTED SCORE: ${branchEval.score.format()}")
         {
             indent +
                 it.first.toString()

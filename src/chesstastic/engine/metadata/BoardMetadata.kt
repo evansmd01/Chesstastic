@@ -40,4 +40,9 @@ data class BoardMetadata(
     }
 
     val isGameOver = isStalemate || isCheckmate
+
+
+    val attackedPieces: List<SquareMetadata> = squares.values.filter {
+        it.occupant != null && it.isAttackedBy.isNotEmpty()
+    }
 }

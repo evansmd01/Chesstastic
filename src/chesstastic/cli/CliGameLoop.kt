@@ -2,6 +2,7 @@ package chesstastic.cli
 
 import chesstastic.ai.AIPlayer
 import chesstastic.ai.Chesstastic
+import chesstastic.ai.ChesstasticConfig
 import chesstastic.ai.models.BranchEvaluation
 import chesstastic.ai.stockfish.Stockfish
 import chesstastic.cli.commands.Command
@@ -26,7 +27,8 @@ object CliGameLoop {
             else {
                 var rightColumn = EvaluationView.render(Chesstastic().evaluate(board))
                 if (lastBranchChosen != null)
-                    rightColumn += "\n\n" + BranchView.render(lastBranchChosen)
+                    rightColumn += "\n\n" + BranchView.render(lastBranchChosen) +
+                        "\n\nSNAPSHOT:\n${Snapshot.from(board)}"
                 val leftColumn = BoardView.render(board)
                 val columnsView = ColumnsView.render(leftColumn, rightColumn)
                 println(columnsView)
@@ -79,9 +81,9 @@ object CliGameLoop {
                         }
                         is Command.SetAi -> when(board.historyMetadata.currentTurn) {
                             Color.Light->
-                                lightAI = Chesstastic(depth = command.depth, breadth = command.breadth)
+                                lightAI = Chesstastic(ChesstasticConfig(depth = command.depth, breadth = command.breadth))
                             Color.Dark ->
-                                darkAI = Chesstastic(depth = command.depth, breadth = command.breadth)
+                                darkAI = Chesstastic(ChesstasticConfig(depth = command.depth, breadth = command.breadth))
                         }
                         is Command.SetStockfish -> when(board.historyMetadata.currentTurn) {
                             Color.Light ->

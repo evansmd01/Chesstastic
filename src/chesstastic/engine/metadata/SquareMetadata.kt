@@ -14,4 +14,6 @@ data class SquareMetadata(
     val isSupportedBy: Set<PieceMetadata>,
     val pins: Set<PinMetadata>,
     val skewers: Set<SkewerMetadata>
-)
+) {
+    val pieceMetadata: PieceMetadata? = occupant?.let { PieceMetadata(it, square) }
+}

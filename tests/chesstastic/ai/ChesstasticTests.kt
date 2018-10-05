@@ -14,7 +14,7 @@ class ChesstasticTests: ChessTestSuite() {
             it("should select the move that results in the best possible score") {
                 val board = Board()
                 val mock = MockHeuristic()
-                val subject = Chesstastic(3, 3, heuristicFactories = setOf({ _ -> mock }))
+                val subject = Chesstastic(ChesstasticConfig(3, 3, setOf(mock)))
 
                 val selectedMove = subject.selectMove(board)
 
@@ -29,8 +29,8 @@ class ChesstasticTests: ChessTestSuite() {
             it("should be able to play a full game without encountering errors") {
                 var board = Board()
 
-                val player1 = Chesstastic(2, 2)
-                val player2 = Chesstastic(2, 2)
+                val player1 = Chesstastic()
+                val player2 = Chesstastic()
 
                 while(!board.metadata.isCheckmate && !board.metadata.isStalemate) {
                     val player = if (board.historyMetadata.currentTurn == Color.Light) player1 else player2

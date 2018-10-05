@@ -38,4 +38,8 @@ interface AssertionHelpers {
         val positionEqual = this.positionEquals(other)
         if(!positionEqual) throw AssertionError("\nBoard with state:\n\n${Snapshot.from(this)}\n\ndid not equal:\n\n${Snapshot.from(other)}\n".prependIndent("       "))
     }
+
+    fun <T: Comparable<T>> T.shouldBeGreaterThan(other: T) {
+        if (this <= other) throw java.lang.AssertionError("$this was not greater than $other")
+    }
 }

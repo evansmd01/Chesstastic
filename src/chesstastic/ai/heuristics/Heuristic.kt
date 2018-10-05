@@ -23,7 +23,8 @@ interface Heuristic {
             { ControlOfCenter(it) },
             { Castling(it) },
             { PinsAndSkewers(it) },
-            { PawnPromotion(it) }
+            { PawnPromotion(it) },
+            { Exchanges(it) }
         )
     }
 }

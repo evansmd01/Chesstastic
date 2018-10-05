@@ -4,7 +4,7 @@ import chesstastic.engine.entities.PieceKind.*
 import chesstastic.engine.entities.*
 import chesstastic.ai.Weights.Key.*
 
-class Weights(private val overrides: Map<String, Double>) {
+class Weights(private val overrides: Map<String, Double> = emptyMap()) {
     enum class Key {
         // Heuristic Weights
         MATERIAL,
@@ -36,6 +36,11 @@ class Weights(private val overrides: Map<String, Double>) {
         PROMOTION_1_RANK_AWAY,
         PROMOTION_2_RANKS_AWAY,
         PROMOTION_3_RANKS_AWAY,
+
+        // attacking
+        WINNING_THE_EXCHANGE,
+        EXCHANGE_GAIN_BONUS,
+        EXCHANGE_SIMPLIFICATION_BONUS,
     }
 
     companion object {
@@ -70,6 +75,11 @@ class Weights(private val overrides: Map<String, Double>) {
             PROMOTION_1_RANK_AWAY -> 7.0
             PROMOTION_2_RANKS_AWAY -> 4.0
             PROMOTION_3_RANKS_AWAY -> 2.0
+
+            //attacking
+            WINNING_THE_EXCHANGE -> 1.0
+            EXCHANGE_GAIN_BONUS -> 20.0
+            EXCHANGE_SIMPLIFICATION_BONUS -> 2.0
         }
     }
 

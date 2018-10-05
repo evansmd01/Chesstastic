@@ -21,7 +21,7 @@ class EvaluationTests: ChessTestSuite() {
                         |R|N|B| |K|B|N|R|
                     """.trimIndent(), turn = Color.Dark)
 
-                    val eval = Chesstastic().evaluate(board)
+                    val eval = Chesstastic.DEFAULT.evaluate(board)
 
                     eval.finalScore.dark.shouldBeGreaterThan(eval.finalScore.light)
                 }
@@ -38,7 +38,7 @@ class EvaluationTests: ChessTestSuite() {
                         |R|N|B|Q|K| | |R|
                     """.trimIndent(), turn = Color.Light)
 
-                    val eval = Chesstastic().evaluate(board)
+                    val eval = Chesstastic.DEFAULT.evaluate(board)
 
                     eval.finalScore.light.shouldBeGreaterThan(eval.finalScore.dark)
                 }

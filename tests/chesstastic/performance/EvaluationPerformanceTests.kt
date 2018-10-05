@@ -9,7 +9,7 @@ import chesstastic.util.Stopwatch
 @Suppress("unused")
 class EvaluationPerformanceTests: ChessTestSuite() {
     init {
-        val chesstastic = Chesstastic()
+        val chesstastic = Chesstastic.DEFAULT
         describe("evaluating the scores of every position from 100 games") {
             it("records performance") {
                 val filename = "100-games.txt"

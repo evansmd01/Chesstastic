@@ -8,11 +8,15 @@ interface AIPlayer {
     fun selectMove(board: Board): Move
 }
 
-class Chesstastic(private val config: ChesstasticConfig = ChesstasticConfig.DEFAULT): AIPlayer {
+class Chesstastic private constructor (
+    private val depth: Int,
+    private val breadth: Int,
+    private val heuristics: Set<Heuristic>
+): AIPlayer {
     var lastBranchChosen: BranchEvaluation? = null
 
     override fun selectMove(board: Board): Move {
-        lastBranchChosen = findBestBranch(board.historyMetadata.currentTurn, board, config.depth, config.breadth)
+        lastBranchChosen = findBestBranch(board.historyMetadata.currentTurn, board, depth, breadth)
         return lastBranchChosen?.branch?.firstOrNull()
             ?: throw Exception("Could not find a move")
     }
@@ -55,12 +59,25 @@ class Chesstastic(private val config: ChesstasticConfig = ChesstasticConfig.DEFA
     fun evaluate(board: Board) = PositionEvaluation(
         winner = if (board.metadata.isCheckmate) board.historyMetadata.currentTurn.opposite else null,
         stalemate = board.metadata.isStalemate,
-        heuristics = config.heuristics.map { it.evaluate(board) }
+        heuristics = heuristics.map { it.evaluate(board) }
     )
-}
 
-data class ChesstasticConfig(val depth: Int, val breadth: Int, val heuristics: Set<Heuristic> = emptySet()) {
     companion object {
-        val DEFAULT = ChesstasticConfig(2, 2, Heuristic.factories.map { it(Weights()) }.toSet())
+        val DEFAULT = configured {  }
+        fun configured(apply: ChesstasticConfig.() -> Unit): Chesstastic {
+            val config = ChesstasticConfig()
+            apply(config)
+            return Chesstastic(
+                depth = config.depth,
+                breadth = config.breadth,
+                heuristics = config.heuristics
+            )
+        }
     }
 }
+
+data class ChesstasticConfig(
+    var depth: Int = 2,
+    var breadth: Int = 2,
+    var heuristics: Set<Heuristic> = Heuristic.factories.map { it(Weights()) }.toSet()
+)

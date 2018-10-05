@@ -19,7 +19,7 @@ class Chesstastic(private val config: ChesstasticConfig = ChesstasticConfig.DEFA
 
     private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: BranchEvaluation? = null): BranchEvaluation? {
         val currentTurn = board.historyMetadata.currentTurn
-        val moves = board.metadata.legalMoves
+        val moves = board.metadata.legalMoves.shuffled()
         // stop recursion if we've hit depth, ensuring we ended with an opponent response
         // , or if there are no legal moves left
         if ((depth < 0 && currentTurn == player) || moves.isEmpty()) {

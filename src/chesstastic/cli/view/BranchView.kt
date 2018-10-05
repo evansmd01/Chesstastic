@@ -28,13 +28,12 @@ object BranchView: TableView() {
         }
     }
 
-    private fun List<Move>.toPairs(): Sequence<Pair<Move, Move>> {
+    private fun List<Move>.toPairs(): Sequence<Pair<Move, Move?>> {
         var remaining: List<Move>? = this
         return generateSequence {
             val move = remaining?.firstOrNull()
             if (move != null) {
                 val response = remaining?.drop(1)?.firstOrNull()
-                    ?: throw Exception("Move $move did not have a response.")
                 remaining = remaining?.drop(2)
                 Pair(move, response)
             } else null

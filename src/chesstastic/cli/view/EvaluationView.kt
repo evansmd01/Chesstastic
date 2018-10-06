@@ -29,12 +29,14 @@ object EvaluationView: TableView() {
             postfix = "\n${100.times("-")}\n\n" + ScoreView.render(evaluation.finalScore)
         ) {
             val title = it.key.toString().toLowerCase().replace("_", " ").capitalize()
-            val imbalance = it.imbalance.format()
+            val baseScore = it.baseScore.format()
+            val imbalance = it.baseScore.imbalance.format()
             val weight = "%.2f".format(it.weight)
             val total = it.weightedScore.format()
 
             indent + title.padded(32) +
-                separator + imbalance.padded(20) +
+                separator + baseScore.padded(19) +
+                separator + imbalance.padded(11) +
                 separator + weight.padded(8) +
                 separator + total
         }

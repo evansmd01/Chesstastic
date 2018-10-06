@@ -4,8 +4,8 @@ import chesstastic.ai.Weights
 
 data class HeuristicResult(
     val key: Weights.Key,
-    val imbalance: Imbalance,
+    val baseScore: Score,
     val weight: Double
 ) {
-    val weightedScore = imbalance.score * weight
+    val weightedScore = baseScore * weight
 }

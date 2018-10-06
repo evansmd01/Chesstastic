@@ -2,14 +2,13 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
-import chesstastic.ai.models.Imbalance
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.Board
-import chesstastic.engine.entities.Color.*
 
 class Material(override val weights: Weights): Heuristic {
     override val key = MATERIAL
 
-    override fun calculateImbalance(board: Board): Imbalance {
+    override fun calculateBaseScore(board: Board): Score {
         val light =  board.metadata.lightPlayer.allPieces
             .map { weights.pieceValue(it.piece.kind) }
             .sum()
@@ -17,7 +16,7 @@ class Material(override val weights: Weights): Heuristic {
             .map { weights.pieceValue(it.piece.kind) }
             .sum()
 
-        return Imbalance(light, dark)
+        return Score(light, dark)
     }
 }
 

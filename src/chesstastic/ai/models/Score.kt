@@ -1,6 +1,8 @@
 package chesstastic.ai.models
 
 import chesstastic.engine.entities.Color
+import kotlin.math.abs
+import kotlin.math.max
 
 data class Score(val light: Double, val dark: Double) {
 
@@ -20,6 +22,11 @@ data class Score(val light: Double, val dark: Double) {
     fun favors(color: Color): Boolean = when (color) {
         Color.Light -> light > dark
         Color.Dark -> dark > light
+    }
+
+    val imbalance = when {
+        light == dark -> 0.0 // avoids divide by zero
+        else -> abs(light - dark) / (light + dark) * max(light, dark)
     }
 
     companion object {

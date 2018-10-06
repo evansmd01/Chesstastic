@@ -2,18 +2,18 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.models.HeuristicResult
-import chesstastic.ai.models.Imbalance
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.Board
 
 interface Heuristic {
     val key: Weights.Key
     val weights: Weights
 
-    fun calculateImbalance(board: Board): Imbalance
+    fun calculateBaseScore(board: Board): Score
 
     fun evaluate(board: Board) = HeuristicResult(
         key = key,
-        imbalance = calculateImbalance(board),
+        baseScore = calculateBaseScore(board),
         weight = weights[key]
     )
 
@@ -22,7 +22,6 @@ interface Heuristic {
             { Material(it) },
             { ControlOfCenter(it) },
             { Castling(it) },
-            { PinsAndSkewers(it) },
             { PawnPromotion(it) },
             { Exchanges(it) },
             { Mobility(it) }

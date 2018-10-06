@@ -2,14 +2,14 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
-import chesstastic.ai.models.Imbalance
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.*
 import chesstastic.engine.metadata.SquareMetadata
 
 class Exchanges(override val weights: Weights): Heuristic {
     override val key = WINNING_THE_EXCHANGE
 
-    override fun calculateImbalance(board: Board): Imbalance {
+    override fun calculateBaseScore(board: Board): Score {
         var lightExchange = Exchange(0.0,0.0)
         var darkExchange = Exchange(0.0,0.0)
 
@@ -22,7 +22,7 @@ class Exchanges(override val weights: Weights): Heuristic {
             }
         }
 
-        return Imbalance(tallyExchange(lightExchange), tallyExchange(darkExchange))
+        return Score(tallyExchange(lightExchange), tallyExchange(darkExchange))
     }
 
     private fun tallyExchange(exchange: Exchange): Double =

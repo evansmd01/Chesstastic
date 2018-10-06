@@ -2,13 +2,13 @@ package chesstastic.ai.heuristics
 
 import chesstastic.ai.Weights
 import chesstastic.ai.Weights.Key.*
-import chesstastic.ai.models.Imbalance
+import chesstastic.ai.models.Score
 import chesstastic.engine.entities.*
 
 class PawnPromotion(override val weights: Weights): Heuristic {
     override val key = PAWN_PROMOTION
 
-    override fun calculateImbalance(board: Board): Imbalance {
+    override fun calculateBaseScore(board: Board): Score {
         var light = 0.0
         var dark = 0.0
 
@@ -28,6 +28,6 @@ class PawnPromotion(override val weights: Weights): Heuristic {
                 else -> { }
             }
         }
-        return Imbalance(light, dark)
+        return Score(light, dark)
     }
 }

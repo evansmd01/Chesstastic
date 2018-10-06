@@ -45,7 +45,7 @@ object CliGameLoop {
             val ai = if (board.historyMetadata.currentTurn == Color.Light) lightAI else darkAI
             when  {
                 ai != null -> {
-                    board = board.updatedWithoutValidation(ai.selectMove(board))
+                    board = board.updated(ai.selectMove(board))
                     if (ai is Chesstastic)
                         lastBranchChosen = ai.lastBranchChosen
 

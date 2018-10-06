@@ -12,6 +12,7 @@ object BoardView {
         val messageColumnRange = messageView.columnRange(8 * SquareView.SQUARE_WIDTH)
         val messageLineRange = messageView.lineRange(8 * SquareView.SQUARE_HEIGHT)
         val message = messageView.render()
+        val lastMove = board.historyMetadata.history.mostRecent
 
         val sb = StringBuilder()
         val fileLabels = File.values().joinToString(separator = "           ", prefix = "        ")
@@ -20,8 +21,10 @@ object BoardView {
         Rank.values().reversed().forEachIndexed { reversedRankIndex, rank ->
             val squareViews = File.values().map { file ->
                 val bgColor = if ((rank.index + file.index) % 2 == 0) Light else Dark
-                val piece = board[Square(file, rank)]
-                SquareView.render(bgColor, piece)
+                val square = Square(file, rank)
+                val piece = board[square]
+                val highlight = square in listOfNotNull(lastMove?.from, lastMove?.to)
+                SquareView.render(bgColor, piece, highlight)
             }
             // line by line, scroll through each squareView and append the corresponding line
             (0..(SquareView.SQUARE_HEIGHT - 1)).forEach { lineIndex ->

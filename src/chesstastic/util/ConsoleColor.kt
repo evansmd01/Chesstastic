@@ -31,3 +31,5 @@ fun String.applyColor(color: Color): String = applyConsoleColor(when (color) {
     Color.Light -> ConsoleColor.CYAN
     Color.Dark -> ConsoleColor.PURPLE
 }, this)
+
+fun String.yellow(): String = applyConsoleColor(ConsoleColor.YELLOW, this)

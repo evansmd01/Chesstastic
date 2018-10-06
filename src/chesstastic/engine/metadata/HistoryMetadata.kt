@@ -11,22 +11,22 @@ import chesstastic.engine.entities.Color.*
 data class HistoryMetadata(
     val history: History,
     val currentTurn: Color,
-    val lightCastleMetadata: CastleMetadata,
-    val darkCastleMetadata: CastleMetadata,
+    val lightCastling: CastleMetadata,
+    val darkCastling: CastleMetadata,
     val inactivityCount: Int,
     val moveCount: Int
 ) {
     operator fun plus(moveData: MoveMetadata): HistoryMetadata {
-        var newLightCastle = lightCastleMetadata
-        var newDarkCastle = darkCastleMetadata
+        var newLightCastle = lightCastling
+        var newDarkCastle = darkCastling
         if(moveData.move is Move.Castle) when (moveData.piece.color) {
-            Light -> newLightCastle = lightCastleMetadata.copy(castled = moveData.move, kingHasMoved = true)
-            Dark -> newDarkCastle = darkCastleMetadata.copy(castled = moveData.move, kingHasMoved = true)
+            Light -> newLightCastle = lightCastling.copy(castled = moveData.move, kingHasMoved = true)
+            Dark -> newDarkCastle = darkCastling.copy(castled = moveData.move, kingHasMoved = true)
         } else {
-            newLightCastle = lightCastleMetadata.updated(
+            newLightCastle = lightCastling.updated(
                 if (currentTurn == Light) moveData.move.from else moveData.move.to
             )
-            newDarkCastle = darkCastleMetadata.updated(
+            newDarkCastle = darkCastling.updated(
                 if (currentTurn == Dark) moveData.move.from else moveData.move.to
             )
         }
@@ -34,8 +34,8 @@ data class HistoryMetadata(
         return HistoryMetadata(
             history = History(moveData.move, history),
             currentTurn = currentTurn.opposite,
-            lightCastleMetadata = newLightCastle,
-            darkCastleMetadata = newDarkCastle,
+            lightCastling = newLightCastle,
+            darkCastling = newDarkCastle,
             inactivityCount = when {
                 moveData.piece.kind == PieceKind.Pawn -> 0
                 moveData.capturing != null -> 0
@@ -49,11 +49,10 @@ data class HistoryMetadata(
         val EMPTY = HistoryMetadata(
             history = History(null, null),
             currentTurn = Light,
-            lightCastleMetadata = CastleMetadata.LIGHT,
-            darkCastleMetadata = CastleMetadata.DARK,
+            lightCastling = CastleMetadata.LIGHT,
+            darkCastling = CastleMetadata.DARK,
             inactivityCount = 0,
             moveCount = 0
         )
     }
 }
-

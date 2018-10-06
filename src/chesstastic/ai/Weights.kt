@@ -26,11 +26,6 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
         KINGSIDE_CASTLE_BONUS,
         CANNOT_CASTLE_PENALTY,
 
-        // pins & skewers
-        PINS_AND_SKEWERS,
-        PIN_BONUS,
-        SKEWER_BONUS,
-
         // pawn promotion
         PAWN_PROMOTION,
         PROMOTION_1_RANK_AWAY,
@@ -44,12 +39,18 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
 
         // mobility
         MOBILITY,
+
+        // development
+        DEVELOPMENT,
+        KNIGHT_DEVELOPMENT_BONUS,
+        BISHOP_DEVELOPMENT_BONUS,
+        ROOK_DEVELOPMENT_BONUS,
     }
 
     companion object {
         fun default(key: Key): Double = when (key) {
             // Heuristic Weights
-            MATERIAL -> 25.0
+            MATERIAL -> 10.0
             QUEEN_MATERIAL_VALUE -> 9.0
             KING_MATERIAL_VALUE -> 0.0
             PAWN_MATERIAL_VALUE -> 1.0
@@ -68,11 +69,6 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
             KINGSIDE_CASTLE_BONUS -> 5.0
             CANNOT_CASTLE_PENALTY -> 5.0
 
-            // pins and skewers
-            PINS_AND_SKEWERS -> 1.0
-            PIN_BONUS -> 1.0
-            SKEWER_BONUS -> 1.0
-
             // pawn promotion
             PAWN_PROMOTION -> 1.0
             PROMOTION_1_RANK_AWAY -> 4.0
@@ -80,12 +76,18 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
             PROMOTION_3_RANKS_AWAY -> 1.0
 
             //attacking
-            WINNING_THE_EXCHANGE -> 10.0
-            EXCHANGE_GAIN_BONUS -> 2.0
+            WINNING_THE_EXCHANGE -> 5.0
+            EXCHANGE_GAIN_BONUS -> 1.0
             EXCHANGE_SIMPLIFICATION_BONUS -> 1.0
 
             // mobility
-            MOBILITY -> 1.0
+            MOBILITY -> 0.5
+
+            // development
+            DEVELOPMENT -> 2.0
+            KNIGHT_DEVELOPMENT_BONUS -> 3.0
+            BISHOP_DEVELOPMENT_BONUS -> 2.0
+            ROOK_DEVELOPMENT_BONUS -> 1.0
         }
     }
 

@@ -24,7 +24,8 @@ interface Heuristic {
             { Castling(it) },
             { PawnPromotion(it) },
             { Exchanges(it) },
-            { Mobility(it) }
+            { Mobility(it) },
+            { Development(it) }
         )
     }
 }

@@ -34,11 +34,11 @@ object MetadataCalculator {
         })
         // king moves
         board.lightMoves.kingMoves.addAll(
-            PotentialKingMoves.calculate(Light, board.lightMetadata.king.square, board.getPiece, board.historyMetadata.lightCastleMetadata)
+            PotentialKingMoves.calculate(Light, board.lightMetadata.king.square, board.getPiece, board.historyMetadata.lightCastling)
                 .mapNotNull { move -> processMove(move, board.squares) }
         )
         board.darkMoves.kingMoves.addAll(
-            PotentialKingMoves.calculate(Dark, board.darkMetadata.king.square, board.getPiece, board.historyMetadata.darkCastleMetadata)
+            PotentialKingMoves.calculate(Dark, board.darkMetadata.king.square, board.getPiece, board.historyMetadata.darkCastling)
                 .mapNotNull { move -> processMove(move, board.squares) }
         )
 

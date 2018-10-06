@@ -13,8 +13,8 @@ class Castling(override val weights: Weights): Heuristic {
         var light = 0.0
         var dark = 0.0
 
-        val lightCastle = board.historyMetadata.lightCastleMetadata.castled
-        val darkCastle = board.historyMetadata.darkCastleMetadata.castled
+        val lightCastle = board.historyMetadata.lightCastling.castled
+        val darkCastle = board.historyMetadata.darkCastling.castled
 
         when  {
             lightCastle is Move.Castle.Queenside ->

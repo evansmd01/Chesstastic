@@ -45,6 +45,10 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
         KNIGHT_DEVELOPMENT_BONUS,
         BISHOP_DEVELOPMENT_BONUS,
         ROOK_DEVELOPMENT_BONUS,
+
+        // king pressure
+        KING_PRESSURE,
+        KING_PRESSURE_ATTACK_RATIO_BONUS,
     }
 
     companion object {
@@ -88,6 +92,10 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
             KNIGHT_DEVELOPMENT_BONUS -> 3.0
             BISHOP_DEVELOPMENT_BONUS -> 2.0
             ROOK_DEVELOPMENT_BONUS -> 1.0
+
+            // king pressure
+            KING_PRESSURE -> 1.0
+            KING_PRESSURE_ATTACK_RATIO_BONUS -> 10.0
         }
     }
 

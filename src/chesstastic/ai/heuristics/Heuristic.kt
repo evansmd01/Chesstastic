@@ -25,7 +25,8 @@ interface Heuristic {
             { PawnPromotion(it) },
             { Exchanges(it) },
             { Mobility(it) },
-            { Development(it) }
+            { Development(it) },
+            { KingPressure(it) }
         )
     }
 }

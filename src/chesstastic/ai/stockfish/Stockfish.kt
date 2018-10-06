@@ -10,10 +10,16 @@ import java.io.OutputStreamWriter
 import java.lang.Exception
 import java.time.Duration
 
-class Stockfish(private val timeLimit: Duration): AIPlayer {
+/**
+ *  [stockfish UCI docs](http://support.stockfishchess.org/kb/advanced-topics/uci-protocol)
+ *
+ *  [UCI WIKI](http://download.shredderchess.com/div/uci.zip)
+ */
+class Stockfish(private val timeLimit: Duration = Duration.ofMillis(200), private val difficulty: Int = 0): AIPlayer {
     override fun selectMove(board: Board): Move {
         val process = StockfishProcess.start()
         try {
+            process.sendCommand("setoption name Skill Level value $difficulty")
             val history = board.historyMetadata.history.toString()
             val move = process.getBestMove(history, timeLimit.toMillis().toInt())
                 ?: throw Exception("Stockfish could not select a move")

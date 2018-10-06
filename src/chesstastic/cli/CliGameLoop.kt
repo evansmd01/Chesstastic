@@ -86,9 +86,9 @@ object CliGameLoop {
                         }
                         is Command.SetStockfish -> when(board.historyMetadata.currentTurn) {
                             Color.Light ->
-                                lightAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
+                                lightAI = Stockfish(difficulty = command.difficulty)
                             Color.Dark ->
-                                darkAI = Stockfish(Duration.ofMillis(command.moveTimeMillis))
+                                darkAI = Stockfish(difficulty = command.difficulty)
                         }
                         is Command.MoveCommand -> {
                             val move = board.metadata.legalMoves.firstOrNull {

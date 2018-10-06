@@ -52,14 +52,14 @@ sealed class Command {
         }
     }
 
-    data class SetStockfish(val moveTimeMillis: Long): Command() {
+    data class SetStockfish(val difficulty: Int): Command() {
         companion object: CommandParser {
             private val regex = """set\s+stockfish\s+(\d+)""".toRegex()
             override fun parse(input: String): SetStockfish? {
                 val match = regex.matchEntire(input.toLowerCase())
                 return if (match != null) {
                     val (moveTime) = match.destructured
-                    SetStockfish(moveTime.toLong())
+                    SetStockfish(moveTime.toInt())
                 } else null
             }
         }

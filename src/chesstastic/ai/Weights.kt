@@ -41,6 +41,9 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
         WINNING_THE_EXCHANGE,
         EXCHANGE_GAIN_BONUS,
         EXCHANGE_SIMPLIFICATION_BONUS,
+
+        // mobility
+        MOBILITY,
     }
 
     companion object {
@@ -80,6 +83,9 @@ class Weights(private val overrides: Map<String, Double> = emptyMap()) {
             WINNING_THE_EXCHANGE -> 10.0
             EXCHANGE_GAIN_BONUS -> 2.0
             EXCHANGE_SIMPLIFICATION_BONUS -> 1.0
+
+            // mobility
+            MOBILITY -> 1.0
         }
     }
 

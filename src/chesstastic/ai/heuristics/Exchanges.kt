@@ -67,11 +67,13 @@ class Exchanges(override val weights: Weights): Heuristic {
                 Exchange(0.0, 0.0)
         }
     }
+
+    private data class Exchange(val losses: Double, val gains: Double) {
+        val totalGain = gains - losses
+        val totalMaterialRemoved = gains + losses
+
+        operator fun plus(other: Exchange) = Exchange(losses + other.losses, gains + other.gains)
+    }
 }
 
-private data class Exchange(val losses: Double, val gains: Double) {
-    val totalGain = gains - losses
-    val totalMaterialRemoved = gains + losses
 
-    operator fun plus(other: Exchange) = Exchange(losses + other.losses, gains + other.gains)
-}

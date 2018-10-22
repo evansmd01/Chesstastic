@@ -28,8 +28,15 @@ class Chesstastic(
         }
 
         bestLeafNodes.take(breadth).forEach { node ->
-            node.board.metadata.legalMoves.forEach { move ->
-                val boardWithMove = node.board.updatedWithoutValidation(move)
+            val bestMoves = node.board.metadata.legalMoves.map { move ->
+                val updated = node.board.updatedWithoutValidation(move)
+                val evaluation = evaluate(updated)
+                Triple(move, updated, evaluation.score)
+            }.sortedByDescending { (_, _, score) ->
+                score.ratioInFavorOf(forPlayer)
+            }
+
+            bestMoves.take(breadth).forEach { (move, boardWithMove, _) ->
                 if (boardWithMove.metadata.isGameOver) {
                     node.addChild(EvaluationTree.TerminatingNode(boardWithMove, evaluate(boardWithMove), move))
                 } else {

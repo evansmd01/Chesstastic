@@ -14,7 +14,7 @@ abstract class EvaluationTree private constructor(
 ) {
     fun moves(): List<Move> {
         return when (this) {
-            is NodeWithMove -> listOf(move) + (ancestor?.moves() ?: emptyList())
+            is NodeWithMove -> (ancestor?.moves() ?: emptyList()) + move
             else -> emptyList()
         }
     }

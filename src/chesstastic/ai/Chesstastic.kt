@@ -1,59 +1,56 @@
 package chesstastic.ai
 
-import chesstastic.ai.heuristics.*
-import chesstastic.ai.models.*
-import chesstastic.engine.entities.*
+import chesstastic.ai.heuristics.Heuristic
+import chesstastic.ai.models.PositionEvaluation
+import chesstastic.engine.entities.Board
+import chesstastic.engine.entities.Color
+import chesstastic.engine.entities.Move
 
-interface AIPlayer {
-    fun selectMove(board: Board): Move
-}
-
-class Chesstastic private constructor (
+class Chesstastic(
     private val depth: Int,
     private val breadth: Int,
     private val heuristics: Set<Heuristic>
 ): AIPlayer {
-    var lastBranchChosen: BranchEvaluation? = null
+    var lastBranchChosen: EvaluationTree? = null
 
     override fun selectMove(board: Board): Move {
-        lastBranchChosen = findBestBranch(board.historyMetadata.currentTurn, board, depth, breadth)
-        return lastBranchChosen?.branch?.firstOrNull()
-            ?: throw Exception("Could not find a move")
+        val tree = EvaluationTree.new(board, evaluate(board))
+        // TODO: replace fixed depth with timeout based logic to continue evaluating until elaspsed time is up.
+        (0..depth).forEach { _ -> updateBestLeafNodes(board.historyMetadata.currentTurn, tree) }
+
+        lastBranchChosen = tree.leafNodes().maxBy { it.evaluation.score.ratioInFavorOf(board.historyMetadata.currentTurn) }
+        return lastBranchChosen?.moves()?.firstOrNull() ?: throw Exception("Unable to select a move. \nTree: $tree \nboard: $board")
     }
 
-    private fun findBestBranch(player: Color, board: Board, depth: Int, breadth: Int, previous: BranchEvaluation? = null): BranchEvaluation? {
-        val currentTurn = board.historyMetadata.currentTurn
-        val moves = board.metadata.legalMoves
-        // stop recursion if we've hit depth, ensuring we ended with an opponent response
-        // , or if there are no legal moves left
-        if ((depth < 0 && currentTurn == player) || moves.isEmpty()) {
-            return previous
+    private fun updateBestLeafNodes(forPlayer: Color, evaluationTree: EvaluationTree) {
+        val bestLeafNodes = evaluationTree.appendableLeafNodes().sortedByDescending { node: EvaluationTree.AppendableNode ->
+            node.evaluation.score.ratioInFavorOf(forPlayer)
         }
 
-        val bestMovesForCurrentPlayer = moves
-            .asSequence()
-            .map { move ->
-                val updatedBoard = board.updated(move)
-                val branch = previous?.branch?.plus(move) ?: listOf(move)
-                BranchEvaluation(branch, evaluate(updatedBoard).finalScore, updatedBoard)
+        bestLeafNodes.take(breadth).forEach { node ->
+            node.board.metadata.legalMoves.forEach { move ->
+                val boardWithMove = node.board.updatedWithoutValidation(move)
+                if (boardWithMove.metadata.isGameOver) {
+                    node.addChild(EvaluationTree.TerminatingNode(boardWithMove, evaluate(boardWithMove), move))
+                } else {
+                    // evaluate responses
+                    val possibleResponses = boardWithMove.metadata.legalMoves.map { response ->
+                        val boardWithResponse = boardWithMove.updatedWithoutValidation(response)
+                        Triple(response, evaluate(boardWithResponse), boardWithResponse)
+                    }
+
+                    // take the response that results in the best possible score for the responder
+                    val (response, evaluation, boardWithResponse) = possibleResponses.maxBy { (_, evaluation, _) ->
+                        evaluation.score.ratioInFavorOf(forPlayer.opposite)
+                    } ?: throw Exception("There were no possible responses. This should have been a terminating node. ${node.board}")
+
+                    node.addChild(EvaluationTree.BranchingNode(
+                        boardWithResponse, evaluation, move, response
+                    ))
+                }
             }
-            .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
-            .toList()
-
-
-        val bestEvaluations = when (currentTurn) {
-            player -> bestMovesForCurrentPlayer.take(breadth)
-            else -> bestMovesForCurrentPlayer.take(1)
         }
 
-        val bestBranches = bestEvaluations
-            .asSequence()
-            .map { evaluation ->
-                findBestBranch(player, evaluation.board, depth - 1, breadth, evaluation)!!
-            }
-            .sortedByDescending { it.score.ratioInFavorOf(currentTurn) }
-            .toList()
-        return bestBranches.first()
     }
 
     fun evaluate(board: Board) = PositionEvaluation(

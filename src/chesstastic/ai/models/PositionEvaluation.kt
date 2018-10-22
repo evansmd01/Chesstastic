@@ -7,7 +7,7 @@ data class PositionEvaluation(
     val stalemate: Boolean,
     val heuristics: List<HeuristicResult>
 ) {
-    val finalScore by lazy {
+    val score by lazy {
         when {
             winner != null -> Score.checkmate(winner)
             stalemate -> Score.EVEN

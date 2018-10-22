@@ -23,7 +23,7 @@ class EvaluationTests: ChessTestSuite() {
 
                     val eval = Chesstastic.DEFAULT.evaluate(board)
 
-                    eval.finalScore.dark.shouldBeGreaterThan(eval.finalScore.light)
+                    eval.score.dark.shouldBeGreaterThan(eval.score.light)
                 }
 
                 it("should be bad to be losing the exchange") {
@@ -40,7 +40,7 @@ class EvaluationTests: ChessTestSuite() {
 
                     val eval = Chesstastic.DEFAULT.evaluate(board)
 
-                    eval.finalScore.light.shouldBeGreaterThan(eval.finalScore.dark)
+                    eval.score.light.shouldBeGreaterThan(eval.score.dark)
                 }
             }
         }

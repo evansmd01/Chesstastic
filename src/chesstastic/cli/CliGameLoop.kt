@@ -47,7 +47,7 @@ object CliGameLoop {
                 ai != null -> {
                     board = board.updated(ai.selectMove(board))
                     if (ai is Chesstastic)
-                        lastBranchChosen = ai.lastBranchChosen
+                        lastBranchChosen = ai.lastBranchChosen?.getBranchEvaluation()
 
                     if(promptAiMoves) {
                         println()

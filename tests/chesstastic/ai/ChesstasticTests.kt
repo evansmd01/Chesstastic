@@ -9,21 +9,6 @@ import java.util.concurrent.ThreadLocalRandom
 @Suppress("unused")
 class ChesstasticTests: ChessTestSuite() {
     init {
-        describe("select move") {
-            it("should select the move that results in the best possible score") {
-                val board = Board()
-                val mock = MockHeuristic()
-                val subject = Chesstastic.configured { heuristics = setOf(mock) }
-
-                val selectedMove = subject.selectMove(board)
-
-                val bestEvaluation = mock.bestEvaluationFor(board.historyMetadata.currentTurn)
-                val bestFirstMove = bestEvaluation.board.historyMetadata.history.first()!!
-
-                selectedMove.shouldBe(bestFirstMove)
-            }
-        }
-
         describe("full game") {
             it("should be able to play a full game without encountering errors") {
                 var board = Board()

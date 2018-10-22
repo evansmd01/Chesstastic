@@ -1,7 +1,6 @@
 package chesstastic.cli.view
 
 import chesstastic.ai.models.*
-import chesstastic.engine.entities.Color
 import chesstastic.util.*
 
 object EvaluationView: TableView() {
@@ -14,7 +13,7 @@ object EvaluationView: TableView() {
                 + separator + "WEIGHT".padded(8)
                 + separator + "SCORE\n${100.times("-")}\n",
             separator = "\n",
-            postfix = "\n${100.times("-")}\n\n" + ScoreView.render(evaluation.finalScore)
+            postfix = "\n${100.times("-")}\n\n" + ScoreView.render(evaluation.score)
         ) {
             val title = it.key.toString().toLowerCase().replace("_", " ").capitalize()
             val baseScore = it.baseScore.format()

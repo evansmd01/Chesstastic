@@ -14,7 +14,8 @@ abstract class EvaluationTree private constructor(
 ) {
     fun moves(): List<Move> {
         return when (this) {
-            is NodeWithMove -> (ancestor?.moves() ?: emptyList()) + move
+            is TerminatingNode -> (ancestor?.moves() ?: emptyList()) + move
+            is BranchingNode -> (ancestor?.moves() ?: emptyList()) + move + response
             else -> emptyList()
         }
     }
@@ -31,10 +32,6 @@ abstract class EvaluationTree private constructor(
 
     // region Nodes
 
-    interface NodeWithMove {
-        val move: Move
-    }
-
     abstract class AppendableNode(board: Board, evaluation: PositionEvaluation): EvaluationTree(board, evaluation, null, mutableSetOf()) {
         fun addChild(child: EvaluationTree) {
             child.ancestor = this
@@ -50,15 +47,15 @@ abstract class EvaluationTree private constructor(
     class TerminatingNode(
         board: Board,
         evaluation: PositionEvaluation,
-        override val move: Move
-    ) : EvaluationTree(board, evaluation, null, mutableSetOf()), NodeWithMove
+        val move: Move
+    ) : EvaluationTree(board, evaluation, null, mutableSetOf())
 
     class BranchingNode(
         board: Board,
         evaluation: PositionEvaluation,
-        override val move: Move,
+        val move: Move,
         val response: Move
-    ) : AppendableNode(board, evaluation), NodeWithMove
+    ) : AppendableNode(board, evaluation)
 
     // endregion
 
